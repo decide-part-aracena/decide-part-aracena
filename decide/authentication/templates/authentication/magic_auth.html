@@ -1,0 +1,11 @@
+<!-- templates/authentication/magic_auth.html -->
+
+{% extends 'base.html' %} {% block content %}
+<h1>Login</h1>
+<br />
+<form method="post">
+	{% csrf_token %}
+	<input type="email" name="email" required />
+	<input type="submit" value="Mandar enlace de inicio de sesión" />
+</form>
+{% endblock content %}

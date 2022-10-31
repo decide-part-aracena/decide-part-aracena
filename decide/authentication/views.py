@@ -11,7 +11,23 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
+from decide.settings import EMAIL_HOST_USER
+from decide.settings import BASEURL
+
 from .serializers import UserSerializer
+
+
+from django.core.cache import cache
+from .forms import MagicLinkForm
+from django.views.generic import TemplateView
+from django.views.decorators.http import require_http_methods
+from django.http.request import HttpRequest
+from django.http.response import HttpResponseBadRequest
+from django.core.mail import send_mail
+from django.shortcuts import render
+from django.shortcuts import redirect
+from django.contrib.auth import login
+import secrets
 
 
 class GetUserView(APIView):
@@ -53,3 +69,41 @@ class RegisterView(APIView):
         except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
+
+
+@require_http_methods(["GET","POST"])
+def magic_link_via_email(request: HttpRequest):
+    '''
+    Genera un magic link de inicio de sesion, lo guarda en cache durante 10 minutos y lo manda por correo. Solo manda el correo a usuarios registrados.
+    '''
+    timeout=10*60 #minutes
+
+    if request.POST:
+        form = MagicLinkForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data["email"]        
+            if  User.objects.filter(email=email).exists():
+                token = secrets.token_urlsafe(nbytes=16)
+                link=f"{BASEURL}/authentication/magic-link/{token}"
+                cache.get_or_set(token,email,timeout=timeout)
+                send_mail(
+                    subject="Decide - Enlace de inicio de sesion",
+                    message=f"Enlace de inicio de sesion: {link}",
+                    from_email=EMAIL_HOST_USER,
+                    recipient_list=[email],
+                    fail_silently=False,
+                )
+    return render(request, "authentication/magic_auth.html")
+
+@require_http_methods("GET")
+def authenticate_via_magic_link(request: HttpRequest, token: str):
+    '''
+    Se hace uso del magic link para iniciar la sesion del usuario
+    '''
+    email = cache.get(token)
+    if email is None:
+        return HttpResponseBadRequest(content="El link de inicio de sesión ha expirado")
+    cache.delete(token)
+    user = User.objects.get(email=email)
+    login(request,user)
+    return redirect("/admin")
