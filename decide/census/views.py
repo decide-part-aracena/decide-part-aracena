@@ -11,7 +11,11 @@ from rest_framework.status import (
 )
 
 from base.perms import UserIsStaff
-from .models import Census
+from .models import Census, ExcelFile
+from django.conf import settings
+from django.shortcuts import render
+import pandas as pd 
+
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -49,3 +53,17 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         except ObjectDoesNotExist:
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
+
+
+def import_datadb(request):
+    if request.method == 'POST':
+            file = request.FILES['file']
+            obj = ExcelFile.objects.create(
+                file = file
+            )
+            path = file.file
+            print('{settings.BASE_DIR)/{path}')
+            df = pd.read_excel(path)
+            print(df)
+
+    return render(request, 'excel.html')
