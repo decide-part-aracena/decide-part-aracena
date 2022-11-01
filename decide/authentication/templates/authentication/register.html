@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+
+    <div id="app-booth">
+        <h1>Register</h1>
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if register_form.errors %}
+                <div class="alert alert-danger">
+                    {{ register_form.errors }}
+                </div>
+            {% endif %}
+            <table>
+                <h4 class="form-control">Username : {{ register_form.username }} </h4>
+                <h4 class="form-control">First name : {{ register_form.first_name }}</h4>
+                <h4 class="form-control">Last name : {{ register_form.last_name }}</h4>
+                <h4 class="form-control">Email : {{ register_form.email }}</h4>
+                <h4 class="form-control">Password : {{ register_form.password1 }}</h4>
+                <h4 class="form-control">Confirm password : {{ register_form.password2 }}</h4>
+            </table>
+            <button class="btn btn-secondary btn-lg" type="submit">Register</button>
+        </form>
+    </div>
+
+
+{% endblock %}

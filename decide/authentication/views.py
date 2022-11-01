@@ -1,3 +1,5 @@
+from pyexpat.errors import messages
+from .forms import NewUserForm
 from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED,
@@ -8,11 +10,10 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect,render
 from django.core.exceptions import ObjectDoesNotExist
 
 from .serializers import UserSerializer
-
 
 class GetUserView(APIView):
     def post(self, request):
@@ -53,3 +54,15 @@ class RegisterView(APIView):
         except IntegrityError:
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
+
+def RegisterUserView(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST,request.FILES)
+        if form.is_valid():
+            user = form.save(commit=True)
+            user.save()
+            return redirect("/admin/login")
+        return render (request=request,template_name="authentication/register.html",context={"register_form":form})
+    else:
+        form = NewUserForm()
+        return render (request=request,template_name="authentication/register.html",context={"register_form":form})
