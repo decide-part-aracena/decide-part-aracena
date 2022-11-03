@@ -1,0 +1,11 @@
+{% extends 'base2.html' %}
+{% block content %}
+
+<h2>El censo elegido ha sido el asigando a la votacion cuyo id es: {{censo.voting_id}}</h2>
+<form method="POST">
+    {% csrf_token %}
+    {{form.as_p}}
+    <button class="btn btn-secondary btn-lg" type="submit">Actualizar</button>
+</form>
+
+{% endblock %}
