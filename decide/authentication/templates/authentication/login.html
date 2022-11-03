@@ -1,0 +1,35 @@
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+         href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+{% endblock %}
+
+{% block content %}
+
+    
+    <div id="app-booth">
+        <h1>Login</h1>
+        <form method="POST">
+            {% csrf_token %}
+
+            {% if register_form.errors %}
+                <div class="alert alert-danger">
+                    {{ register_form.errors }}
+                </div>
+            {% endif %}
+            <table>
+                <h4 class="form-control">Username : {{ login_form.username }} </h4>
+                <h4 class="form-control">Password : {{ login_form.password }}</h4>
+            </table>
+            <button class="btn btn-secondary btn-lg" type="submit">Login</button>
+        </form>
+
+        <p>If you don't have an account you can <a href="/authentication/registeruser">create an account</a></p>
+    </div>
+
+
+{% endblock %}

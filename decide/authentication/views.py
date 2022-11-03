@@ -1,5 +1,7 @@
 from pyexpat.errors import messages
 from .forms import NewUserForm
+from django.contrib.auth import login, authenticate, logout
+from django.contrib.auth.forms import AuthenticationForm
 from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED,
@@ -61,8 +63,25 @@ def RegisterUserView(request):
         if form.is_valid():
             user = form.save(commit=True)
             user.save()
-            return redirect("/admin/login")
+            return redirect("/")
         return render (request=request,template_name="authentication/register.html",context={"register_form":form})
     else:
         form = NewUserForm()
         return render (request=request,template_name="authentication/register.html",context={"register_form":form})
+        
+def LoginUserView(request):
+    if request.method == "POST":
+        form = AuthenticationForm(request,data=request.POST)
+        if form.is_valid():
+            username=form.cleaned_data.get('username')
+            password=form.cleaned_data.get('password')
+            user= authenticate(request,username=username,password=password)
+            if user is not None:
+                login(request,user)
+                return redirect("/")
+    form = AuthenticationForm()
+    return render (request=request,template_name="authentication/login.html",context={"login_form":form})
+
+def LogoutUserView(request):
+    logout(request)
+    return redirect("/")
