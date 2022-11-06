@@ -11,7 +11,6 @@ from django.db import IntegrityError
 from django.shortcuts import get_object_or_404
 from django.core.exceptions import ObjectDoesNotExist
 
-from decide.settings import EMAIL_HOST_USER
 from decide.settings import BASEURL
 
 from .serializers import UserSerializer
@@ -89,7 +88,7 @@ def magic_link_via_email(request: HttpRequest):
                 send_mail(
                     subject="Decide - Enlace de inicio de sesion",
                     message=f"Enlace de inicio de sesion: {link}",
-                    from_email=EMAIL_HOST_USER,
+                    from_email='decide.part.aracena@outlook.com',
                     recipient_list=[email],
                     fail_silently=False,
                 )
