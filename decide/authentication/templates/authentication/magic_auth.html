@@ -28,7 +28,6 @@
 				<div class="form-text">Introduce el correo electrónico asociado con tu cuenta</div>
 			</div>
 			<div id="timer-hidden" style="display:none">
-				<p id="email-typo-check"></p>
 				<p class="form-label">Si el correo electrónico es correcto le llegará un mensaje.</p>
 				<p id="timer" style="font-size: x-large;"></p>
 			</div>
@@ -36,7 +35,9 @@
 		</div>
 	</div>	
 </div>
+{% endblock content %}
 
+{% block extrabody %}
 <script>
 	function magicLinkRequest(){
 		var email = document.getElementById("email-input").value
@@ -46,8 +47,9 @@
 			submitForm();
 
 			document.getElementById("submit-button").disabled = true;
-			document.getElementById("email-input").value = ""
-			document.getElementById("email-typo-check").innerHTML = "Se ha enviado un enlace al correo: " + email
+			document.getElementById("email-input").value = "" 
+
+			alertMsg('Se ha enviado un enlace al correo: ' + email, 'success')
 		}else{
 			alertMsg('Formato de correo electrónico incorrecto, revíselo', 'danger')
 		}		
@@ -119,5 +121,5 @@
 	  
 		alertPlaceholder.append(wrapper)
 	  }
-	</script>
-{% endblock content %}
+</script>
+{% endblock extrabody %}

@@ -18,7 +18,6 @@ from .serializers import UserSerializer
 
 from django.core.cache import cache
 from .forms import MagicLinkForm
-from django.views.generic import TemplateView
 from django.views.decorators.http import require_http_methods
 from django.http.request import HttpRequest
 from django.http.response import HttpResponseBadRequest
@@ -80,7 +79,7 @@ def magic_link_via_email(request: HttpRequest):
     if request.POST:
         form = MagicLinkForm(request.POST)
         if form.is_valid():
-            email = form.cleaned_data["email"]        
+            email = form.cleaned_data["email"]
             if  User.objects.filter(email=email).exists():
                 token = secrets.token_urlsafe(nbytes=16)
                 link=f"{BASEURL}/authentication/magic-link/{token}"
