@@ -11,3 +11,4 @@ django-nose==1.4.6
 jsonnet==0.12.1
 selenium
 django-allauth
+python-dotenv
