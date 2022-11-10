@@ -9,6 +9,9 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import VotingForm
+
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -99,3 +102,37 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
+def listarQuestions(request):
+    questions = Voting.objects.all()
+    return render(request, 'voting.html',{
+        'question':questions
+    })
+
+def voting_details(request, voting_id):
+    if request.method == 'GET':
+        voting = get_object_or_404(Voting, pk=voting_id)
+        form = VotingForm(instance=voting)
+        return render(request, 'voting_details.html', {'voting': voting, 'form': form})
+    else:
+        try:
+            voting = get_object_or_404(Voting, pk=voting_id)
+            form = VotingForm(request.POST, instance=voting)
+            form.save()
+            return redirect('voting')
+        except ValueError:
+            return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
+                                                          'error': form.errors})
+
+
+def crear_voting(request):
+    if request.method == 'GET':
+        return render(request, 'crear_voting.html', {'form': VotingForm})
+    else:
+        try:
+            form = VotingForm(request.POST)
+            nuevo_question = form.save(commit=False)
+            nuevo_question.save()
+            return redirect('voting')
+        except ValueError:
+            return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
