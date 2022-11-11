@@ -85,8 +85,8 @@ def magic_link_via_email(request: HttpRequest):
                 link=f"{BASEURL}/authentication/magic-link/{token}"
                 cache.get_or_set(token,email,timeout=timeout)
                 send_mail(
-                    subject="Decide - Enlace de inicio de sesion",
-                    message=f"Enlace de inicio de sesion: {link}",
+                    subject="Decide - Login magic link",
+                    message=f"Copy in the browser the following link in order to login {link}",
                     from_email='decide.part.aracena@outlook.com',
                     recipient_list=[email],
                     fail_silently=False,
@@ -100,7 +100,7 @@ def authenticate_via_magic_link(request: HttpRequest, token: str):
     '''
     email = cache.get(token)
     if email is None:
-        return HttpResponseBadRequest(content="El link de inicio de sesión ha expirado")
+        return HttpResponseBadRequest(content="Link has expired, request a new one")
     cache.delete(token)
     user = User.objects.get(email=email)
     login(request,user)

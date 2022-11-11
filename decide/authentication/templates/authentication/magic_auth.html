@@ -18,20 +18,20 @@
 
 <div class="container justify">
 	<div class="row justify-content-center">
-		<h2>Inicio de sesión mediante enlace</h2>
+		<h2>Login with magic link</h2>
 		<div class="col-8 align-self-center">
 			<div id="alertPlaceHolder"></div>
 			{% csrf_token %}
 			<div class="form-outline mb-4">
-				<label for="exampleInputEmail1" class="form-label">Correo electrónico:</label>
+				<label for="exampleInputEmail1" class="form-label">Email:</label>
 				<input id="email-input" type="email" class="form-control" name="email" aria-describedby="email">
-				<div class="form-text">Introduce el correo electrónico asociado con tu cuenta</div>
+				<div class="form-text">Introduce an email linked to an account</div>
 			</div>
 			<div id="timer-hidden" style="display:none">
-				<p class="form-label">Si el correo electrónico es correcto le llegará un mensaje.</p>
+				<p class="form-label">If the email is correct, an email will be sent to you inbox</p>
 				<p id="timer" style="font-size: x-large;"></p>
 			</div>
-			<button id="submit-button" onclick="magicLinkRequest()" type="submit" class="btn btn-primary btn-block mb-4" >Mandar enlace de inicio de sesión</button>
+			<button id="submit-button" onclick="magicLinkRequest()" type="submit" class="btn btn-primary btn-block mb-4" >Send link</button>
 		</div>
 	</div>	
 </div>
@@ -49,9 +49,9 @@
 			document.getElementById("submit-button").disabled = true;
 			document.getElementById("email-input").value = "" 
 
-			alertMsg('Se ha enviado un enlace al correo: ' + email, 'success')
+			alertMsg('Link sent to ' + email, 'success')
 		}else{
-			alertMsg('Formato de correo electrónico incorrecto, revíselo', 'danger')
+			alertMsg('Check the email format', 'danger')
 		}		
 	}
 
@@ -66,11 +66,11 @@
 			var minutos = Math.floor(tiempoRestante / 60);
 			var segundos = Math.floor(tiempoRestante - minutos*60);
 	  
-			document.getElementById("timer").innerHTML = "El enlace expira en  " + minutos + "m " + segundos + "s ";
+			document.getElementById("timer").innerHTML = "Link expires in  " + minutos + "m " + segundos + "s ";
 		  
 			if (tiempoRestante < 0) {
 			  clearInterval(x);
-			  document.getElementById("timer").innerHTML = "El enlace ha expirado, pida uno nuevo";
+			  document.getElementById("timer").innerHTML = "Link has expired, request a new one";
 			  document.getElementById("submit-button").disabled = false;
 			}
 		  }, 1000);
