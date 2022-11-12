@@ -72,9 +72,11 @@ class RegisterView(APIView):
 @require_http_methods(["GET","POST"])
 def magic_link_via_email(request: HttpRequest):
     '''
-    Genera un magic link de inicio de sesion, lo guarda en cache durante 10 minutos y lo manda por correo. Solo manda el correo a usuarios registrados.
+    Generate a 10 minutes magic link and send it via email to registered users
     '''
     timeout=10*60 #minutes
+    if request.user.is_authenticated:
+        return redirect("/base/")
 
     if request.POST:
         form = MagicLinkForm(request.POST)
@@ -96,7 +98,7 @@ def magic_link_via_email(request: HttpRequest):
 @require_http_methods("GET")
 def authenticate_via_magic_link(request: HttpRequest, token: str):
     '''
-    Se hace uso del magic link para iniciar la sesion del usuario
+    Use the magic link(token) to log in the user
     '''
     email = cache.get(token)
     if email is None:
@@ -104,4 +106,4 @@ def authenticate_via_magic_link(request: HttpRequest, token: str):
     cache.delete(token)
     user = User.objects.get(email=email)
     login(request,user)
-    return redirect("/admin")
+    return redirect("/base/")
