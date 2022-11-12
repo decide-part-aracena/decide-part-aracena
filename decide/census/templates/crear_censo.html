@@ -4,7 +4,7 @@
 <div id="app-booth">
     <h1>Crear Censo</h1>
     {{error}}
-    <form method="POST" action="/censo/crear">
+    <form method="POST">
         {% csrf_token %}
         {{form.as_p}}
         <br />

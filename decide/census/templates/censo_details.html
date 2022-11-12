@@ -1,4 +1,4 @@
-{% extends 'base2.html' %}
+{% extends 'base.html' %}
 {% block content %}
 
 <h2>El censo elegido ha sido el asigando a la votacion cuyo id es: {{censo.voting_id}}</h2>
@@ -8,4 +8,5 @@
     <button class="btn btn-secondary btn-lg" type="submit">Actualizar</button>
 </form>
 
+<button class="btn btn-secondary btn-lg"><a href="{% url 'censo' %}">Volver al listado</a></button>
 {% endblock %}
