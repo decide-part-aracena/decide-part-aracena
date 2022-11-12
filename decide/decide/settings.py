@@ -182,4 +182,4 @@ if os.path.exists("config.jsonnet"):
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
 # Login url
-LOGIN_URL = '/authentication/magic-login/'
+LOGIN_URL = '/authentication/loginuser'
