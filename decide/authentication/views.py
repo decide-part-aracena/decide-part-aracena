@@ -1,7 +1,6 @@
 from pyexpat.errors import messages
-from .forms import NewUserForm
+from .forms import NewUserForm,LoginUserForm
 from django.contrib.auth import login, authenticate, logout
-from django.contrib.auth.forms import AuthenticationForm
 from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED,
@@ -74,7 +73,7 @@ def RegisterUserView(request):
         if form.is_valid():
             user = form.save(commit=True)
             user.save()
-            return redirect("/")
+            return redirect("/base/")
         return render (request=request,template_name="authentication/register.html",context={"register_form":form})
     else:
         form = NewUserForm()
@@ -82,20 +81,20 @@ def RegisterUserView(request):
         
 def LoginUserView(request):
     if request.method == "POST":
-        form = AuthenticationForm(request,data=request.POST)
+        form = LoginUserForm(request,data=request.POST)
         if form.is_valid():
             username=form.cleaned_data.get('username')
             password=form.cleaned_data.get('password')
             user= authenticate(request,username=username,password=password)
             if user is not None:
                 login(request,user)
-                return redirect("/")
-    form = AuthenticationForm()
+                return redirect("/base/")
+    form = LoginUserForm()
     return render (request=request,template_name="authentication/login.html",context={"login_form":form})
 
 def LogoutUserView(request):
     logout(request)
-    return redirect("/")
+    return redirect("/base/")
 
 @require_http_methods(["GET","POST"])
 def magic_link_via_email(request: HttpRequest):
