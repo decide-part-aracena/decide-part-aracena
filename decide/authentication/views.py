@@ -1,3 +1,6 @@
+from pyexpat.errors import messages
+from .forms import NewUserForm,LoginUserForm
+from django.contrib.auth import login, authenticate, logout
 from rest_framework.response import Response
 from rest_framework.status import (
         HTTP_201_CREATED,
@@ -8,14 +11,10 @@ from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth.models import User
 from django.db import IntegrityError
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect,render
 from django.core.exceptions import ObjectDoesNotExist
-
 from decide.settings import BASEURL
-
 from .serializers import UserSerializer
-
-
 from django.core.cache import cache
 from .forms import MagicLinkForm
 from django.views.decorators.http import require_http_methods
@@ -68,6 +67,34 @@ class RegisterView(APIView):
             return Response({}, status=HTTP_400_BAD_REQUEST)
         return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
 
+def RegisterUserView(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST,request.FILES)
+        if form.is_valid():
+            user = form.save(commit=True)
+            user.save()
+            return redirect("/base/")
+        return render (request=request,template_name="authentication/register.html",context={"register_form":form})
+    else:
+        form = NewUserForm()
+        return render (request=request,template_name="authentication/register.html",context={"register_form":form})
+        
+def LoginUserView(request):
+    if request.method == "POST":
+        form = LoginUserForm(request,data=request.POST)
+        if form.is_valid():
+            username=form.cleaned_data.get('username')
+            password=form.cleaned_data.get('password')
+            user= authenticate(request,username=username,password=password)
+            if user is not None:
+                login(request,user)
+                return redirect("/base/")
+    form = LoginUserForm()
+    return render (request=request,template_name="authentication/login.html",context={"login_form":form})
+
+def LogoutUserView(request):
+    logout(request)
+    return redirect("/base/")
 
 @require_http_methods(["GET","POST"])
 def magic_link_via_email(request: HttpRequest):
