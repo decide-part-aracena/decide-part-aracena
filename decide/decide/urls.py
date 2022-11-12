@@ -17,6 +17,7 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework_swagger.views import get_swagger_view
+from base import usersviews as v1u
 
 
 schema_view = get_swagger_view(title='Decide API')
@@ -24,6 +25,10 @@ schema_view = get_swagger_view(title='Decide API')
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
+    path('users/', v1u.users_list, name = 'users'),
+    path('users/crear', v1u.users_create, name = 'create_user'),
+    path('users/<int:user_id>', v1u.users_details, name = 'user_details'),
+    path('borrar/users/<int:user_id>', v1u.users_delete, name = 'delete_user'),
     path('gateway/', include('gateway.urls')),
 ]
 
