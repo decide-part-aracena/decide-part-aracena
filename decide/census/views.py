@@ -1,3 +1,4 @@
+from http.client import HTTPResponse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import generics
@@ -12,8 +13,10 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from .models import Census, ExcelFile
+from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.shortcuts import render
+from django.contrib.auth.models import User
 import pandas as pd 
 
 
@@ -37,6 +40,14 @@ class CensusCreate(generics.ListCreateAPIView):
         voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
         return Response({'voters': voters})
 
+#Creada para la task -----------------------------------------------------------------
+    def list_user_create(self, request, *args, **kwargs):
+        voting_id = request.GET.get('voting_id')
+        voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
+        for voter in voters:
+            usuario = User.create_user(voter)
+            usuario.save()
+        return Response({'voters': voters})
 
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
@@ -54,6 +65,7 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
+#Creada para la task -----------------------------------------------------------------
 
 def import_datadb(request):
     if request.method == 'POST':
@@ -67,3 +79,20 @@ def import_datadb(request):
             print(df)
 
     return render(request, 'excel.html')
+
+def get_or_create_user_to_import(self, voter_id):
+        user, _ = User.objects.get_or_create(pk=voter_id)
+        user.username = 'user{}'.format(voter_id)
+        user.set_password('qwerty')
+        user.save()
+        return user
+
+def imprimir(request):
+    votaciones = Census.objects.all().values()
+    output = ""
+    for vt in votaciones:
+        output += vt
+    return HTTPResponse(output)
+
+def excel(request):
+   return render(request, 'excel.html')

@@ -1,16 +1,21 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+
+    <div class="top-header">
+        <h1 class="top-title">IMPORT</h1>
+    </div>
+
+
+    <h3> Add the excel here</h3>
+    <p> Revisa que el formato sea el adecuado antes de pulsar en "Submit"</p>
+    
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         <input type="file" requered name="file">
-        <button type="submit">Submit</button>
+        <button onclick="return confirm('Success!')" type="submit">Submit</button>
     </form>
-</body>
-</html>
+    {% endblock %}
