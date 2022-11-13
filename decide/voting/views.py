@@ -4,6 +4,8 @@ from django.utils import timezone
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
+from django.shortcuts import render, redirect
+from voting.forms import QuestionForm
 
 from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
@@ -99,3 +101,42 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
+
+def listaPreguntas(request):
+    preguntas = Question.objects.all()
+    return render(request, 'preguntas.html', {'preguntas':preguntas})
+
+def crearPreguntas(request):
+    if request.method == 'GET':
+        return render(request, 'crearPreguntas.html', {'form':QuestionForm})
+    else:
+        try: 
+            form = QuestionForm(request.POST)
+            nuevaPregunta = form.save(commit = False)
+            nuevaPregunta.save()
+            return redirect('preguntas')
+        except ValueError: 
+            return render(request, 'preguntas.html', {'form':QuestionForm, 'error': form.errors})
+
+def borrarPreguntas(request, question_id):
+    question = Question.objects.get(id = question_id)
+    question.delete()
+    return redirect('preguntas')
+
+def showUpdateQuestions(request, question_id):
+    if request.method == 'GET':
+        question = get_object_or_404(Question, pk=question_id)
+        form = QuestionForm(instance = question)
+        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form})
+    else:
+        try:
+            question = get_object_or_404(Question, pk=question_id)
+            form = QuestionForm(request.POST, instance = question)
+            form.save()
+            return redirect('preguntas')
+        except ValueError:
+            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'error': form.errors})
+
+
+
