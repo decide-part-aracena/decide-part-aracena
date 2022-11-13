@@ -20,6 +20,7 @@ from rest_framework_swagger.views import get_swagger_view
 from voting import views
 
 
+
 schema_view = get_swagger_view(title='Decide API')
 
 urlpatterns = [
@@ -30,9 +31,9 @@ urlpatterns = [
     path('question/crear/', views.crearPreguntas, name='crear_preguntas'),
     path('question/<int:question_id>/', views.showUpdateQuestions, name='showUpdateQuestions'),
     path('borrar/question/<int:question_id>/', views.borrarPreguntas, name='borrar_preguntas'),
-
-
-
+    path('voting/', views.listarQuestions, name = 'question_list'),
+    path('voting/<int:voting_id>', views.voting_details, name = 'voting_details'),
+    path('voting/crear', views.crear_voting, name = 'crear_voting')
 ]
 
 for module in settings.MODULES:
