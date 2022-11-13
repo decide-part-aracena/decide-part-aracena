@@ -103,7 +103,7 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-def listarQuestions(request):
+def listarPreguntas(request):
     questions = Voting.objects.all()
     return render(request, 'voting.html',{
         'question':questions
