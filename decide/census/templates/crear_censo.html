@@ -1,0 +1,18 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+
+<div id="app-booth">
+    <h1>Crear Censo</h1>
+    {{error}}
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        <br />
+        <button class="btn btn-secondary btn-lg" type="submit"
+            onclick="return confirm('¿Seguro que quieres crear el censo?');">Crear</button>
+    </form>
+</div>
+<br />
+<button class="btn btn-secondary btn-lg"><a href="{% url 'censo' %}">Volver al listado</a></button>
+
+{% endblock %}
