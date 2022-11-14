@@ -5,5 +5,5 @@ from .views import mainView
 
 urlpatterns = [
     path('', login_required(mainView.as_view()), name='index'),
-    path('import_datadb', views.excel, name='import_datadb'),
+   # path('import_datadb', views.excel, name='import_datadb'),
 ]

@@ -19,6 +19,9 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 import pandas as pd 
 
+import os
+import psycopg2
+
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -70,13 +73,16 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 def import_datadb(request):
     if request.method == 'POST':
             file = request.FILES['file']
-            obj = ExcelFile.objects.create(
-                file = file
-            )
-            path = file.file
+            obj = ExcelFile.objects.create( file = file )
+            path = str(obj.file)
             print('{settings.BASE_DIR)/{path}')
             df = pd.read_excel(path)
-            print(df)
+            for d in df.values:
+              print(d)
+              print(d[0])
+        
+              census = Census(voting_id=d[3], voter_id=d[0])
+              census.save()
 
     return render(request, 'excel.html')
 
@@ -86,13 +92,6 @@ def get_or_create_user_to_import(self, voter_id):
         user.set_password('qwerty')
         user.save()
         return user
-
-def imprimir(request):
-    votaciones = Census.objects.all().values()
-    output = ""
-    for vt in votaciones:
-        output += vt
-    return HTTPResponse(output)
 
 def excel(request):
    return render(request, 'excel.html')
