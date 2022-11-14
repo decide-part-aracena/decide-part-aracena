@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% load i18n static %}
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+    href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+    href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+
+    <!-- Importacion de Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="app-visualizer">
+        <!-- Navbar -->
+        <b-navbar type="dark" variant="secondary">
+            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
+        </b-navbar>
+    </div>
+
+    <div id="graphic-visualizer" class="grafica voting container">
+        <h1>Representación gráfica de resultados de la votación</h1>
+
+        <h2>Gráfica de barras:</h2>
+        <canvas id="grafica"></canvas>
+    </div>
+
+{% endblock %}
+
+{% block extrabody %}
+ 
+    <!-- Grafica de barras -->
+    <script>
+        const $grafica = document.getElementById("grafica");
+        const etiquetas = ["Enero", "Febrero", "Marzo", "Abril"]
+        const datosVentas2020 = {
+            label: "Ventas por mes",
+            data: [5000, 1500, 8000, 5102],
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 5,
+        };
+
+        new Chart($grafica, {
+            type: 'bar',
+            data: {
+                labels: etiquetas,
+                datasets: [
+                    datosVentas2020,
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                },
+            }
+        });
+    </script>
+
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+        var voting = {{voting|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-visualizer',
+            data: {
+                voting: voting
+            }
+        })
+    </script>
+</body>
+{% endblock %}
+
