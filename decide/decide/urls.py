@@ -26,9 +26,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('users/', v1u.users_list, name = 'users'),
-    path('users/crear', v1u.users_create, name = 'create_user'),
     path('users/<int:user_id>', v1u.users_details, name = 'user_details'),
-    path('borrar/users/<int:user_id>', v1u.users_delete, name = 'delete_user'),
+    path('users/delete/<int:user_id>', v1u.users_delete, name = 'delete_user'),
     path('gateway/', include('gateway.urls')),
 ]
 

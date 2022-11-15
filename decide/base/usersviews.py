@@ -3,6 +3,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import generics
 from rest_framework.response import Response
+from .forms import NewUserForm
 
 from rest_framework.status import (
     HTTP_201_CREATED as ST_201,
@@ -11,24 +12,43 @@ from rest_framework.status import (
     HTTP_401_UNAUTHORIZED as ST_401,
     HTTP_409_CONFLICT as ST_409
 )
-
+from rest_framework.views import APIView
 from base.perms import UserIsStaff
 from django.contrib.auth.models import User
 
-class UsersCreate(generics.ListCreateAPIView):
-    permission_classes = (UserIsStaff,)
+class RegisterView(APIView):
+    def post(self, request):
+        key = request.data.get('token', '')
+        tk = get_object_or_404(Token, key=key)
+        if not tk.user.is_superuser:
+            return Response({}, status=HTTP_401_UNAUTHORIZED)
 
-    def create(self, request, *args, **kwargs):
-        username = request.data.get('username')
-        password = request.data.get('password')
-        password_confirmation = request.data.get('password_confirmation')
+        username = request.data.get('username', '')
+        pwd = request.data.get('password', '')
+        if not username or not pwd:
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+
         try:
-            if eq(password, password_confirmation):
-                User.save()
+            user = User(username=username)
+            user.set_password(pwd)
+            user.save()
+            token, _ = Token.objects.get_or_create(user=user)
         except IntegrityError:
-            return Response('Error try to create user', status=ST_409)
-        return Response('User created', status=ST_201)
+            return Response({}, status=HTTP_400_BAD_REQUEST)
+        return Response({'user_pk': user.pk, 'token': token.key}, HTTP_201_CREATED)
 
+def RegisterUserView(request):
+    if request.method == "POST":
+        form = NewUserForm(request.POST,request.FILES)
+        if form.is_valid():
+            user = form.save(commit=True)
+            user.save()
+            return redirect("/base/")
+        return render (request=request,template_name="users_create.html",context={"register_form":form})
+    else:
+        form = NewUserForm()
+        return render (request=request,template_name="users_create.html",context={"register_form":form})
+        
 
 class UsersDetail(generics.RetrieveDestroyAPIView):
 
@@ -52,17 +72,15 @@ def users_list(request):
 
 
 def users_create(request):
-    if request.method == 'GET':
+    if request.method == "POST":
+        form = NewUserForm(request.POST,request.FILES)
+        if form.is_valid():
+            user = form.save(commit=True)
+            user.save()
         return render(request, 'users_create.html', {'form': UsersForm})
     else:
-        try:
-            form = UserForm(request.POST)
-            new_user = form.save(commit=False)
-            new_user.save()
-            return redirect('users')
-        except ValueError:
-            return render(request, 'users_create.html', {'form': UsersForm, 'error': form.errors})
-
+        form = NewUserForm()
+        return render(request, 'users_create.html', {'form': UsersForm, 'error': form.errors})
 
 def users_details(request, user_id):
     if request.method == 'GET':
@@ -71,7 +89,7 @@ def users_details(request, user_id):
         return render(request, 'users_details.html', {'user': user, 'form': form})
     else:
         try:
-            user = get_object_or_404(User, pk=votacion_id)
+            user = get_object_or_404(User, pk=user_id)
             form = UsersForm(request.POST, instance=user)
             form.save()
             return redirect('user')
@@ -79,7 +97,7 @@ def users_details(request, user_id):
             return render(request, 'users_details.html', {'user': user, 'form': UsersForm,
                                                           'error': form.errors})
 
-def users_delete(request, votacion_id):
-    user = User.objects.get(id = votacion_id)
+def users_delete(request, user_id):
+    user = User.objects.get(id = user_id)
     user.delete()
-    return redirect('user')
+    return redirect('/users')

@@ -1,11 +1,46 @@
-{% extends 'base2.html' %}
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+{% endblock %}
+
 {% block content %}
-
-<h2>Usuario: {{User.username}}</h2>
-<form method="POST">
-    {% csrf_token %}
-    {{form.as_p}}
-    <button class="btn btn-secondary btn-lg" type="submit">Actualizar</button>
-</form>
-
+<div class="row justify-content-center">
+    <center>
+        <h2>Usuario: {{User.username}}</h2>
+    </center>
+    <div class="col-8 align-self-center">
+        <form method="POST">
+            {% csrf_token %}
+            {% if UsersForm.errors %}
+            <div class="alert alert-danger">
+                {{ UsersForm.errors }}
+            </div>
+            {% endif %}
+            <div class="row form-outline mb-4">
+                <label for="id_username" class="form-label">Username :</label>
+                <span class="form-control-lg"> {{ UsersForm.username }} </span>
+            </div>
+            <div class="row form-outline mb-4">
+                <label for="id_first_name" class="form-label">First name :</label>
+                <span class="form-control-lg">{{ UsersForm.first_name }} </span>
+            </div>
+            <div class="row form-outline mb-4">
+                <label for="id_last_name" class="form-label">Last name :</label>
+                <span class="form-control-lg">{{ UsersForm.last_name }} </span>
+            </div>
+            <div class="row form-outline mb-4">
+                <label for="id_email" class="form-label">Email :</label>
+                <span class="form-control-lg">{{ UsersForm.email }} </span>
+            </div>
+            <div class="row form-outline mb-4">
+                <label for="id_password1" class="form-label">Password :</label>
+                <span class="form-control-lg">{{ UsersForm.password }} </span>
+            </div>
+            <div class="text-center">
+                <button class="btn btn-secondary btn-lg col-9" type="Sumit">Update</button>
+            </div>
+    </div>
+    </form>
+</div>
+</div>
 {% endblock %}

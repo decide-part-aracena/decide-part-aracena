@@ -1,9 +1,31 @@
 {% extends 'base_dashboard.html' %}
 
-{% block extrahead %}{% endblock extrahead %}
+{% block extrahead %}
+<STYLE>A {text-decoration: none;} </STYLE>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock extrahead %}
 
 {% block content %}
 <center><h3><strong>Users</strong></h3></center>
+<div class="alert alert-light" role="alert" style="width: 95.5%;display: grid;
+  justify-content: right;margin-bottom: 1px;">
+    <button type="button" class="btn btn-outline-dark">
+      <a class="alert-link" href="/authentication/registeruser/">New User</a>
+    </button>
+</div>
+
+<div class="input-group container justify" style="width: 90%;">
+  <div class="input-group-prepend" >
+    <span class="input-group-text" id="basic-addon1" style="height: 41px;margin-right: 4px;">
+      <i class="fa fa-search"></i>
+    </span>
+  </div>
+  <input id="myInput" type="text" class="form-control" aria-describedby="basic-addon1">
+  <hr>
+</div>
+
 <div class="container justify" style="width: 90%;">
   <table class="table align-middle mb-0 bg-white">
       <thead class="bg-light">
@@ -14,7 +36,7 @@
           <th></th>
         </tr>
       </thead>
-      <tbody>
+      <tbody id="myTable">
         {% for user in users %}
           <tr>
             <td>
@@ -40,7 +62,10 @@
             {% endif %}
             <td>
               <button type="button" class="btn btn-link btn-sm btn-rounded">
-                Edit
+                <a class="item" href="/users/{{ user.id }}">Edit</a>
+              </button>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+                <a class="item" href="/users/delete/{{ user.id }}">Delete</a>
               </button>
             </td>
           </tr>
@@ -50,4 +75,16 @@
   </div>
 {% endblock content %}
 
-{% block extrabody %}{% endblock extrabody %}
+{% block extrabody %}
+  <script>
+    //Copiado de https://sutilweb.com/lenguajes/bootstrap/bootstrap-4/boostrap-4-filtros/
+    $(document).ready(function(){
+      $("#myInput").on("keyup", function() {
+        var value = $(this).val().toLowerCase();
+        $("#myTable tr").filter(function() {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+        });
+      });
+    });
+  </script>
+{% endblock extrabody %}
