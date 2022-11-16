@@ -14,6 +14,8 @@ from rest_framework.status import (
 from base.perms import UserIsStaff
 from .models import Census
 from .forms import CensusForm
+from django.core.paginator import Paginator
+from django.http import Http404
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -57,7 +59,14 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 
 def listar_censos(request):
     censos = Census.objects.all()
-    return render(request, 'censo.html', {'censos': censos})
+    page = request.GET.get('page',1)
+    try:
+        paginator = Paginator(censos,2)
+        censos = paginator.page(page)
+    except:
+        raise Http404
+
+    return render(request, 'censo.html', {'censos': censos, 'paginator':paginator})
 
 
 def crear_censo(request):
