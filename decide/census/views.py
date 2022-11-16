@@ -77,11 +77,9 @@ def import_datadb(request):
             path = str(obj.file)
             print('{settings.BASE_DIR)/{path}')
             df = pd.read_excel(path)
-            for d in df.values:
-              print(d)
-              print(d[0])
-        
-              census = Census(voting_id=d[3], voter_id=d[0])
+           
+            for i in range(df.shape[0]):
+              census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
               census.save()
 
     return render(request, 'excel.html')
