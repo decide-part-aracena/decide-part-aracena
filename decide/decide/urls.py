@@ -25,7 +25,6 @@ urlpatterns = [
     path('doc/', schema_view),
     path('', include('census.urls')),
     path('gateway/', include('gateway.urls')),
-    path('accounts/', include('allauth.urls')),
 ]
 
 for module in settings.MODULES:
