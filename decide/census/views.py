@@ -72,16 +72,27 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
 
 def import_datadb(request):
     if request.method == 'POST':
-            file = request.FILES['file']
-            obj = ExcelFile.objects.create( file = file )
-            path = str(obj.file)
-            print('{settings.BASE_DIR)/{path}')
-            df = pd.read_excel(path)
-           
-            for i in range(df.shape[0]):
-              census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-              census.save()
+        file = request.FILES['file']
+        obj = ExcelFile.objects.create( file = file )
+        path = str(obj.file)
+        print('{settings.BASE_DIR)/{path}')
+        df = pd.read_excel(path)
 
+        users = User.objects.all()
+        users_id = []
+        for us in users:
+            user_id = us.id
+            users_id.append(user_id)
+        
+            #print(range(df.shape[0]))
+        for i in range(df.shape[0]):
+            #print(i)
+            if df['voter_id'][i] in  users_id:
+                #print(df['voter_id'][i])
+                #print('Dentro')
+                census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                census.save()
+        print(users_id)
     return render(request, 'excel.html')
 
 def get_or_create_user_to_import(self, voter_id):
