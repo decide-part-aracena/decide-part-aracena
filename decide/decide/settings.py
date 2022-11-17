@@ -253,3 +253,5 @@ INSTALLED_APPS = INSTALLED_APPS + MODULES
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = '/'
+# Login url
+LOGIN_URL = '/authentication/loginuser'

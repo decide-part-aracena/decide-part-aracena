@@ -101,4 +101,6 @@ ENV/
 .mypy_cache/
 
 .vagrant
-decide/.secrets
+
+# secrets
+.secrets
