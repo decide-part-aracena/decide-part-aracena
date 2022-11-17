@@ -27,43 +27,14 @@
 
         <h2>Gráfica de barras:</h2>
         <canvas id="grafica"></canvas>
+
+        <h2>Gráfica tipo donut:</h2>
+        <canvas id="grafica2"></canvas>
     </div>
 
 {% endblock %}
 
 {% block extrabody %}
- 
-    <!-- Grafica de barras -->
-    <script>
-        const $grafica = document.getElementById("grafica");
-        const etiquetas = ["Enero", "Febrero", "Marzo", "Abril"]
-        const datosVentas2020 = {
-            label: "Ventas por mes",
-            data: [5000, 1500, 8000, 5102],
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 5,
-        };
-
-        new Chart($grafica, {
-            type: 'bar',
-            data: {
-                labels: etiquetas,
-                datasets: [
-                    datosVentas2020,
-                ]
-            },
-            options: {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true
-                        }
-                    }],
-                },
-            }
-        });
-    </script>
 
     <!-- Vuejs -->
     <script src="https://unpkg.com/vue@2.7.10"></script>
@@ -79,7 +50,79 @@
                 voting: voting
             }
         })
+
+        //Extracción de datos para gráficas//
+
+        var opcionesVotacion = []
+        var resultadosVotacion = []
+
+        const procesado = voting.postproc
+        const tam = procesado.length
+
+        var i = 0
+        while(i < tam) {
+            opcionesVotacion.push(procesado[i].option)
+            resultadosVotacion.push(procesado[i].votes)
+
+            i += 1;               
+        }
     </script>
+
+    <!-- Muestreo de gráficas-->
+    <script>
+        const datosVotaciones = {
+            label: "Votos por opción",
+            data: resultadosVotacion,
+            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+            borderColor: 'rgba(54, 162, 235, 1)',
+            borderWidth: 5,
+        }
+        
+        //Gráfica de barras
+        const $grafica = document.getElementById("grafica");
+
+        new Chart($grafica, {
+            type: 'bar',
+            data: {
+                labels: opcionesVotacion,
+                datasets: [
+                    datosVotaciones,
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                },
+            }
+        });
+
+        //Gráfica tipo donut
+        const $grafica2 = document.getElementById("grafica2");
+
+        new Chart($grafica2, {
+            type: 'pie',
+            data: {
+                labels: opcionesVotacion,
+                datasets: [
+                    datosVotaciones,
+                ]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                },
+            }
+        });
+    </script>
+
 </body>
 {% endblock %}
 
