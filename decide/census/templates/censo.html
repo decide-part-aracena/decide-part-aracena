@@ -1,0 +1,26 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+
+<br />
+<div>
+    {% if censos.count > 0 %}
+    <table border="5" style="margin: 0 auto;">
+        <tr>
+            <td>Id Votacion</td>
+            <td>Id Usuario</td>
+        </tr>
+        {% for censo in censos %}
+        <tr>
+            <td><a href="{% url 'censo_details' censo.id %}">{{censo.voting_id}}</a></td>
+            <td>{{censo.voter_id}}</td>
+            <td><a href="{% url 'borrar_censo' censo.id %}" 
+                onClick="return confirm('¿Quieres borrar el censo cuya votacion es {{censo.voting_id}}?');">
+                    Borrar
+                </a></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_censo' %}">Crear censo</a></button>
+</div>
+{% endblock %}
