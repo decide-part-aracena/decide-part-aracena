@@ -1,9 +1,7 @@
 from django.urls import path
-from django.contrib.auth.decorators import login_required
-from users import views as v1
+from . import views
 
 urlpatterns = [
-    path('', v1.users_list, name = 'users'),
-    path('delete/<int:user_id>', v1.users_delete, name = 'delete_user'),
-    path('<int:user_id>', v1., name = 'update_user'),
+    path('', views.users_list, name = 'users'),
+    path('delete/<int:user_id>', views.users_delete, name = 'delete_user'),
 ]
