@@ -1,18 +1,8 @@
-from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import generics
 from rest_framework.response import Response
 
-from rest_framework.status import (
-    HTTP_201_CREATED as ST_201,
-    HTTP_204_NO_CONTENT as ST_204,
-    HTTP_400_BAD_REQUEST as ST_400,
-    HTTP_401_UNAUTHORIZED as ST_401,
-    HTTP_409_CONFLICT as ST_409
-)
-
-from base.perms import UserIsStaff
 from django.contrib.auth.models import User
 from .forms import UsersForm
 from django.contrib import messages
@@ -25,8 +15,6 @@ class UsersDetail(generics.RetrieveDestroyAPIView):
         return Response('User deleted', status=ST_204)
 
     def retrieve(self, request, user_id, *args, **kwargs):
-        user = request.GET.get('user_id')
-        form_class = UsersForm
         try:
             User.objects.get(id=user_id)
         except ObjectDoesNotExist:
@@ -40,8 +28,6 @@ def users_list(request):
 
 
 def users_details(request, user_id):
-    template_name = 'users_details.html'
-    form_class = UsersForm
     if request.method == 'GET':
         user = get_object_or_404(User, pk=user_id)
         form = UsersForm(instance=user)
