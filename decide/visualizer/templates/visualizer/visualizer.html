@@ -20,7 +20,24 @@
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
 
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
-            <h2 v-else-if="!voting.end_date">Votación en curso</h2>
+            <h2 v-else-if="!voting.end_date">Votación en curso
+                <div>
+                    <table class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th>Censo</th>
+                                <th>Participación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>[[ realtimedata.num_census ]]</td>
+                                <td>[[ realtimedata.participation ]]</td>
+                            </tr>
+                        </tbody>                
+                    </table>
+                </div>
+            </h2>
             <div v-else>
                 <h2 class="heading">Resultados:</h2>
 
@@ -54,13 +71,16 @@
 
     <script>
         var voting = {{voting|safe}};
+        var realtimedata = {{realtimedata|safe}};
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
             data: {
-                voting: voting
+                voting: voting,
+                realtimedata: realtimedata
             }
         })
     </script>
 </body>
 {% endblock %}
+
