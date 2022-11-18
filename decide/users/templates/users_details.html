@@ -4,43 +4,30 @@
 {% endblock %}
 
 {% block content %}
-<div class="row justify-content-center">
+<div class="justify-content-center">
     <center>
-        <h2>Usuario: {{User.username}}</h2>
+        <h2>User: {{user.username}}</h2>
+        <div class="col-8 align-self-center">
+            <form method="POST" style="text-align: initial;display: inline-block;">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {{form.as_p}}
+                <button class="btn btn-outline-dark" type="submit">Update</button>
+                <a class="btn btn-outline-dark"href="/users">Back to list</a>
+            </form>
+            
+        </div>
     </center>
-    <div class="col-8 align-self-center">
-        <form method="POST">
-            {% csrf_token %}
-            {% if UsersForm.errors %}
-            <div class="alert alert-danger">
-                {{ UsersForm.errors }}
-            </div>
-            {% endif %}
-            <div class="row form-outline mb-4">
-                <label for="id_username" class="form-label">Username :</label>
-                <span class="form-control-lg"> {{ UsersForm.username }} </span>
-            </div>
-            <div class="row form-outline mb-4">
-                <label for="id_first_name" class="form-label">First name :</label>
-                <span class="form-control-lg">{{ UsersForm.first_name }} </span>
-            </div>
-            <div class="row form-outline mb-4">
-                <label for="id_last_name" class="form-label">Last name :</label>
-                <span class="form-control-lg">{{ UsersForm.last_name }} </span>
-            </div>
-            <div class="row form-outline mb-4">
-                <label for="id_email" class="form-label">Email :</label>
-                <span class="form-control-lg">{{ UsersForm.email }} </span>
-            </div>
-            <div class="row form-outline mb-4">
-                <label for="id_password1" class="form-label">Password :</label>
-                <span class="form-control-lg">{{ UsersForm.password }} </span>
-            </div>
-            <div class="text-center">
-                <button class="btn btn-secondary btn-lg col-9" type="Sumit">Update</button>
-            </div>
-    </div>
-    </form>
-</div>
 </div>
 {% endblock %}

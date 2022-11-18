@@ -11,9 +11,7 @@
 <center><h3><strong>Users</strong></h3></center>
 <div class="alert alert-light" role="alert" style="width: 95.5%;display: grid;
   justify-content: right;margin-bottom: 1px;">
-    <button type="button" class="btn btn-outline-dark">
-      <a class="alert-link" href="/authentication/registeruser/">New User</a>
-    </button>
+    <a class="btn btn-outline-dark" href="/authentication/registeruser/">New User</a>
 </div>
 
 <div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
@@ -64,7 +62,9 @@
               <button type="button" class="btn btn-link btn-sm btn-rounded">
                 <a class="item" href="/users/{{ user.id }}">Edit</a>
               </button>
-              <button type="button" class="btn btn-link btn-sm btn-rounded">
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-link btn-sm btn-rounded"
+              onClick="return confirm('¿Are you sure you want to delete {{user.username}}?');">
                 <a class="item" href="/users/delete/{{ user.id }}">Delete</a>
               </button>
             </td>
@@ -87,4 +87,5 @@
       });
     });
   </script>
+
 {% endblock extrabody %}

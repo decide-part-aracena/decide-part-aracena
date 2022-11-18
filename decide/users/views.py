@@ -14,19 +14,21 @@ from rest_framework.status import (
 
 from base.perms import UserIsStaff
 from django.contrib.auth.models import User
-
+from .forms import UsersForm
+from django.contrib import messages
 
 class UsersDetail(generics.RetrieveDestroyAPIView):
 
     def destroy(self, request, user_id, *args, **kwargs):
-        user = User.objects.filter(user_id=user_id)
+        user = User.objects.filter(id=user_id)
         user.delete()
         return Response('User deleted', status=ST_204)
 
     def retrieve(self, request, user_id, *args, **kwargs):
         user = request.GET.get('user_id')
+        form_class = UsersForm
         try:
-            User.objects.get(user_id=user)
+            User.objects.get(id=user_id)
         except ObjectDoesNotExist:
             return Response('Invalid user', status=ST_401)
         return Response('Valid user')
@@ -38,6 +40,8 @@ def users_list(request):
 
 
 def users_details(request, user_id):
+    template_name = 'users_details.html'
+    form_class = UsersForm
     if request.method == 'GET':
         user = get_object_or_404(User, pk=user_id)
         form = UsersForm(instance=user)
@@ -47,7 +51,8 @@ def users_details(request, user_id):
             user = get_object_or_404(User, pk=user_id)
             form = UsersForm(request.POST, instance=user)
             form.save()
-            return redirect('user')
+            messages.info(request, 'The profile has been update')
+            return redirect('/users/'+str(user_id))
         except ValueError:
             return render(request, 'users_details.html', {'user': user, 'form': UsersForm,
                                                           'error': form.errors})
@@ -55,6 +60,6 @@ def users_details(request, user_id):
 def users_delete(request, user_id):
     user = User.objects.get(id = user_id)
     user.delete()
-    return redirect('user')
+    return redirect('/users')
     
 

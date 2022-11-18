@@ -70,7 +70,7 @@ class RegisterView(APIView):
 
 
 def RegisterUserView(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not(request.user.is_staff):
         return redirect(URL_BASE)
 
     if request.method == "POST":
