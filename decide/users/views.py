@@ -3,6 +3,11 @@ from django.shortcuts import get_object_or_404, redirect, render
 from rest_framework import generics
 from rest_framework.response import Response
 
+from rest_framework.status import (
+    HTTP_204_NO_CONTENT as ST_204,
+    HTTP_401_UNAUTHORIZED as ST_401
+)
+
 from django.contrib.auth.models import User
 from .forms import UsersForm
 from django.contrib import messages
