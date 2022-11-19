@@ -41,24 +41,31 @@
                     </tbody>
                 </table>
                 
-                <button>
-                    <a href="/graphic/4">
-                    Representaciones gráficas de los resultados
-                </button>
-                
+                <br>
+
+                <div class="row">
+                    <button id="boton-grafica">
+                        <a :href="'/graphic/' + voting.id">
+                            Representaciones gráficas de los resultados
+                        </a>
+                    </button>
+                </div>
             </div>
+
         </div>
         
     </div>
 {% endblock %}
 
 {% block extrabody %}
+
     <!-- Vuejs -->
     <script src="https://unpkg.com/vue@2.7.10"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
 
     <script>
+
         var voting = {{voting|safe}};
         var app = new Vue({
             delimiters: ['[[', ']]'],
@@ -67,6 +74,8 @@
                 voting: voting
             }
         })
+
     </script>
+    
 </body>
 {% endblock %}

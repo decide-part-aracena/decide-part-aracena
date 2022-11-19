@@ -11,9 +11,16 @@
     <!-- Importacion de Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
 
+    <!-- Importacion plugin para coloreado de gráficas -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
+    
+    <script src="https://unpkg.com/chartjs-plugin-colorschemes"></script>
+
 {% endblock %}
 
 {% block content %}
+
+    {% load static %}
 
     <div id="app-visualizer">
         <!-- Navbar -->
@@ -25,11 +32,28 @@
     <div id="graphic-visualizer" class="grafica voting container">
         <h1>Representación gráfica de resultados de la votación</h1>
 
+        <br>
+
         <h2>Gráfica de barras:</h2>
         <canvas id="grafica"></canvas>
 
-        <h2>Gráfica tipo donut:</h2>
-        <canvas id="grafica2"></canvas>
+        <br>
+
+        <h2>Gráfica tipo "donut":</h2>
+        <canvas id="grafica2"></canvas>        
+
+        <br>
+
+        <div class="row">
+            <button id="boton-retorno">
+                <a :href="'/visualizer/' + identificador">
+                    Resultados de la votación mostrados en tabla
+                </a>
+            </button>
+        </div>
+
+        <br>
+
     </div>
 
 {% endblock %}
@@ -43,6 +67,7 @@
 
     <script>
         var voting = {{voting|safe}};
+
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
@@ -51,7 +76,20 @@
             }
         })
 
+        var identificador = voting.id
+
+        var app2 = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#boton-retorno',
+            data: {
+                identificador: identificador
+            }
+        })
+
+
+        //                                 //
         //Extracción de datos para gráficas//
+        //                                 //
 
         var opcionesVotacion = []
         var resultadosVotacion = []
@@ -68,28 +106,28 @@
         }
     </script>
 
-    <!-- Muestreo de gráficas-->
+    <!-- Tipos de gráfica -->
     <script>
-        const datosVotaciones = {
-            label: "Votos por opción",
-            data: resultadosVotacion,
-            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-            borderColor: 'rgba(54, 162, 235, 1)',
-            borderWidth: 5,
-        }
-        
+
         //Gráfica de barras
         const $grafica = document.getElementById("grafica");
-
+    
         new Chart($grafica, {
             type: 'bar',
             data: {
                 labels: opcionesVotacion,
-                datasets: [
-                    datosVotaciones,
-                ]
+                datasets: [{
+                    label: 'Votos totales por opción',
+                    data: resultadosVotacion,
+                    borderWidth: 5,
+                }]                    
             },
             options: {
+                plugins: {
+                    colorschemes: {
+                        scheme: 'brewer.Paired10'
+                    }
+                },
                 scales: {
                     yAxes: [{
                         ticks: {
@@ -99,19 +137,26 @@
                 },
             }
         });
-
+    
         //Gráfica tipo donut
         const $grafica2 = document.getElementById("grafica2");
-
+    
         new Chart($grafica2, {
-            type: 'pie',
+            type: 'doughnut',
             data: {
                 labels: opcionesVotacion,
-                datasets: [
-                    datosVotaciones,
-                ]
+                datasets: [{
+                    label: 'Votos totales por opción',
+                    data: resultadosVotacion,
+                    borderWidth: 5,
+                }]      
             },
             options: {
+                plugins: {
+                    colorschemes: {
+                        scheme: 'brewer.SetOne5'
+                    }              
+                },
                 scales: {
                     yAxes: [{
                         ticks: {
@@ -123,6 +168,5 @@
         });
     </script>
 
-</body>
 {% endblock %}
 
