@@ -104,7 +104,7 @@ ROOT_URLCONF = 'decide.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'authentication','templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -176,7 +176,9 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
 # SOCIAL AUTH
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -251,7 +253,7 @@ if os.path.exists("config.jsonnet"):
 INSTALLED_APPS = INSTALLED_APPS + MODULES
 
 SITE_ID = 1
-
-LOGIN_REDIRECT_URL = '/'
+SOCIALACCOUNT_LOGIN_ON_GET =False
+LOGIN_REDIRECT_URL = '/base/'
 # Login url
 LOGIN_URL = '/authentication/loginuser'

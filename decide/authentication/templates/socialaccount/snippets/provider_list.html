@@ -1,0 +1,20 @@
+{% load socialaccount %}
+{% load static %}
+{% get_providers as socialaccount_providers %}
+{% for provider in socialaccount_providers %}
+{% if provider.id == "openid" %}
+{% for brand in provider.get_brands %}
+<li>
+  <a title="{{brand.name}}" 
+     class="socialaccount_provider {{provider.id}} {{brand.id}}" 
+     href="{% provider_login_url provider.id openid=brand.openid_url process=process %}"
+     ><img border="0" alt="{{ brand.name }}" src="{% static 'images/' %}{{ brand.name }}Logo.png" width="40" height="40"></a>
+</li>
+{% endfor %}
+{% endif %}
+<li>
+  <button style="border: 1px solid #ffffff; background-color: #ffffff; color: blue;" title="{{provider.name}}" class="socialaccount_provider {{provider.id}}" 
+     href="{% provider_login_url provider.id process=process scope=scope auth_params=auth_params %}">
+    <img border="0" alt="{{ provider.name }}" src="{% static 'images/' %}{{ provider.name }}Logo.png" width="30" height="30">{{ provider.name }} </button>
+  </li>
+{% endfor %}

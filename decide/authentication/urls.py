@@ -14,5 +14,5 @@ urlpatterns = [
     path('logoutuser/',LogoutUserView),
     path('magic-login/', magic_link_via_email, name='magic_login'),
     path('magic-link/<str:token>', authenticate_via_magic_link, name='magic_link'),
-    path('accounts/', include('allauth.urls')),
+    path('loginuser/', include('allauth.urls')),
 ]
