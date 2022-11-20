@@ -170,3 +170,10 @@ def crear_voting(request):
         except ValueError:
             return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
 
+
+def listar_voting(request):
+    voting = Voting.objects.all()
+    return render(request, 'voting.html',{
+        'voting':voting
+    })
+    
