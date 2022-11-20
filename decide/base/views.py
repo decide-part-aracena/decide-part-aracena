@@ -2,7 +2,6 @@ from census.models import Census
 from voting.models import Voting
 from django.views.generic.base import TemplateView
 
-
 class mainView(TemplateView):
     template_name = 'base/index.html'
 
