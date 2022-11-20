@@ -30,6 +30,7 @@ urlpatterns = [
 ]
 
 for module in settings.MODULES:
+    print(module)
     urlpatterns += [
         path('{}/'.format(module), include('{}.urls'.format(module)))
     ]
