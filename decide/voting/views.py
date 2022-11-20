@@ -100,6 +100,14 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
+<<<<<<< HEAD
+=======
+def listar_voting(request):
+    voting = Voting.objects.all()
+    return render(request, 'voting.html',{
+        'voting':voting
+    })
+>>>>>>> parent of c097f78 (Revert "feature #17: Fronted de votacion inplementado")
 
 def voting_details(request, voting_id):
     if request.method == 'GET':
