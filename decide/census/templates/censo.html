@@ -38,20 +38,14 @@
             <td>
               <div class="d-flex align-items-center">
                 <div class="ms-3">
-                  <p class="fw-bold mb-1">{{c.voting_id}}</p>
-                  <p class="text-muted mb-0">{{c.voter_id}}</p>
+                  <p class="fw-bold mb-1">{{c.voter_id}}</p>
                 </div>
               </div>
             </td>
-            {% if user.is_staff %}
-              <td>
-                <span class="badge text-bg-success">✔</span>
-              </td>
-            {% else %}
-              <td>
-                <span class="badge text-bg-danger">✗</span>
-              </td>
-            {% endif %}
+            
+             <td>
+              <p class="fw-normal mb-1">{{ c.voting_id}}</p>
+            </td>
             <td>
               <button type="button" class="btn btn-link btn-sm btn-rounded">
                 <a class="item" href="{% url 'censo_details' c.id %}">Edit</a>
