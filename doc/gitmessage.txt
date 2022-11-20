@@ -1,0 +1,15 @@
+# --------------------------------------------------
+# Los commits se realizarán siguiendo este formato:
+#       <tipo> #<incidenciaId>: <descripcion>
+# --------------------------------------------------
+# El tipo debe ser una de las siguientes opciones
+#   feat : Cuando se introduce una funcionalidad
+#   feature : Una variante de feat
+#   fix : Cuando se realiza un bug fix
+#   docs : Cuando se introduce, modifica o elimina algun documento
+#   test : Cuando se introduce, refactoriza o modifican tests
+#   refactor : Cuando se refactoriza codigo en produccion
+#
+#IncidenciaId debe ser la incidencia asociada a la issue realizada
+#
+#Descripcion debe ser una descripcion breve de lo realizado 
