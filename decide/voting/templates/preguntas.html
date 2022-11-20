@@ -1,15 +1,41 @@
 {% extends 'base.html' %}
 {% block content %}
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+table {
+  font-family: arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+tr:nth-child(even) {
+  background-color: #dddddd;
+
+
+}
+
+</style>
+</head>
+<body>
 <div>
     {% if preguntas.count > 0 %}
     <table border="5" style="margin: 0 auto;">
         <tr>
             <td>Descripción</td>
+            <td>Acción</td>
         </tr>
         {% for p in preguntas %}
         <tr>
             <td><a href="{% url 'showUpdateQuestions' p.id %}">{{p.desc}}</a></td>
-            <td><a href="{% url 'borrar_preguntas' p.id %}" 
+            <td><a class="fa fa-trash-o" href="{% url 'borrar_preguntas' p.id %}" 
                 onClick="return confirm('¿Quieres borrar la pregunta cuya Descripción es {{p.desc}}?');">
                     Borrar
                 </a></td>
@@ -19,4 +45,8 @@
     {% endif %}
     <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_preguntas' %}">Crear pregunta</a></button>    
 </div>
+
+</body>
+<html>
+
 {% endblock %}

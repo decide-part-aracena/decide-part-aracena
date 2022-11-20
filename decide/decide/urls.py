@@ -27,7 +27,7 @@ urlpatterns = [
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
     path('question/', views.listaPreguntas, name='preguntas'),
-    path('question/crear/', views.crearPreguntas, name='crear_preguntas'),
+    path('question/create/', views.crearPreguntas, name='crear_preguntas'),
     path('question/<int:question_id>/', views.showUpdateQuestions, name='showUpdateQuestions'),
     path('borrar/question/<int:question_id>/', views.borrarPreguntas, name='borrar_preguntas'),
 
