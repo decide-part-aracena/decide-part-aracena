@@ -3,16 +3,16 @@
 
 <br />
 <div>
-    {% if voting.count > 0 %}
+    {% if question.count > 0 %}
     <table border="5" style="margin: 0 auto;">
         <tr>
+            <td>Id Pregunta</td>
             <td>Id Votacion</td>
-            <td>Name</td>
         </tr>
-        {% for votacion in voting %}
+        {% for q in question %}
         <tr>
-            <td><a href="{% url 'voting_details' votacion.id %}">{{votacion.id}}</a></td>
-            <td>{{votacion.name}}</td>
+            <td><a href="{% url 'voting_details' q.id %}">{{q.question}}</a></td>
+            <td>{{q.name}}</td>
         </tr>
         {% endfor %}
     </table>
