@@ -135,4 +135,16 @@ def crear_voting(request):
             nuevo_question.save()
             return redirect('voting')
         except ValueError:
+<<<<<<< HEAD
             return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
+=======
+            return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
+
+
+def listar_voting(request):
+    voting = Voting.objects.all()
+    return render(request, 'voting.html',{
+        'voting':voting
+    })
+    
+>>>>>>> origin/aisqazcev

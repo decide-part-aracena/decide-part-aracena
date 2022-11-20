@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-<h2>La pregunta elegida es: {{voting.question}}</h2>
+<h2>La votacion elegida es: {{voting.voting_id}}</h2>
 <form method="POST">
     {% csrf_token %}
     {{form.as_p}}
