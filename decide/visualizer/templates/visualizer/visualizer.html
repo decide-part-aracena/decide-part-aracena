@@ -21,12 +21,10 @@
 
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
             <h2 v-else-if="!voting.end_date">Votación en curso</h2>
-
             <div v-else>
-                <h2 class="heading">[[voting.question.desc]]</h2>
-            
+                <h2 class="heading">Resultados:</h2>
+
                 <table class="table table-bordered table-striped">
-                    
                     <thead>
                         <tr>
                             <th>Opción</th>
@@ -36,27 +34,6 @@
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h2 class="heading">[[voting.question.desc]]</h2>
-                
-                <table class="table table-bordered table-striped">
-                    
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
                             <th>[[opt.option]]</th>
                             <td>[[opt.postproc]]</td>
                             <td class="text-muted">[[opt.votes]]</td>
@@ -74,7 +51,7 @@
     <script src="https://unpkg.com/vue@2.7.10"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-    
+
     <script>
         var voting = {{voting|safe}};
         var app = new Vue({

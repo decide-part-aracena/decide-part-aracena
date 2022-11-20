@@ -9,9 +9,6 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
-from django.shortcuts import get_object_or_404, redirect, render
-from .forms import VotingForm
-
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -103,11 +100,6 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-def listarPreguntas(request):
-    questions = Voting.objects.all()
-    return render(request, 'voting.html',{
-        'question':questions
-    })
 
 def voting_details(request, voting_id):
     if request.method == 'GET':
@@ -135,9 +127,6 @@ def crear_voting(request):
             nuevo_question.save()
             return redirect('voting')
         except ValueError:
-<<<<<<< HEAD
-            return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
-=======
             return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
 
 
@@ -147,4 +136,3 @@ def listar_voting(request):
         'voting':voting
     })
     
->>>>>>> origin/aisqazcev

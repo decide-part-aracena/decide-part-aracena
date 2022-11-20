@@ -26,15 +26,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
-<<<<<<< HEAD
     path('voting/', views.listarPreguntas, name = 'question_list'),
-=======
-    path('question/', views.listaPreguntas, name='preguntas'),
-    path('question/create/', views.crearPreguntas, name='crear_preguntas'),
-    path('question/<int:question_id>/', views.showUpdateQuestions, name='showUpdateQuestions'),
-    path('borrar/question/<int:question_id>/', views.borrarPreguntas, name='borrar_preguntas'),
-    path('votingList/', views.listar_voting, name = 'voting_list'),
->>>>>>> origin/aisqazcev
     path('voting/<int:voting_id>', views.voting_details, name = 'voting_details'),
     path('voting/crear', views.crear_voting, name = 'crear_voting'),
     path('votingList/', views.listar_voting, name = 'voting_list'),
