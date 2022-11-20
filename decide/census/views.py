@@ -22,8 +22,6 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 import pandas as pd 
 
-import os
-import psycopg2
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
