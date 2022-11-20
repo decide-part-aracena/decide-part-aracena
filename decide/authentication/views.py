@@ -45,7 +45,7 @@ class LogoutView(APIView):
             pass
 
         return Response({})
-
+    
 
 class RegisterView(APIView):
     def post(self, request):
