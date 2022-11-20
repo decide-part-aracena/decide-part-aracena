@@ -9,6 +9,9 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
+from django.shortcuts import get_object_or_404, redirect, render
+from .forms import VotingForm
+
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -100,14 +103,18 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-<<<<<<< HEAD
-=======
+
 def listar_voting(request):
     voting = Voting.objects.all()
     return render(request, 'voting.html',{
         'voting':voting
     })
->>>>>>> parent of c097f78 (Revert "feature #17: Fronted de votacion inplementado")
+
+def listarPreguntas(request):
+    questions = Voting.objects.all()
+    return render(request, 'voting.html',{
+        'question':questions
+    })
 
 def voting_details(request, voting_id):
     if request.method == 'GET':
@@ -135,12 +142,5 @@ def crear_voting(request):
             nuevo_question.save()
             return redirect('voting')
         except ValueError:
+
             return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
-
-
-def listar_voting(request):
-    voting = Voting.objects.all()
-    return render(request, 'voting.html',{
-        'voting':voting
-    })
-    
