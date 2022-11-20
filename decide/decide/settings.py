@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'gateway',
 
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -58,6 +59,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.discord',
+
+    'import_export',
+
 ]
 
 REST_FRAMEWORK = {
