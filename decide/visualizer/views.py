@@ -34,8 +34,6 @@ class VisualizerView(TemplateView):
 
                 if num_census != 0:
                     participation = (f'{(num_votes/num_census)*100}')+'%'    
-                else:
-                    participation = '0%'
             
             realtimedata = {'num_census':num_census, 'num_votes':num_votes, 'participation':participation}
             context['realtimedata'] = realtimedata
