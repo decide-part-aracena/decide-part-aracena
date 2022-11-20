@@ -92,15 +92,9 @@ def import_datadb(request):
                
                 census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                 census.save()
-      
+
     return render(request, 'excel.html')
 
-def get_or_create_user_to_import(self, voter_id):
-        user, _ = User.objects.get_or_create(pk=voter_id)
-        user.username = 'user{}'.format(voter_id)
-        user.set_password('qwerty')
-        user.save()
-        return user
 
 def excel(request):
    return render(request, 'excel.html')
