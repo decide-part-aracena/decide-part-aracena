@@ -5,8 +5,8 @@
 <form method="POST">
     {% csrf_token %}
     {{form.as_p}}
-    <button class="btn btn-secondary btn-lg" type="submit">Actualizar</button>
+    <button class="btn btn-secondary btn-lg" type="submit">Update</button>
 </form>
 
-<button class="btn btn-secondary btn-lg"><a href="{% url 'preguntas' %}">Volver al listado</a></button>
+<button class="btn btn-secondary btn-lg"><a href="{% url 'preguntas' %}">Back to list/a></button>
 {% endblock %}

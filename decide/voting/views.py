@@ -14,6 +14,7 @@ from base.perms import UserIsStaff
 from base.models import Auth
 from django.shortcuts import get_object_or_404, redirect, render
 from .forms import VotingForm
+from .forms import QuestionOptionsForm
 
 
 
@@ -113,15 +114,17 @@ def listaPreguntas(request):
 
 def crearPreguntas(request):
     if request.method == 'GET':
-        return render(request, 'crearPreguntas.html', {'form':QuestionForm})
+        v = range(0,3)
+        return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm, 'v':v})
     else:
         try: 
             form = QuestionForm(request.POST)
             nuevaPregunta = form.save(commit = False)
             nuevaPregunta.save()
             return redirect('preguntas')
-        except ValueError: 
-            return render(request, 'preguntas.html', {'form':QuestionForm, 'error': form.errors})
+        except ValueError:
+            v = range(0,3) 
+            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'v':v,'error': form.errors})
 
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
