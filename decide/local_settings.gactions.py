@@ -11,6 +11,7 @@ MODULES = [
     'store',
     'visualizer',
     'voting',
+    'users',
 ]
 BASEURL = 'http://localhost:8000'
 APIS = {
@@ -23,6 +24,7 @@ APIS = {
     'store': BASEURL,
     'visualizer': BASEURL,
     'voting': BASEURL,
+    'users': BASEURL,
 }
 
 
@@ -40,3 +42,4 @@ DATABASES = {
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
+

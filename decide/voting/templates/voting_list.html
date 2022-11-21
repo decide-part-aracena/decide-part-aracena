@@ -1,0 +1,25 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+
+<br />
+<div>
+    {% if voting.count > 0 %}
+    <table border="5" style="margin: 0 auto;">
+        <tr>
+            <td>Id voting</td>
+            <td>Name</td>
+        </tr>
+
+        {% for votacion in voting %}
+        <tr>
+            <td><a href="{% url 'voting_details' votacion.id %}">{{votacion.id}}</a></td>
+            <td>{{votacion.name}}</td>
+            <td><a href="/visualizer/{{votacion.id}}">vizualizer</a></td>
+
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    <button class="btn btn-secondary btn-lg"><a href="{% url 'create_voting' %}">Create voting</a></button>
+</div>
+{% endblock %}

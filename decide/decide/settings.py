@@ -12,6 +12,8 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
+
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -25,7 +27,7 @@ SECRET_KEY = '^##ydkswfu0+=ofw0l#$kv^8n)0$i(qd&d&ol#p9!b$8*5%j1+'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,6 +46,19 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'rest_framework_swagger',
     'gateway',
+
+
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.discord',
+
+    'import_export',
+
 ]
 
 REST_FRAMEWORK = {
@@ -56,6 +71,9 @@ REST_FRAMEWORK = {
 
 AUTHENTICATION_BACKENDS = [
     'base.backends.AuthBackend',
+    #for social auth
+    'django.contrib.auth.backends.ModelBackend',#allows the default log in
+    'allauth.account.auth_backends.AuthenticationBackend',
 ]
 
 MODULES = [
@@ -68,6 +86,7 @@ MODULES = [
     'store',
     'visualizer',
     'voting',
+    'users',
 ]
 
 BASEURL = 'http://localhost:8000'
@@ -87,7 +106,7 @@ ROOT_URLCONF = 'decide.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'authentication','templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -95,6 +114,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                #allauth 
+                'django.template.context_processors.request',
             ],
         },
     },
@@ -152,11 +173,15 @@ USE_TZ = True
 
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
-
+8000
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, "static"),
+]
+
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
@@ -180,3 +205,9 @@ if os.path.exists("config.jsonnet"):
 
 
 INSTALLED_APPS = INSTALLED_APPS + MODULES
+
+SITE_ID = 1
+SOCIALACCOUNT_LOGIN_ON_GET =False
+LOGIN_REDIRECT_URL = '/base/'
+# Login url
+LOGIN_URL = '/authentication/loginuser'

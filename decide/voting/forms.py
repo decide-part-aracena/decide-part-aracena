@@ -11,4 +11,3 @@ class VotingForm(ModelForm):
     class Meta:
         model = Voting
         fields = ['name', 'desc', 'question', 'start_date', 'end_date','auths']
-
