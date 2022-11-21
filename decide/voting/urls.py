@@ -8,4 +8,5 @@ urlpatterns = [
     path('voting/<int:voting_id>', voting.voting_details, name = 'voting_details'),
     path('voting/create', voting.create_voting, name = 'create_voting'),
     path('votingList/', voting.list_voting, name = 'voting_list'),
+    path('delete/voting/<int:voting_id>/', voting.delete_voting, name='delete_voting'),
 ]

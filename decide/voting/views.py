@@ -181,3 +181,8 @@ def list_voting(request):
     return render(request, 'voting_list.html',{
         'voting':voting
     })
+
+def delete_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    voting.delete()
+    return redirect('voting_list')
