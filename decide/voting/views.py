@@ -153,27 +153,27 @@ def voting_details(request, voting_id):
             voting = get_object_or_404(Voting, pk=voting_id)
             form = VotingForm(request.POST, instance=voting)
             form.save()
-            return redirect('voting')
+            return redirect('voting_list')
         except ValueError:
             return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
                                                           'error': form.errors})
 
 
-def crear_voting(request):
+def create_voting(request):
     if request.method == 'GET':
-        return render(request, 'crear_voting.html', {'form': VotingForm})
+        return render(request, 'create_voting.html', {'form': VotingForm})
     else:
         try:
             form = VotingForm(request.POST)
             nuevo_question = form.save(commit=False)
             nuevo_question.save()
-            return redirect('voting')
+            return redirect('voting_list')
         except ValueError:
-            return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
+            return render(request, 'create_voting.html', {'form': VotingForm, 'error': form.errors})
 
 
-def listar_voting(request):
+def list_voting(request):
     voting = Voting.objects.all()
-    return render(request, 'voting.html',{
+    return render(request, 'voting_list.html',{
         'voting':voting
     })
