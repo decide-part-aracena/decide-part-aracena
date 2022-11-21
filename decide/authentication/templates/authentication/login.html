@@ -1,0 +1,58 @@
+{% extends 'base_dashboard.html' %}
+
+{% load i18n %}
+{% load static %}
+{% load account socialaccount %}
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <center>
+        <h2>Login</h2>
+    </center>
+    <div class="col-8 align-self-center">
+        <form method="POST">
+            {% csrf_token %}
+            {% if login_form.errors %}
+            <div class="alert alert-danger">
+                {{ login_form.errors }}
+            </div>
+            {% endif %}
+            <div class="row form-outline mb-4">
+                <label for="id_username" class="form-label">Username :</label>
+                <div class="form-control-lg"> {{ login_form.username }} </div>
+            </div>
+
+            <div class="row form-outline mb-4">
+                <label for="id_password2" class="form-label">Confirm password :</label>
+                <span class="form-control-lg"> {{ login_form.password }} </span>
+            </div>
+
+            <div class="text-center">
+                <button class="btn btn-secondary btn-lg col-10" type="submit">Login</button>
+                <br><br>
+                <p>If you don't have an account you can <a href="/authentication/registeruser">create an account</a></p>
+            </div>
+
+    </div>
+    </form>
+    <div class="text-center">
+      <div class="login-or border-top border-bottom my-3">{% trans 'OR' %}</div>
+    </div>
+
+    <div class="text-center">
+      <h3>Login using</h3>
+      {% get_providers as socialaccount_providers %}
+      {% if socialaccount_providers %}
+      <div class="socialaccount_ballot">
+        <div class="socialaccount_providers">
+          {% include "socialaccount/snippets/provider_list.html" with process="login" %}
+        </div>
+        <br>
+        <p>Or <a href="/authentication/magic-login">login with your email</a></p>
+      {% endif %}
+      </div>
+    </div>
+</div>
+{% endblock %}
