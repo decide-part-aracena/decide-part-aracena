@@ -28,10 +28,10 @@ el procemiento contrario; es decir, el procedimiento de "llenado" de las ramas d
 
 Para llenar la rama develop con todo el contenido de las ramas de trabajo se usará el procedimiento de las pull request de cada rama de trabajo a develop,
 previamente a la realización de dicha pr (pull request) debes de comprobar que lo que hay en tu rama de trabajo funciona perfectammente, una vez echo la revisión
-creas dicha pr desde github y una vez que la hayas creado debes de notificar a otro miembro de tu equipo de trabajo para que dicho miembro te la acepte.
+creas dicha pr desde github y una vez que la hayas creado debes de notificar a otro miembro de tu equipo de trabajo para que dicho miembro te la acepte. A parte de
+esto, dichas pr tienen que ser revisadas.
 
 **4.2- Procedimiento de llenado de las ramas de trabajo estando la de develop actualizada y funcionando a la perfección:**
 
-Para llenar las ramas de trabajo con todo el contenido de la rama develop se usará el procedimiento de las pull request revirtiendo el orden sin necesidad de la 
-aceptación de otros miembros del equipo y realizada por 2 posibles sitios (el que el miembro del equipo considere oportuno); mediante la interfaz de github análogo al
-procedimiento 4.1 o mediante terminal ejecutando el comando git merge develop.
+Para llenar las ramas de trabajo con todo el contenido de la rama develop se usará el procedimiento del merge, para aplicar dicho procedimiento nos iremos a la terminal ejecutando el comando git merge develop antes de ejecutar dicho comando, el personal del equipo de trabajo decidirá o no que su merge pueda
+ser fast forward o no fastforward. Si el usuario elige el fast forward, el comando de la terminal varía a git merge --no-commit develop.
