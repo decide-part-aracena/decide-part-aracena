@@ -158,8 +158,7 @@ class AuthTestCase(APITestCase):
         )
 
 
-class TestRegisterLoginUser(StaticLiveServerTestCase):
-
+class AuthUserTestCase(StaticLiveServerTestCase):
     def setUp(self):
         # Load base test functionality for decide
         self.base = BaseTestCase()
@@ -192,8 +191,6 @@ class TestRegisterLoginUser(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password2").send_keys(
             "fire1234", Keys.ENTER)
 
-        print(self.driver.current_url)
-        print(self.live_server_url+"/authentication/loginuser/?next=/base/")
         self.assertTrue(
             self.live_server_url+"/authentication/loginuser/?next=/base/" == self.driver.current_url)
 
@@ -231,3 +228,38 @@ class TestRegisterLoginUser(StaticLiveServerTestCase):
             "1234", Keys.ENTER)
         self.assertTrue(
             self.live_server_url+"/authentication/loginuser/" == self.driver.current_url)
+
+    def test_logout(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/")
+        self.driver.set_window_size(1366, 836)
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("seleniumVoter")
+        self.driver.find_element(By.ID, "id_password").send_keys(
+            "123", Keys.ENTER)
+        self.driver.find_element(By.ID, "navbarDropdown1").click()
+        self.driver.find_element(By.LINK_TEXT, "Logout").click()
+        self.assertTrue(
+            self.live_server_url+"/authentication/loginuser/?next=/base/" == self.driver.current_url)
+
+    def test_login_being_logged(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/")
+        self.driver.set_window_size(1366, 836)
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("seleniumVoter")
+        self.driver.find_element(By.ID, "id_password").send_keys(
+            "123", Keys.ENTER)
+        self.driver.get(self.live_server_url+"/authentication/loginuser/")
+        self.assertTrue(
+            self.live_server_url+"/base/" == self.driver.current_url)
+
+    def test_register_being_logged(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/")
+        self.driver.set_window_size(1366, 836)
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("seleniumVoter")
+        self.driver.find_element(By.ID, "id_password").send_keys(
+            "123", Keys.ENTER)
+        self.driver.get(self.live_server_url+"/authentication/registeruser/")
+
+        self.assertTrue(
+            self.live_server_url+"/base/" == self.driver.current_url)
