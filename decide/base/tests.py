@@ -12,9 +12,11 @@ from base import mods
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.common.exceptions import NoSuchElementException
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-
+# Avoid timezone warnings
+USE_TZ = False
 
 class BaseTestCase(APITestCase):
 
@@ -178,8 +180,14 @@ class IndexViewTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_username").send_keys(user)
         self.driver.find_element(By.ID, "id_password").send_keys(password,Keys.ENTER)
 
-        vote_link = self.driver.find_element_by_link_text('Vote').get_attribute('href')
-        result_link = self.driver.find_element_by_link_text('Results').get_attribute('href')
+        try:
+            vote_link = self.driver.find_element_by_link_text('Vote').get_attribute('href')
+            result_link = self.driver.find_element_by_link_text('Results').get_attribute('href')
 
-        self.assertRegex(vote_link,'\/booth\/[0-9]*', msg='Vote link does not match the pattern "\/booth\/[0-9]*"')
-        self.assertRegex(result_link,'\/visualizer\/[0-9]*', msg='Results link does not match the pattern "\/visualizer\/[0-9]*"')
+            self.assertRegex(vote_link,'\/booth\/[0-9]*', msg='Vote link does not match the pattern "\/booth\/[0-9]*"')
+            self.assertRegex(result_link,'\/visualizer\/[0-9]*', msg='Results link does not match the pattern "\/visualizer\/[0-9]*"')
+        except:
+            self.assertRaises(NoSuchElementException,self.driver.find_element_by_link_text('Vote'), msg='Vote link not found')
+            self.assertRaises(NoSuchElementException,self.driver.find_element_by_link_text('Results'), msg='Results link not found')
+
+        
