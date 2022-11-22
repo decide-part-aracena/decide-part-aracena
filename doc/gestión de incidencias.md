@@ -18,15 +18,19 @@ Asignación: miembros del equipo encargados de gestionar la incidencia.
 
 Etiquetas: 
 El equipo decidió crear etiquetas personalizadas para agrupar las incidencias en función del subsistema al que se le va a hacer un incremento. Por ejemplo:
+
   - Autenticación.
   - Censo.
   - Visualización.
+
 Además, se añadieron las siguientes:
+
   - Epic: indica que la incidencia se ha dividido en otras para facilitar su desarrollo.
   - documentation: gestión de documentos del proyecto.
   - CI/CD: incidencias relacionadas con la adaptación del proyecto a la Integración contínua.
   
 Por otro lado, utilizamos algunas de las que github añade por defecto:
+
   - bug: fallo de programación en el software.
   - duplicate: ya hay otra incidencia similar.
   - enhancement: solicitud de mejora en el software.
@@ -37,6 +41,7 @@ Por otro lado, utilizamos algunas de las que github añade por defecto:
   - wontix: comportamiento defectuoso / no existe solución posible.
 
 Proyecto (y estado): vinculamos la incidencia al proyecto correspondiente y le asignamos un estado.
+  
   Estados: 
     - Todo: incidencia por hacer.
     - In Progress: se ha comenzado a trabajar en ella.
