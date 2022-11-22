@@ -78,7 +78,10 @@ def RegisterUserView(request):
         if form.is_valid():
             user = form.save(commit=True)
             user.save()
-            return redirect(URL_BASE)
+            if request.user.is_staff:
+                return redirect("/users")
+            else:
+                return redirect(URL_BASE)
         return render(request=request, template_name="authentication/register.html", context={"register_form": form})
     else:
         form = NewUserForm()
