@@ -51,8 +51,7 @@ class BaseTestCase(APITestCase):
         self.client.credentials()
 
 
-#Test de navegación
-
+#Navigation tets
 class NavBarTestCase(StaticLiveServerTestCase):
 
     def setUp(self):
@@ -171,15 +170,18 @@ class IndexViewTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_username").send_keys(user)
         self.driver.find_element(By.ID, "id_password").send_keys(password,Keys.ENTER)
 
-        self.assertTrue(open_msg in self.driver.page_source, msg='Expected message "You do not have open votings"')
-        self.assertTrue(waiting_msg in self.driver.page_source, msg='Expected message "You do not have votings waiting for result"')
-        self.assertTrue(previous_msg in self.driver.page_source, msg='Expected message "You do not have votings to visualize"')
+        self.assertTrue(open_msg in self.driver.page_source, msg=f'Expected message "{open_msg}"')
+        self.assertTrue(waiting_msg in self.driver.page_source, msg=f'Expected message "{waiting_msg}"')
+        self.assertTrue(previous_msg in self.driver.page_source, msg=f'Expected message "{previous_msg}"')
 
 
     def test_indexVotingsExist(self, user='admin', password='qwerty'):
         '''
         Test if votings are shown
         '''
+        open_msg='You do not have open votings'
+        waiting_msg='You do not have votings waiting for result'
+        previous_msg='You do not have votings to visualize'
         waiting_voting_name = 'waiting voting'
 
         self.driver.get(f"{self.live_server_url}{LOGIN_URL}")
@@ -193,6 +195,10 @@ class IndexViewTestCase(StaticLiveServerTestCase):
             self.assertRegex(vote_link,'\/booth\/[0-9]*', msg='Vote link does not match the pattern "\/booth\/[0-9]*"')
             self.assertRegex(result_link,'\/visualizer\/[0-9]*', msg='Results link does not match the pattern "\/visualizer\/[0-9]*"')
             self.assertTrue(waiting_voting_name in self.driver.page_source,msg='Voting waiting for result now found')
+
+            self.assertFalse(open_msg in self.driver.page_source, msg=f'Not expected message "{open_msg}"')
+            self.assertFalse(waiting_msg in self.driver.page_source, msg=f'Not expected message "{waiting_msg}"')
+            self.assertFalse(previous_msg in self.driver.page_source, msg=f'Not expected message "{previous_msg}"')
         except:
             self.assertRaises(NoSuchElementException,self.driver.find_element_by_link_text('Vote'), msg='Vote link not found')
             self.assertRaises(NoSuchElementException,self.driver.find_element_by_link_text('Results'), msg='Results link not found')
