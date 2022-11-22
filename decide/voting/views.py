@@ -191,18 +191,19 @@ def sort_by_startDate(request):
     dic = {}
     for v in voting:
         fecha = v.start_date
-        dic[v] = fecha
+        if fecha != None:      
+            dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorted_by_startDate.html', {'sorted_voting_startDate':sorted_dic.keys})
-
 
 def sort_by_endDate(request):
     voting = Voting.objects.all()
     dic = {}
     for v in voting:
-        fecha = v.end_date
-        dic[v] = fecha
+        fecha = v.end_date  
+        if fecha != None:      
+            dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorted_by_endDate.html', {'sorted_voting_endDate':sorted_dic.keys})
