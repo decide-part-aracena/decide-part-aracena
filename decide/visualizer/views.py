@@ -3,11 +3,9 @@ import json
 from base import mods
 from census.models import Census
 from store.models import Vote
-from voting.models import Question
 
 from django.conf import settings
 from django.http import Http404
-from django.shortcuts import render
 from django.views.generic import TemplateView
 
 
