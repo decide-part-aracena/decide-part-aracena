@@ -23,7 +23,7 @@ class TestUsers(StaticLiveServerTestCase):
         mods.mock_query(self.client)
         
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
 
     def tearDown(self):
@@ -93,7 +93,7 @@ class TestUsers(StaticLiveServerTestCase):
         self.assertTrue(self.live_server_url+"/authentication/registeruser/" 
             == self.driver.current_url)
     
-    def test_new_user_positive(self):
+    def test_edit_user_positive(self):
         '''Test if an administrator can edit a valid user'''
         self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
         self.driver.find_element(By.ID, "id_username").send_keys("admin")
@@ -112,7 +112,7 @@ class TestUsers(StaticLiveServerTestCase):
         email = self.driver.find_element(By.ID, "id_email")
         self.assertTrue(email.get_attribute("value") == "noadmin9@gmail.com")
     
-    def test_new_user_negative(self):
+    def test_edit_user_negative(self):
         '''Test if an administrator can edit an invalid user'''
         self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
         self.driver.find_element(By.ID, "id_username").send_keys("admin")
