@@ -7,6 +7,10 @@ from rest_framework.test import APITestCase
 
 from base import mods
 
+# Create non naive datetime objects
+from datetime import datetime
+from django.utils import timezone
+import pytz
 
 #selenium
 from selenium import webdriver
@@ -15,8 +19,6 @@ from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-# Avoid timezone warnings
-USE_TZ = False
 
 class BaseTestCase(APITestCase):
 
@@ -114,13 +116,15 @@ class IndexViewTestCase(StaticLiveServerTestCase):
 
         #Create votings in different states and relate a user via census
         voter_id = User.objects.only('id').get(username='admin').id
+        timezone.now()
+        date = datetime(2000, 1, 1, tzinfo=pytz.UTC)
 
-        voting_open = Voting(name='open voting', start_date='2000-01-01')
+        voting_open = Voting(name='open voting', start_date=date)
         voting_open.save()
         census1 = Census(voter_id=voter_id, voting_id=voting_open.id)
         census1.save()
 
-        voting_waiting = Voting(name='waiting voting', end_date='2000-01-01')
+        voting_waiting = Voting(name='waiting voting', end_date=date)
         voting_waiting.save()
         census2 = Census(voter_id=voter_id, voting_id=voting_waiting.id)
         census2.save()
@@ -159,23 +163,25 @@ class IndexViewTestCase(StaticLiveServerTestCase):
         '''
         Test if the correct message is shown when the user has no votings associated via census
         '''
-        openMsg='You do not have open votings'
-        waitingMsg='You do not have votings waiting for result'
-        previousMsg='You do not have votings to visualize'
+        open_msg='You do not have open votings'
+        waiting_msg='You do not have votings waiting for result'
+        previous_msg='You do not have votings to visualize'
 
         self.driver.get(f"{self.live_server_url}{LOGIN_URL}")
         self.driver.find_element(By.ID, "id_username").send_keys(user)
         self.driver.find_element(By.ID, "id_password").send_keys(password,Keys.ENTER)
 
-        self.assertTrue(openMsg in self.driver.page_source, msg='Expected message "You do not have open votings"')
-        self.assertTrue(waitingMsg in self.driver.page_source, msg='Expected message "You do not have votings waiting for result"')
-        self.assertTrue(previousMsg in self.driver.page_source, msg='Expected message "You do not have votings to visualize"')
+        self.assertTrue(open_msg in self.driver.page_source, msg='Expected message "You do not have open votings"')
+        self.assertTrue(waiting_msg in self.driver.page_source, msg='Expected message "You do not have votings waiting for result"')
+        self.assertTrue(previous_msg in self.driver.page_source, msg='Expected message "You do not have votings to visualize"')
 
 
     def test_indexVotingsExist(self, user='admin', password='qwerty'):
         '''
         Test if votings are shown
         '''
+        waiting_voting_name = 'waiting voting'
+
         self.driver.get(f"{self.live_server_url}{LOGIN_URL}")
         self.driver.find_element(By.ID, "id_username").send_keys(user)
         self.driver.find_element(By.ID, "id_password").send_keys(password,Keys.ENTER)
@@ -186,6 +192,7 @@ class IndexViewTestCase(StaticLiveServerTestCase):
 
             self.assertRegex(vote_link,'\/booth\/[0-9]*', msg='Vote link does not match the pattern "\/booth\/[0-9]*"')
             self.assertRegex(result_link,'\/visualizer\/[0-9]*', msg='Results link does not match the pattern "\/visualizer\/[0-9]*"')
+            self.assertTrue(waiting_voting_name in self.driver.page_source,msg='Voting waiting for result now found')
         except:
             self.assertRaises(NoSuchElementException,self.driver.find_element_by_link_text('Vote'), msg='Vote link not found')
             self.assertRaises(NoSuchElementException,self.driver.find_element_by_link_text('Results'), msg='Results link not found')
