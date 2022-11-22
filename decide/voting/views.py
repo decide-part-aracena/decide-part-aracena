@@ -136,3 +136,17 @@ def crear_voting(request):
             return redirect('voting')
         except ValueError:
             return render(request, 'crear_voting.html', {'form': VotingForm, 'error': form.errors})
+
+import operator
+def sort_by_name(request):
+    voting = Voting.objects.all()
+    sorted_voting = []
+    dic = {}
+    for vote in voting:
+        name = vote.name
+        fecha = vote.start_date
+        dic[vote] = name
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    sorted_voting.append(sorted_dic.keys)
+    return render(request, 'voting.html', {'sorted_voting':sorted_dic.keys})

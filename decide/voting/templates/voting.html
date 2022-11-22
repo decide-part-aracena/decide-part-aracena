@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_dashboard.html' %}
 {% block content %}
 
 <br />
@@ -19,4 +19,15 @@
     {% endif %}
     <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_voting' %}">Crear votacion</a></button>
 </div>
+
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+        aria-expanded="false">
+        Ordenar por:
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li><a class="dropdown-item" href="{% url 'sort_by_name' %}">Título</a></li>
+            {{sorted_voting}}
+            <!-- <li><a class="dropdown-item" href="{% url 'voting_list' %}">Creadas recientemente</a></li>
+            <li><a class="dropdown-item" href="{% url 'censo' %}">Finalizadas recientemente</a></li> -->
+        </ul>
 {% endblock %}
