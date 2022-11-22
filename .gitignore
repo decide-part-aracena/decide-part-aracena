@@ -104,3 +104,4 @@ ENV/
 
 # secrets
 .secrets
+.vscode/settings.json
