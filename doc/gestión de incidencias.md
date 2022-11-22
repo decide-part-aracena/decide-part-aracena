@@ -1,10 +1,13 @@
 **1. RESUMEN EJECUTIVO**
+
 El equipo ha decidido el siguiente método para gestionar las incidencias, ya sea para describir la petición para añadir un incremento o la solucionar un problema. 
 
 **2. SISTEMA DE GESTIÓN**
+
 Utilizamos github como herramienta para gestionar tanto el proyecto como las incidencias que lo componen para así tenerlos vinculados al repositorio. Las incidencias se crean desde el menú Issues donde, a continuación, detallamos los campos a completar.
 
 **3. CONTENIDO DE LA INCIDENCIA**
+
 Título: descripción clara y concisa sobre la información de la incidencia.
 
 Identificador: número generado de forma ordinal por github. Usado para vincular commits a una incidencia determinada.
