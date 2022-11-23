@@ -45,7 +45,7 @@ class LogoutView(APIView):
             pass
 
         return Response({})
-
+    
 
 class RegisterView(APIView):
     def post(self, request):
@@ -70,7 +70,7 @@ class RegisterView(APIView):
 
 
 def RegisterUserView(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not(request.user.is_staff):
         return redirect(URL_BASE)
 
     if request.method == "POST":
@@ -144,5 +144,5 @@ def authenticate_via_magic_link(request: HttpRequest, token: str):
         return HttpResponseBadRequest(content="Link has expired, request a new one")
     cache.delete(token)
     user = User.objects.get(email=email)
-    login(request, user)
+    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
     return redirect(URL_BASE)
