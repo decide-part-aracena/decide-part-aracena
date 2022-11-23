@@ -13,4 +13,3 @@ pandas==1.5.1
 django-import-export
 selenium
 django-allauth
-python-dotenv==0.21.0

@@ -1,0 +1,22 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+
+<div id="app-booth">
+    <h1>Create Question</h1>
+    {{error}}
+    <form method="POST">
+        {% csrf_token %}
+        {{form.as_p}}
+        {% for i in v %}
+        {{form2.as_p}}
+        {% endfor %}
+
+        <br />
+        <button class="btn btn-secondary btn-lg" type="submit"
+            onclick="return confirm('¿Seguro que quieres crear la pregunta?');">Create</button>
+    </form>
+</div>
+<br />
+<button class="btn btn-secondary btn-lg"><a href="{% url 'preguntas' %}">Back to list</a></button>
+
+{% endblock %}

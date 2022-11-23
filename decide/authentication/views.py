@@ -78,7 +78,10 @@ def RegisterUserView(request):
         if form.is_valid():
             user = form.save(commit=True)
             user.save()
-            return redirect(URL_BASE)
+            if request.user.is_staff:
+                return redirect("/users")
+            else:
+                return redirect(URL_BASE)
         return render(request=request, template_name="authentication/register.html", context={"register_form": form})
     else:
         form = NewUserForm()
@@ -144,5 +147,5 @@ def authenticate_via_magic_link(request: HttpRequest, token: str):
         return HttpResponseBadRequest(content="Link has expired, request a new one")
     cache.delete(token)
     user = User.objects.get(email=email)
-    login(request, user)
+    login(request, user, backend='django.contrib.auth.backends.ModelBackend')
     return redirect(URL_BASE)
