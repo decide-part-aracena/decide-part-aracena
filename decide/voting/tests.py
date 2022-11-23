@@ -16,9 +16,8 @@ from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 
 
+class VotingTestCase(BaseTestCase):
 
-class VotingModelTestCase(BaseTestCase): 
-    
     def setUp(self):
         super().setUp()
 
@@ -38,9 +37,8 @@ class VotingModelTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             opt.save()
-        v = Voting(name='test voting')
+        v = Voting(name='test voting', question=q)
         v.save()
-        v.question.add(q)
 
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -48,15 +46,6 @@ class VotingModelTestCase(BaseTestCase):
         v.auths.add(a)
 
         return v
-    
-    def create_question(self):
-        q = Question(desc='test question')
-        q.save()
-        for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
-            opt.save()
-
-        return q
 
     def create_voters(self, v):
         for i in range(100):
@@ -94,6 +83,29 @@ class VotingModelTestCase(BaseTestCase):
                 mods.post('store', json=data)
         return clear
 
+    def test_complete_voting(self):
+        v = self.create_voting()
+        self.create_voters(v)
+
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        clear = self.store_votes(v)
+
+        self.login()  # set token
+        v.tally_votes(self.token)
+
+        tally = v.tally
+        tally.sort()
+        tally = {k: len(list(x)) for k, x in itertools.groupby(tally)}
+
+        for q in v.question.options.all():
+            self.assertEqual(tally.get(q.number, 0), clear.get(q.number, 0))
+
+        for q in v.postproc:
+            self.assertEqual(tally.get(q["number"], 0), q["votes"])
+
     def test_create_voting_from_api(self):
         data = {'name': 'Example'}
         response = self.client.post('/voting/', data, format='json')
@@ -109,13 +121,22 @@ class VotingModelTestCase(BaseTestCase):
         response = mods.post('voting', params=data, response=True)
         self.assertEqual(response.status_code, 400)
 
+        data = {
+            'name': 'Example',
+            'desc': 'Description example',
+            'question': 'I want a ',
+            'question_opt': ['cat', 'dog', 'horse']
+        }
+
+        response = self.client.post('/voting/', data, format='json')
+        self.assertEqual(response.status_code, 201)
+
     def test_update_voting(self):
         voting = self.create_voting()
 
         data = {'action': 'start'}
-        
-        response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
-        self.assertEqual(response.status_code, 401)
+        #response = self.client.post('/voting/{}/'.format(voting.pk), data, format='json')
+        #self.assertEqual(response.status_code, 401)
 
         # login with user no admin
         self.login(user='noadmin')
@@ -187,80 +208,3 @@ class VotingModelTestCase(BaseTestCase):
         response = self.client.put('/voting/{}/'.format(voting.pk), data, format='json')
         self.assertEqual(response.status_code, 400)
         self.assertEqual(response.json(), 'Voting already tallied')
-    
-    def test_create_onequestion_voting(self):
-        q1 = Question(desc='question1')
-        q1.save()
-        for i in range(5):
-            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
-            opt.save()
-        v = Voting(name='test voting')
-        v.save()
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-        v.question.add(q1)
-        self.assertEqual(v.question.all().count(), 1)
-
-
-    def test_create_multiquestion_voting(self):
-        q1 = Question(desc='question1')
-        q1.save()
-        for i in range(5):
-            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
-            opt.save()
-        q2 = Question(desc='question2')
-        q2.save()
-        for i in range(5):
-            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
-            opt.save()
-        v = Voting(name='test voting')
-        v.save()
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-        v.question.add(q1)
-        v.question.add(q2)
-        a = v.question.all().count() == 2
-        self.assertTrue(a)
-
-    def test_deleting_question_from_voting_multiquestion(self):
-        q1 = Question(desc="test question1")
-        q1.save()
-        q2 = Question(desc="test question2")
-        q2.save()
-        QuestionOption(question=q1,option="option1")
-        QuestionOption(question=q1,option="option2")
-        QuestionOption(question=q2,option="option3")
-        QuestionOption(question=q2,option="option4")
-        v=Voting(name="Votacion")
-        v.save()
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        v.auths.add(a)
-        v.question.add(q1)
-        v.question.add(q2)
-        self.assertEquals(v.question.all().count(), 2)
-        v.question.remove(q2)
-        self.assertEquals(v.question.all().count(),1)
-
-    def test_adding_question_to_voting_multiquestion(self):
-        q1 = Question(desc="test question1")
-        q1.save()
-        q2 = Question(desc="test question2")
-        q2.save()
-        QuestionOption(question=q1,option="option1")
-        QuestionOption(question=q1,option="option2")
-        QuestionOption(question=q2,option="option3")
-        QuestionOption(question=q2,option="option4")
-        v=Voting(name="Votacion")
-        v.save()
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        v.auths.add(a)
-        v.question.add(q1)
-        self.assertEquals(v.question.all().count(), 1)
-        v.question.add(q2)
-        self.assertEquals(v.question.all().count(),2)
