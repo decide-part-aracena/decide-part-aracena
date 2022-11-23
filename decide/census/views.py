@@ -2,6 +2,7 @@ from http.client import HTTPResponse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
+
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -21,6 +22,7 @@ from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.models import User
 import pandas as pd 
+from voting.models import Voting
 
 import os
 import psycopg2
@@ -118,9 +120,15 @@ def import_datadb(request):
             user_id = us.id
             users_id.append(user_id)
         
+        votings = Voting.objects.all()
+        votings_id = []
+        for vid in votings:
+            voting_id = vid.id
+            votings_id.append(voting_id)
+
         for i in range(df.shape[0]):
            
-            if df['voter_id'][i] in  users_id:
+            if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
                
                 census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                 census.save()
