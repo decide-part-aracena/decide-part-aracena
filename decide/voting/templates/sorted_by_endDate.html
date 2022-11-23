@@ -55,12 +55,12 @@
             <td>
               <div class="d-flex align-items-center">
                 <div class="ms-3">
-                  <p class="fw-bold mb-1" href="{% url 'voting_details' v.id %}">{{v.id}}</p>
+                  <p class="fw-bold mb-1">{{v.id}}</p>
                 </div>
               </div>
             </td>
             <td>
-                <p class="fw-bold mb-1" href="{% url 'voting_details' v.id %}">{{v.name}}</p>
+                <p class="fw-bold mb-1">{{v.name}}</p>
             </td>
             {% if v.start_date %}
               <td>
@@ -72,13 +72,13 @@
               </td>
             {% endif %}
             <td>
-            <p class="fw-bold mb-1" href="{% url 'voting_details' v.id %}">{{v.start_date}}</p>   
+            <p class="fw-bold mb-1">{{v.start_date}}</p>   
             </td>
             <td>
-              <p class="fw-bold mb-1" href="{% url 'voting_details' v.id %}">{{v.end_date}}</p>
+              <p class="fw-bold mb-1">{{v.end_date}}</p>
             </td>
             <td>
-              <p class="fw-bold mb-1" href="{% url 'voting_details' v.id %}">{{v.tally}}</p>
+              <p class="fw-bold mb-1">{{v.tally}}</p>
             </td>
             <td>
               <button type="button" class="btn btn-link btn-sm btn-rounded">
