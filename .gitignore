@@ -103,4 +103,7 @@ ENV/
 .vagrant
 
 # secrets
-.secrets
+secrets_settings.py
+
+# vscode settings
+.vscode/

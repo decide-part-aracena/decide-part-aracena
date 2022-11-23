@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
-from dotenv import dotenv_values
-
-secrets = dotenv_values(".secrets")
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -184,55 +181,7 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
-# SOCIAL AUTH
 
-SOCIALACCOUNT_PROVIDERS = {
-    'google': {
-        'APP': {
-            'client_id' : secrets['SOCIAL_AUTH_GOOGLE_CLIENT_ID'],
-            'secret': secrets['SOCIAL_AUTH_GOOGLE_SECRET'],
-            'key': '',
-        },
-        'SCOPE': [
-            'profile',
-            'email',
-        ],
-        'AUTH_PARAMS': {
-            'access_type': 'online',
-        },
-    },
-    'facebook': {
-        'APP': {
-            'client_id' : secrets['SOCIAL_AUTH_FACEBOOK_KEY'],
-            'secret': secrets['SOCIAL_AUTH_FACEBOOK_SECRET'],
-            'key': '',
-        },
-        'METHOD': 'oauth2',
-        'SCOPE': ['email', 'public_profile'],
-        'AUTH_PARAMS': {'auth_type': 'reauthenticate'},
-        'INIT_PARAMS': {'cookie': True},
-        'FIELDS': [
-            'id',
-            'first_name',
-            'last_name',
-            'middle_name',
-            'name',
-            'name_format',
-            'picture',
-            'short_name'
-        ],
-        'EXCHANGE_TOKEN': True,
-        'VERIFIED_EMAIL': False,
-        'VERSION': 'v13.0',
-    },
-    'discord': {
-        'APP': {
-            'client_id' : secrets['SOCIAL_AUTH_DISCORD_CLIENT_ID'],
-            'secret': secrets['SOCIAL_AUTH_DISCORD_SECRET'],
-            'key': '',
-        },
-    },
-}
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
@@ -245,6 +194,12 @@ try:
     from local_settings import *
 except ImportError:
     print("local_settings.py not found")
+
+#Secrets import, if secrets_settings file is not found it might affect some features
+try:
+    from secrets_settings import *
+except ImportError:
+    print("secrets_settings.py not found")
 
 # loading jsonnet config
 if os.path.exists("config.jsonnet"):
