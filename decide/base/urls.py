@@ -1,7 +1,6 @@
 from django.urls import path
 from django.contrib.auth.decorators import login_required
 from .views import mainView
-from voting import views as voting
 from census import views 
 
 urlpatterns = [

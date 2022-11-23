@@ -4,17 +4,15 @@ import operator
 
 from django.conf import settings
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from voting.forms import QuestionForm
 
 from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
-from django.shortcuts import get_object_or_404, redirect, render
 from .forms import VotingForm
 from .forms import QuestionOptionsForm
 
