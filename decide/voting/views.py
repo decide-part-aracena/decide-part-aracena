@@ -6,7 +6,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
 from django.shortcuts import render, redirect
+from base.serializers import KeySerializer
+
 from voting.forms import QuestionForm
+from .models import Voting
+from base.models import Key
+from .filters import StartedFilter
+from django.utils.crypto import get_random_string
+from base import mods
+from base.models import Auth, Key
+
 
 from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
@@ -161,7 +170,7 @@ def voting_details(request, voting_id):
         except ValueError:
             return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
                                                           'error': form.errors})
-
+                                                  
 
 def create_voting(request):
     if request.method == 'GET':
@@ -186,3 +195,23 @@ def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
+
+def start_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    #voting.create_pubkey()
+    voting.start_date = timezone.now()
+    voting.save()
+    return redirect('voting_list')
+
+def stop_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    voting.end_date = timezone.now()
+    voting.save()
+    return redirect('voting_list')
+
+def tally_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    token = request.session.get('auth-token', '')
+    voting.tally_votes(token)
+    return redirect('voting_list')
+

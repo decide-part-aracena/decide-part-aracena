@@ -22,48 +22,30 @@
             <h2 v-if="!voting.start_date">Votación no comenzada</h2>
             <h2 v-else-if="!voting.end_date">Votación en curso</h2>
 
-            <div v-else>
-                <h2 class="heading">[[voting.question.desc]]</h2>
+        {% for v in question %}
+            <h2 class="heading">[[voting.question.desc]]</h2>
             
-                <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped">
                     
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
+                <thead>
+                    <tr>
+                        <th>Opción</th>
+                        <th>Puntuación</th>
+                        <th>Votos</th>
+                    </tr>
+                </thead>
+                 <tbody>
+                    <tr v-for="opt in voting.postproc" :key="opt.number">
                             
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h2 class="heading">[[voting.question.desc]]</h2>
-                
-                <table class="table table-bordered table-striped">
-                    
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                        <th>[[opt.option]]</th>
+                        <td>[[opt.postproc]]</td>
+                        <td class="text-muted">[[opt.votes]]</td>
+                    </tr>
+                </tbody>
+            </table>
+            <h2 class="heading">[[voting.question.desc]]</h2>
+        {% endfor %}
+            
 
         </div>
     </div>

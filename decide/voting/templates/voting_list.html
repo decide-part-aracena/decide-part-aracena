@@ -40,12 +40,12 @@
             <td>
               <div class="d-flex align-items-center">
                 <div class="ms-3">
-                  <p class="fw-bold mb-1" href="{% url 'voting_details' votacion.id %}">{{votacion.id}}</p>
+                  <p class="fw-bold mb-1">{{votacion.id}}</p>
                 </div>
               </div>
             </td>
             <td>
-                <p class="fw-bold mb-1" href="{% url 'voting_details' votacion.id %}">{{votacion.name}}</p>
+                <p class="fw-bold mb-1">{{votacion.name}}</p>
             </td>
             {% if votacion.start_date %}
               <td>
@@ -57,13 +57,13 @@
               </td>
             {% endif %}
             <td>
-            <p class="fw-bold mb-1" href="{% url 'voting_details' votacion.id %}">{{votacion.start_date}}</p>   
+            <p class="fw-bold mb-1">{{votacion.start_date}}</p>   
             </td>
             <td>
-              <p class="fw-bold mb-1" href="{% url 'voting_details' votacion.id %}">{{votacion.end_date}}</p>
+              <p class="fw-bold mb-1">{{votacion.end_date}}</p>
             </td>
             <td>
-              <p class="fw-bold mb-1" href="{% url 'voting_details' votacion.id %}">{{votacion.tally}}</p>
+              <p class="fw-bold mb-1">{{votacion.tally}}</p>
             </td>
             <td>
               <button type="button" class="btn btn-link btn-sm btn-rounded">
@@ -71,7 +71,19 @@
               </button>
               <button type="button" class="btn btn-link btn-sm btn-rounded">
                 <a class="item" href="/visualizer/{{ votacion.id }}">Visualizer</a>
-              <!-- Button trigger modal -->
+              </button>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+              <a class="item" href="{% url 'start_voting' votacion.id %}">Start</a>
+              </button>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+              <a class="item" href="{% url 'stop_voting' votacion.id %}">Stop</a>
+              </button> 
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+              <a class="item" href="{% url 'tally_voting' votacion.id %}">Tally</a>
+              </button>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+                <a class="item" href="/booth/{{ votacion.id }}">booth</a>
+              </button>
               <button type="button" class="btn btn-link btn-sm btn-rounded"
               onClick="return confirm('¿Are you sure you want to delete {{ votacion.id }}?');">
                 <a class="item" href="{% url 'delete_voting' votacion.id %}">Delete</a>
