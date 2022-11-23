@@ -1,15 +1,7 @@
-from django.test import TestCase
 from rest_framework.test import APIClient
-from rest_framework.test import APITestCase
-
-from django.contrib.auth.models import User
-from rest_framework.authtoken.models import Token
-
 from base import mods
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from base.tests import BaseTestCase
 from selenium.webdriver.common.keys import Keys
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
