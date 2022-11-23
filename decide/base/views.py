@@ -45,3 +45,4 @@ def export_csv(request):
         writer.writerow([getattr(obj, field) for field in fields])
     
     return response
+

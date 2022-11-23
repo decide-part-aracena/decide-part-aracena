@@ -12,4 +12,4 @@ jsonnet==0.12.1
 pandas==1.5.1
 django-import-export
 selenium
-python-dotenv==0.21.0
+django-allauth
