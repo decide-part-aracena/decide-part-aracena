@@ -13,14 +13,3 @@ class Census(models.Model):
 class ExcelFile(models.Model):
     file = models.FileField(upload_to="excel")
     
-    CSV = 'csv'
-    XLSX = 'excel'
-
-    FILE_TYPES = [
-        (CSV, 'csv'), 
-        (XLSX, 'excel')
-    ]
-
-    file_type = models.CharField(max_length=4,
-    choices=  FILE_TYPES,
-    default= XLSX)

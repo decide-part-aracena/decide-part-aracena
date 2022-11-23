@@ -45,15 +45,6 @@ class CensusCreate(generics.ListCreateAPIView):
             voting_id=voting_id).values_list('voter_id', flat=True)
         return Response({'voters': voters})
 
-#Creada para la task -----------------------------------------------------------------
-    def list_user_create(self, request, *args, **kwargs):
-        voting_id = request.GET.get('voting_id')
-        voters = Census.objects.filter(voting_id=voting_id).values_list('voter_id', flat=True)
-        for voter in voters:
-            usuario = User.create_user(voter)
-            usuario.save()
-        return Response({'voters': voters})
-
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
     def destroy(self, request, voting_id, *args, **kwargs):
@@ -117,9 +108,9 @@ def import_datadb(request):
         obj = ExcelFile.objects.create( file = file )
         path = str(obj.file)
         
-        #df = pd.read_excel(path)
+        df = pd.read_excel(path)
     
-        df = pd.read_csv(path)
+        #df = pd.read_csv(path)
 
         users = User.objects.all()
         users_id = []
