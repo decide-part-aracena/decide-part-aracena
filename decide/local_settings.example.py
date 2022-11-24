@@ -6,6 +6,7 @@ MODULES = [
     'base',
     'booth',
     'census',
+    'graphic',
     'mixnet',
     'postproc',
     'store',
@@ -19,6 +20,7 @@ APIS = {
     'base': BASEURL,
     'booth': BASEURL,
     'census': BASEURL,
+    'graphic': BASEURL,
     'mixnet': BASEURL,
     'postproc': BASEURL,
     'store': BASEURL,
@@ -32,9 +34,9 @@ APIS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'decidedb',
+        'NAME': 'decide',
         'USER': 'decide',
-        'PASSWORD':'complexpassword',
+        'PASSWORD': 'complexpassword',
         'HOST': 'localhost',
         'PORT': '5432',
     }
