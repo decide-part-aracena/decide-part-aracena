@@ -121,10 +121,9 @@ def crearPreguntas(request):
             form = QuestionForm(request.POST)
             nuevaPregunta = form.save(commit = False)
             nuevaPregunta.save()
-            form2 = QuestionOptionsForm(request.POST)
-            nuevaPregunta2 = form2.save(commit = False)
-            print("=================================================", nuevaPregunta2)
-            nuevaPregunta2.save()           
+            # form2 = QuestionOptionsForm(request.POST)
+            # nuevaPregunta2 = form2.save(commit = False)
+            # nuevaPregunta2.save()           
             return redirect('preguntas')
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
