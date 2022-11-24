@@ -81,6 +81,7 @@ MODULES = [
     'base',
     'booth',
     'census',
+    'graphic',
     'mixnet',
     'postproc',
     'store',
@@ -194,6 +195,12 @@ try:
     from local_settings import *
 except ImportError:
     print("local_settings.py not found")
+
+#Secrets import, if secrets_settings file is not found it might affect some features
+try:
+    from secrets_settings import *
+except ImportError:
+    print("secrets_settings.py not found")
 
 # loading jsonnet config
 if os.path.exists("config.jsonnet"):

@@ -21,9 +21,9 @@ from django.conf import settings
 from django.shortcuts import render
 from django.contrib.auth.models import User
 import pandas as pd 
-
-import os
-import psycopg2
+import operator
+from django.core.paginator import Paginator
+from django.http import Http404
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -72,8 +72,16 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
         return Response('Valid voter')
 
 def listar_censos(request):
+
     censos = Census.objects.all()
-    return render(request, 'censo.html', {'censos': censos})
+    page = request.GET.get('page',1)
+    try:
+        paginator = Paginator(censos,2)
+        censos = paginator.page(page)
+    except:
+        raise Http404
+
+    return render(request, 'censo.html', {'censos': censos, 'paginator':paginator})
 
 
 def crear_censo(request):
@@ -145,4 +153,14 @@ def get_or_create_user_to_import(self, voter_id):
 
 def excel(request):
    return render(request, 'excel.html')
+
+def sort_by_voting(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voting_id = c.voting_id
+        dic[c] = voting_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
 
