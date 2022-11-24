@@ -1,4 +1,3 @@
-from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 
@@ -6,10 +5,11 @@ from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 
 from base import mods
+from decide.settings import LOGIN_URL
+from django.core.cache import cache
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
 from base.tests import BaseTestCase
 from selenium.webdriver.common.keys import Keys
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -263,3 +263,106 @@ class AuthUserTestCase(StaticLiveServerTestCase):
 
         self.assertTrue(
             self.live_server_url+"/base/" == self.driver.current_url)
+
+
+class MagicAuthTestCase(StaticLiveServerTestCase):
+
+    MAGIC_LOGIN_URL = '/authentication/magic-login/'
+
+    def setUp(self):
+        #Load base test functionality for decide
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+       
+            
+    def tearDown(self):           
+        super().tearDown()
+        self.driver.quit()
+        self.base.tearDown()
+
+    def test_accessView_positive(self):
+        '''
+        Test if a non logged user can access
+        '''
+        expected_header = 'Login with magic link'
+
+        self.driver.get(f"{self.live_server_url}{self.MAGIC_LOGIN_URL}")
+
+        self.assertTrue(expected_header in self.driver.page_source, msg=f'Expected header message not found: "{expected_header}"')
+
+    def test_accessView_negative(self, user='noadmin', password='qwerty'):
+        '''
+        Test if redirect is performed if the user is already logged
+        '''
+        self.driver.get(f"{self.live_server_url}{LOGIN_URL}")
+        self.driver.find_element(By.ID, "id_username").send_keys(user)
+        self.driver.find_element(By.ID, "id_password").send_keys(password,Keys.ENTER)
+
+        expected_url = f'{self.live_server_url}/base/'
+        self.driver.get(f"{self.live_server_url}{self.MAGIC_LOGIN_URL}")
+        current_url = self.driver.current_url
+
+        self.assertEqual(current_url,expected_url,msg=f'Redirect was not performed, current url is {current_url}')
+
+    def test_requestLink_positive(self):
+        '''
+        Test frontend behaviour when link is requested correctly
+        '''
+        expected_msg = 'Link sent to test@decide.vote'
+        self.assertFalse(expected_msg in self.driver.page_source,msg=f'Expected message "{expected_msg}" found before requesting link')
+
+        self.driver.get(f"{self.live_server_url}{self.MAGIC_LOGIN_URL}")
+        self.driver.find_element(By.ID, "email-input").send_keys('test@decide.vote')
+        self.driver.find_element(By.ID, "submit-button").click()
+
+        self.assertTrue(expected_msg in self.driver.page_source,msg=f'Expected message "{expected_msg}" not found')
+
+    def test_requestLink_negative(self):
+        '''
+        Test frontend behaviour when link is requested incorrectly
+        '''
+        expected_msg = 'Check the email format'
+        self.assertFalse(expected_msg in self.driver.page_source,msg=f'Expected message "{expected_msg}" found before requesting link')
+
+        self.driver.get(f"{self.live_server_url}{self.MAGIC_LOGIN_URL}")
+        self.driver.find_element(By.ID, "email-input").send_keys('IThoughtIW@sAValidEmail')
+        self.driver.find_element(By.ID, "submit-button").click()
+
+        self.assertTrue(expected_msg in self.driver.page_source,msg=f'Expected message "{expected_msg}" not found')
+
+    def test_emailSent_positive(self):
+        '''
+        Test if the email was sent correctly with the magic link
+
+        THIS TEST CANNOT BE EXECUTED IN DEVELOPMENT DUE TO THE ORGANIZATION INFRASTRUCTURE,
+            IN ORDER TO TEST THIS FEATURE ASK THE SECRETS KEYS ADMINISTRATOR
+
+        Procedure:
+            - Enter as guest to "http://localserver:port/authentication/magic-login/"
+            - In the email field, write an email asociated with an existing user
+                and click "Send link"
+            - A success alert message and a 10 minutes timer must be shown in the browser
+            - Check your inbox to see if the email was correctly sent (this might take up to 2 minutes)
+        '''
+        pass
+
+    def test_emailSent_positive(self):
+        '''
+        Test if the email was sent correctly with the magic link
+
+        THIS TEST CANNOT BE EXECUTED IN DEVELOPMENT DUE TO THE ORGANIZATION INFRASTRUCTURE,
+            IN ORDER TO TEST THIS FEATURE ASK THE SECRETS KEYS ADMINISTRATOR
+
+        Procedure:
+            - Enter as guest to "http://localserver:port/authentication/magic-login/"
+            - In the email field, write an email asociated with an existing user
+                and click "Send link"
+            - A success alert message and a 10 minutes timer must be shown in the browser
+            - Check your inbox to see if the email was never delivered
+                (take a break and check it later, you have gone through enough testing today :) )
+        '''
+        pass

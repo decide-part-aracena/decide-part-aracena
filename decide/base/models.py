@@ -40,3 +40,4 @@ class Key(models.Model):
             return "{},{},{},{}".format(self.p, self.g, self.y, self.x)
         else:
             return "{},{},{}".format(self.p, self.g, self.y)
+            

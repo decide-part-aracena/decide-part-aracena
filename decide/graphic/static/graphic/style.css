@@ -1,0 +1,33 @@
+div.graphic-container {
+  margin-top: 50px;
+  margin-bottom: 50px;
+  text-align: center;
+  justify-content: center;
+}
+
+div.row {
+  margin-left: 10%;
+  margin-right: 10%;
+  background-color: #24242c;
+  border-radius: 20%;
+}
+
+h1.title {
+  margin-top: 2%;
+  margin-bottom: 2%;
+  font-weight: bold;
+  color: white;
+}
+
+.canvas {
+  margin-top: 25px;
+}
+
+h1.title-graphic {
+  margin-top: 50px;
+  font-weight: bold;
+}
+
+div.button-row {
+  margin: 50px;
+}
