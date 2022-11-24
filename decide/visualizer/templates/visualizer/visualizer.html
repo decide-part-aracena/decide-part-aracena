@@ -16,8 +16,11 @@
 
             <h2 v-if="!voting.start_date">Voting not started</h2>
             
-            <h2 v-else-if="!voting.end_date">Voting in progress - Realtime data:
+            <h2 v-else-if="!voting.end_date">Voting in progress 
+
                 <div>
+                    <p>Realtime data:</p>
+
                     <table class="table table-bordered table-striped">
                         <thead>
                             <tr>
@@ -38,29 +41,9 @@
             <div v-else>
                 <h2 class="heading">Results:</h2>
 
-            <div v-else>
-                <h2 class="heading">[[voting.question.desc]]</h2>
-            
-                <table class="table table-bordered table-striped">
-                    
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <h2 class="heading">[[voting.question.desc]]</h2>
-                
+                <div v-for="quest in voting.question" :key="quest.id">
+                    <h2 class="heading">[[quest.desc]]</h2>
+                </div>
                 <table class="table table-bordered table-striped">
                     
                     <thead>
@@ -72,13 +55,14 @@
                     </thead>
                     <tbody>
                         <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
                             <th>[[opt.option]]</th>
                             <td>[[opt.postproc]]</td>
                             <td class="text-muted">[[opt.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
+
+
             </div>
         </div>
     </div>
