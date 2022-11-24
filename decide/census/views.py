@@ -23,8 +23,6 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 import pandas as pd 
 from voting.models import Voting
-import os
-import psycopg2
 import operator
 from django.core.paginator import Paginator
 from django.http import Http404

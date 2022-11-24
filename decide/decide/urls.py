@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include
-from census.views import import_datadb
 from rest_framework_swagger.views import get_swagger_view
 from voting import views
 
