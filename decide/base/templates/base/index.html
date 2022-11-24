@@ -1,0 +1,96 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}{% endblock extrahead %}
+
+{% block content %}
+    <div class="row justify-content-center">
+
+        <div class="col-md align-self-start fit-content">
+            <center><h3><strong>Open votings</strong></h3></center>
+            <ul class="list-group list-group-flush">
+            {% for voting in on_going_votings %}
+                <li class="list-group-item">
+                    <div class="card">
+                        <div class="card-body">
+                            <h6 class="card-title">
+                                {{ voting.id }} - {{ voting.name }}
+                                
+                            </h6>
+                            <p class="card-subtitle mb-2 text-muted">
+                                {{ voting.desc }}
+                            </p>
+                            <p class="card-text mb-2 text-muted">Start date: {{  voting.start_date }}</p>
+                            <a href="/booth/{{ voting.id }}" class="btn btn-primary" >
+                                Vote
+                            </a>
+                            <a href="/visualizer/{{ voting.id }}" class="btn btn-primary" >
+                                Realtime data
+                            </a>
+                        </div>
+                    </div>
+                </li>
+            {% endfor %}
+            {% if not tally_votings %}
+                <center><h6 class="mb-2 text-muted">You do not have open votings</h6></center>
+            {% endif %}
+            </ul>
+        </div>
+
+        <div class="col-md align-self-start fit-content">
+            <center><h3><strong>Waiting for result</strong></h3></center>
+            <ul class="list-group list-group-flush">
+            {% for voting in finished_votings %}
+            <li class="list-group-item">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            {{ voting.id }} - {{ voting.name }}
+                            
+                        </h6>
+                        <p class="card-subtitle mb-2 text-muted">
+                            {{ voting.desc }}
+                        </p>
+                        <p class="card-text mb-2 text-muted">Start date: {{  voting.start_date }}</p>
+                        <p class="card-text mb-2 text-muted">End date: {{  voting.end_date }}</p>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+            {% if not tally_votings %}
+                <center><h6 class="mb-2 text-muted">You do not have votings waiting for result</h6></center>
+            {% endif %}
+            </ul>
+        </div>
+
+        <div class="col-md align-self-start fit-content">
+            <center><h3><strong>Previous votings</strong></h3></center>
+            <ul class="list-group list-group-flush">
+            {% for voting in tally_votings %}
+            <li class="list-group-item">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="card-title">
+                            {{ voting.id }} - {{ voting.name }}
+                            
+                        </h6>
+                        <p class="card-subtitle mb-2 text-muted">
+                            {{ voting.desc }}
+                        </p>
+                        <p class="card-text mb-2 text-muted">End date: {{  voting.end_date }}</p>
+                        <a href="/visualizer/{{ voting.id }}" class="btn btn-success" >
+                            Results
+                        </a>
+                    </div>
+                </div>
+            </li>
+            {% endfor %}
+            {% if not tally_votings %}
+                <center><h6 class="mb-2 text-muted">You do not have votings to visualize</h6></center>
+            {% endif %}
+            </ul>
+        </div>
+
+    </div>
+{% endblock content %}
+
+{% block extrabody %}{% endblock extrabody %}
