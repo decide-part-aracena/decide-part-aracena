@@ -1,0 +1,116 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+<STYLE>A {text-decoration: none;} </STYLE>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock extrahead %}
+
+{% block content %}
+<center><h3><strong>Votings</strong></h3></center>
+
+<div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
+  <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+    <li class="nav-item">
+      <li class="nav-item me-3 me-lg-0 dropdown"> 
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Order by:
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="{% url 'sorted_by_name' %}">Title</a></li>
+              <li><a class="dropdown-item" href="{% url 'sorted_by_startDate' %}">Start date</a></li>
+              <li><a class="dropdown-item" href="{% url 'sorted_by_endDate' %}">End date</a></li>
+          </ul>
+      </li>
+    </li>
+  </ul>
+  <div class="input-group-prepend" >
+    <span class="input-group-text" id="basic-addon1" style="height: 41px;margin-right: 4px;">
+      <i class="fa fa-search"></i>
+    </span>
+  </div>
+  <input id="myInput" type="text" class="form-control" aria-describedby="basic-addon1">
+  <hr>
+</div>
+
+<div class="container justify" style="width: 90%;"> 
+<table class="table align-middle mb-0 bg-white">
+      <thead class="bg-light">
+        <tr>
+          <th>Id voting</th>
+          <th>Name</th>
+          <th>Status</th>
+          <th>Start date</th>
+          <th>End date</th>
+          <th>Tally</th>
+          
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for v in sorted_voting_endDate %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="ms-3">
+                  <p class="fw-bold mb-1">{{v.id}}</p>
+                </div>
+              </div>
+            </td>
+            <td>
+                <p class="fw-bold mb-1">{{v.name}}</p>
+            </td>
+            {% if v.start_date %}
+              <td>
+                <span class="badge text-bg-success">✔</span>
+              </td>
+            {% else %}
+              <td>
+                <span class="badge text-bg-danger">✗</span>
+              </td>
+            {% endif %}
+            <td>
+            <p class="fw-bold mb-1">{{v.start_date}}</p>   
+            </td>
+            <td>
+              <p class="fw-bold mb-1">{{v.end_date}}</p>
+            </td>
+            <td>
+              <p class="fw-bold mb-1">{{v.tally}}</p>
+            </td>
+            <td>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+                <a class="item" href="{% url 'voting_details' v.id %}">Edit</a>
+              </button>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+                <a class="item" href="/visualizer/{{ v.id }}">Visualizer</a>
+              <!-- Button trigger modal -->
+              <button type="button" class="btn btn-link btn-sm btn-rounded"
+              onClick="return confirm('¿Are you sure you want to delete {{ v.id }}?');">
+                <a class="item" href="{% url 'delete_voting' v.id %}">Delete</a>
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>
+<button class="btn btn-secondary btn-lg"><a href="{% url 'create_voting' %}">Create voting</a></button>
+{% endblock content %}
+
+{% block extrabody %}
+<script>
+  //Copiado de https://sutilweb.com/lenguajes/bootstrap/bootstrap-4/boostrap-4-filtros/
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+
+{% endblock extrabody %}

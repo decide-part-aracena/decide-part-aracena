@@ -11,7 +11,7 @@
 <center><h3><strong>Users</strong></h3></center>
 <div class="alert alert-light" role="alert" style="width: 95.5%;display: grid;
   justify-content: right;margin-bottom: 1px;">
-    <a class="btn btn-outline-dark" href="/authentication/registeruser/">New User</a>
+    <a class="btn btn-outline-dark" href="/authentication/registeruser/" id="newUser">New User</a>
 </div>
 
 <div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
@@ -59,12 +59,12 @@
               </td>
             {% endif %}
             <td>
-              <button type="button" class="btn btn-link btn-sm btn-rounded">
-                <a class="item" href="/users/{{ user.id }}">Edit</a>
+              <button type="button" class="btn btn-link btn-sm btn-rounded" id="edituser">
+                <a class="item" href="/users/{{ user.id }}" >Edit</a>
               </button>
               <!-- Button trigger modal -->
               <button type="button" class="btn btn-link btn-sm btn-rounded"
-              onClick="return confirm('¿Are you sure you want to delete {{user.username}}?');">
+              onClick="return confirm('Are you sure you want to delete {{user.username}}?');">
                 <a class="item" href="/users/delete/{{ user.id }}">Delete</a>
               </button>
             </td>
