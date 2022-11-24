@@ -1,3 +1,4 @@
+import csv
 from http.client import HTTPResponse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
@@ -16,6 +17,7 @@ from base.perms import UserIsStaff
 from .models import Census
 from .forms import CensusForm
 from .models import Census, ExcelFile
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.shortcuts import render
@@ -145,4 +147,25 @@ def get_or_create_user_to_import(self, voter_id):
 
 def excel(request):
    return render(request, 'excel.html')
+
+#Creada para la task -----------------------------------------------------------------
+def export_csv(request):
+
+    queryset = Census.objects.all()
+
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content_Disposition'] = 'atachment; filename="census.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow([options.get_field(field).verbose_name for field in fields])
+
+    for obj in queryset:
+        writer.writerow([getattr(obj, field) for field in fields])
+    
+    return response
+
 

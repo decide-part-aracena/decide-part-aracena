@@ -26,23 +26,4 @@ class mainView(TemplateView):
         context['tally_votings'] = tally_votings
         return context
 
-#Creada para la task -----------------------------------------------------------------
-def export_csv(request):
-
-    queryset = Census.objects.all()
-
-    options = Census._meta
-    fields = [field.name for field in options.fields]
-
-    response = HttpResponse(content_type='text/csv')
-    response['Content_Disposition'] = 'atachment; filename="census.csv"'
-
-    writer = csv.writer(response)
-
-    writer.writerow([options.get_field(field).verbose_name for field in fields])
-
-    for obj in queryset:
-        writer.writerow([getattr(obj, field) for field in fields])
-    
-    return response
 
