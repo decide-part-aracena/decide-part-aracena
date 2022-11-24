@@ -7,9 +7,18 @@ from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
 
+from base.serializers import KeySerializer
+
+from django.shortcuts import render, redirect, get_object_or_404
+from voting.forms import QuestionForm
+from .models import Voting
+from base.models import Key
+from .filters import StartedFilter
+from django.utils.crypto import get_random_string
+from base import mods
+from base.models import Auth, Key
 from voting.forms import QuestionForm, QuestionOptionsForm
 from django.shortcuts import render, redirect, get_object_or_404
-
 
 from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
@@ -165,7 +174,9 @@ def voting_details(request, voting_id):
             form.save()
             return redirect('voting_list')
         except ValueError:
-            return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm, 'error': form.errors})
+            return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
+                                                          'error': form.errors})
+                                                  
 
 
 def create_voting(request):
@@ -224,3 +235,17 @@ def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
+
+def start_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    voting.create_pubkey()
+    voting.start_date = timezone.now()
+    voting.save()
+    return redirect('voting_list')
+
+def stop_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    voting.end_date = timezone.now()
+    voting.save()
+    return redirect('voting_list')
+
