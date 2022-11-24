@@ -9,7 +9,14 @@
    
         {% csrf_token %}
         {{form.as_p}}
-         
+        <!-- <label for="name">Nombre</label>
+        {{form.name}}
+        <label for="name">Descripcion</label>
+        {{form.desc}}
+        <label for="name">Preguntas</label>
+        {{form.question}}
+        <label for="name">auths</label>
+        {{form.auths}} -->
 
         <br />
          <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_preguntas' %}">Add Question</a></button>

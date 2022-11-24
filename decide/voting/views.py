@@ -198,7 +198,7 @@ def delete_voting(request, voting_id):
 
 def start_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
-    #voting.create_pubkey()
+    voting.create_pubkey()
     voting.start_date = timezone.now()
     voting.save()
     return redirect('voting_list')
@@ -208,10 +208,3 @@ def stop_voting(request, voting_id):
     voting.end_date = timezone.now()
     voting.save()
     return redirect('voting_list')
-
-def tally_voting(request, voting_id):
-    voting = Voting.objects.get(id = voting_id)
-    token = request.session.get('auth-token', '')
-    voting.tally_votes(token)
-    return redirect('voting_list')
-

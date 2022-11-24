@@ -12,6 +12,5 @@ urlpatterns = [
     path('delete/voting/<int:voting_id>/', voting.delete_voting, name='delete_voting'),
     path('start/voting/<int:voting_id>/', voting.start_voting, name='start_voting'),
     path('stop/voting/<int:voting_id>/', voting.stop_voting, name='stop_voting'),
-    path('tally/voting/<int:voting_id>/', voting.tally_voting, name='tally_voting'),
-    
+  
 ]
