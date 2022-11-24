@@ -1,12 +1,14 @@
-{% extends "base.html" %}
+{% extends 'base_dashboard.html' %}
+
 {% load i18n static %}
+
 
 {% block extrahead %}
     <link type="text/css" rel="stylesheet"
     href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
     <link type="text/css" rel="stylesheet"
     href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
-    <link type="text/css" rel="stylesheet" href="{% static "booth/style.css" %}" />
+    <link type="text/css" rel="stylesheet" href="{% static "graphic/style.css" %}" />
 
     <!-- Importacion de Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
@@ -20,40 +22,26 @@
 
 {% block content %}
 
-    {% load static %}
-
-    <div id="app-visualizer">
-        <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-        </b-navbar>
-    </div>
-
-    <div id="graphic-visualizer" class="grafica voting container">
-        <h1>Representación gráfica de resultados de la votación</h1>
-
-        <br>
-
-        <h2>Gráfica de barras:</h2>
+    <div id="graphic-visualizer" class="grafica-container">
+        <div class="row">
+            <h1 class="titulo">
+                Gráficas con resultados de la votación
+            </h1>
+        </div>
+        
+        <h1 class="titulo-grafica">Barras</h1>
         <canvas id="grafica"></canvas>
 
-        <br>
+        <h1 class="titulo-grafica">Tipo "donut"</h1>
+        <canvas id="grafica2"></canvas>
+    </div>
 
-        <h2>Gráfica tipo "donut":</h2>
-        <canvas id="grafica2"></canvas>        
-
-        <br>
-
-        <div class="row">
-            <button id="boton-retorno">
-                <a :href="'/visualizer/' + identificador">
-                    Resultados de la votación mostrados en tabla
-                </a>
-            </button>
-        </div>
-
-        <br>
-
+    <div class="row boton-row">
+        <button id="boton-retorno">
+            <a :href="'/visualizer/' + identificador">
+                Resultados de la votación mostrados en tabla
+            </a>
+        </button>
     </div>
 
 {% endblock %}
@@ -119,7 +107,7 @@
                 datasets: [{
                     label: 'Votos totales por opción',
                     data: resultadosVotacion,
-                    borderWidth: 5,
+                    borderWidth: 10,
                 }]                    
             },
             options: {

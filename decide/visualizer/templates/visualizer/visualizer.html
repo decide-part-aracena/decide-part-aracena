@@ -89,7 +89,7 @@
 
                 <div class="row">
                     <button id="boton-grafica">
-                        <a :href="'/graphic/' + voting.id">
+                        <a :href="'/graphic/' + identificador">
                             Representaciones gráficas de los resultados
                         </a>
                     </button>
@@ -118,6 +118,15 @@
             data: {
                 voting: voting,
                 realtimedata: realtimedata
+            }
+        })
+
+        var identificador = voting.id
+        var app2 = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#boton-grafica',
+            data: {
+                identificador: identificador
             }
         })
 
