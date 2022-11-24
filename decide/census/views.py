@@ -143,4 +143,3 @@ def get_or_create_user_to_import(self, voter_id):
 
 def excel(request):
    return render(request, 'excel.html')
-
