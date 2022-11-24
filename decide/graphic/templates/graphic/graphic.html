@@ -10,10 +10,10 @@
     href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
     <link type="text/css" rel="stylesheet" href="{% static "graphic/style.css" %}" />
 
-    <!-- Importacion de Chart.js -->
+    <!-- Import of Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
 
-    <!-- Importacion plugin para coloreado de gráficas -->
+    <!-- Import of the graph coloring plugin -->
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
     
     <script src="https://unpkg.com/chartjs-plugin-colorschemes"></script>
@@ -22,24 +22,24 @@
 
 {% block content %}
 
-    <div id="graphic-visualizer" class="grafica-container">
+    <div id="graphic-visualizer" class="graphic-container">
         <div class="row">
-            <h1 class="titulo">
-                Gráficas con resultados de la votación
+            <h1 class="title">
+                Graphs with voting results
             </h1>
         </div>
         
-        <h1 class="titulo-grafica">Barras</h1>
-        <canvas id="grafica"></canvas>
+        <h1 class="title-graphic">Bar type</h1>
+        <canvas id="graphic"></canvas>
 
-        <h1 class="titulo-grafica">Tipo "donut"</h1>
-        <canvas id="grafica2"></canvas>
+        <h1 class="title-graphic">Donut type</h1>
+        <canvas id="graphic2"></canvas>
     </div>
 
-    <div class="row boton-row">
-        <button id="boton-retorno">
-            <a :href="'/visualizer/' + identificador">
-                Resultados de la votación mostrados en tabla
+    <div class="row button-row">
+        <button id="return-button">
+            <a :href="'/visualizer/' + identificator">
+                Voting results displayed in table
             </a>
         </button>
     </div>
@@ -64,49 +64,50 @@
             }
         })
 
-        var identificador = voting.id
+        var identificator = voting.id
 
         var app2 = new Vue({
             delimiters: ['[[', ']]'],
-            el: '#boton-retorno',
+            el: '#return-button',
             data: {
-                identificador: identificador
+                identificator: identificator
             }
         })
 
 
-        //                                 //
-        //Extracción de datos para gráficas//
-        //                                 //
+        //                          //
+        //Data extraction for charts//
+        //                          //
 
-        var opcionesVotacion = []
-        var resultadosVotacion = []
+        var votingOptions = []
+        var votingResults = []
 
-        const procesado = voting.postproc
-        const tam = procesado.length
+        const postproc = voting.postproc
+        const len = postproc.length
 
         var i = 0
-        while(i < tam) {
-            opcionesVotacion.push(procesado[i].option)
-            resultadosVotacion.push(procesado[i].votes)
+        while(i < len) {
+            votingOptions.push(postproc[i].option)
+            votingResults.push(postproc[i].votes)
 
             i += 1;               
         }
+
     </script>
 
-    <!-- Tipos de gráfica -->
+    <!-- Graphic types -->
     <script>
 
-        //Gráfica de barras
-        const $grafica = document.getElementById("grafica");
+        //Bar chart
+        const $graphic = document.getElementById("graphic");
     
-        new Chart($grafica, {
+        new Chart($graphic, {
             type: 'bar',
             data: {
-                labels: opcionesVotacion,
+                labels: votingOptions,
                 datasets: [{
-                    label: 'Votos totales por opción',
-                    data: resultadosVotacion,
+                    label: 'Total votes per option',
+                    data: votingResults,
                     borderWidth: 10,
                 }]                    
             },
@@ -126,16 +127,16 @@
             }
         });
     
-        //Gráfica tipo donut
-        const $grafica2 = document.getElementById("grafica2");
+        //Donut chart
+        const $graphic2 = document.getElementById("graphic2");
     
-        new Chart($grafica2, {
+        new Chart($graphic2, {
             type: 'doughnut',
             data: {
-                labels: opcionesVotacion,
+                labels: votingOptions,
                 datasets: [{
-                    label: 'Votos totales por opción',
-                    data: resultadosVotacion,
+                    label: 'Total votes per option',
+                    data: votingResults,
                     borderWidth: 5,
                 }]      
             },

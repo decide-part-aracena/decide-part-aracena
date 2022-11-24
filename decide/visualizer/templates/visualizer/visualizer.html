@@ -88,9 +88,9 @@
                 <br>
 
                 <div class="row">
-                    <button id="boton-grafica">
-                        <a :href="'/graphic/' + identificador">
-                            Representaciones gráficas de los resultados
+                    <button id="button-graphic">
+                        <a :href="'/graphic/' + identificator">
+                            Graphic representation of the results
                         </a>
                     </button>
                 </div>
@@ -121,12 +121,12 @@
             }
         })
 
-        var identificador = voting.id
+        var identificator = voting.id
         var app2 = new Vue({
             delimiters: ['[[', ']]'],
-            el: '#boton-grafica',
+            el: '#button-graphic',
             data: {
-                identificador: identificador
+                identificator: identificator
             }
         })
 
