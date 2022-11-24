@@ -176,6 +176,7 @@ def create_voting(request):
 def sort_by_name(request):
     voting = Voting.objects.all()
     dic = {}
+    # print("#####################################" + str(request))
     for v in voting:
         name = v.name
         dic[v] = name
@@ -187,6 +188,7 @@ def sort_by_name(request):
 def sort_by_startDate(request):
     voting = Voting.objects.all()
     dic = {}
+    
     for v in voting:
         fecha = v.start_date
         if fecha != None:      
