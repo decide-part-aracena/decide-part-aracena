@@ -12,6 +12,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('doc/', schema_view),
     path('gateway/', include('gateway.urls')),
+    path('census/', include('census.urls')),
     path('question/', views.listaPreguntas, name='preguntas'),
     path('question/create/', views.crearPreguntas, name='crear_preguntas'),
     path('question/<int:question_id>/', views.showUpdateQuestions, name='showUpdateQuestions'),
@@ -23,3 +24,4 @@ for module in settings.MODULES:
     urlpatterns += [
         path('{}/'.format(module), include('{}.urls'.format(module)))
     ]
+    

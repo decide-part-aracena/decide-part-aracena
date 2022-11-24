@@ -43,60 +43,53 @@
             <div v-else>
                 <h2 class="heading">Resultados:</h2>
 
-            <div v-else>
-                <h2 class="heading">[[voting.question.desc]]</h2>
+        {% for v in question %}
+            <h2 class="heading">[[voting.question.desc]]</h2>
             
-                <table class="table table-bordered table-striped">
+            <table class="table table-bordered table-striped">
                     
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
+                <thead>
+                    <tr>
+                        <th>Opción</th>
+                        <th>Puntuación</th>
+                        <th>Votos</th>
+                    </tr>
+                </thead>
+                 <tbody>
+                    <tr v-for="opt in voting.postproc" :key="opt.number">
+
                             <th>[[opt.option]]</th>
                             <td>[[opt.postproc]]</td>
                             <td class="text-muted">[[opt.votes]]</td>
                         </tr>
                     </tbody>
                 </table>
-                <h2 class="heading">[[voting.question.desc]]</h2>
                 
-                <table class="table table-bordered table-striped">
-                    
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
+                <br>
+
+                <div class="row">
+                    <button id="button-graphic">
+                        <a :href="'/graphic/' + identificator">
+                            Graphic representation of the results
+                        </a>
+                    </button>
+                </div>
             </div>
 
         </div>
+        
     </div>
 {% endblock %}
 
 {% block extrabody %}
+
     <!-- Vuejs -->
     <script src="https://unpkg.com/vue@2.7.10"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
     
     <script>
+
         var voting = {{voting|safe}};
         var realtimedata = {{realtimedata|safe}};
         var app = new Vue({
@@ -107,7 +100,18 @@
                 realtimedata: realtimedata
             }
         })
+
+        var identificator = voting.id
+        var app2 = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#button-graphic',
+            data: {
+                identificator: identificator
+            }
+        })
+
     </script>
+    
 </body>
 {% endblock %}
 
