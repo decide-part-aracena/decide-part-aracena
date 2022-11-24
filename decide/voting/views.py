@@ -1,13 +1,14 @@
 
 import django_filters.rest_framework
+import operator
+
 from django.conf import settings
 from django.utils import timezone
-from django.shortcuts import get_object_or_404
 from rest_framework import generics, status
 from rest_framework.response import Response
-from django.shortcuts import render, redirect
 from base.serializers import KeySerializer
 
+from django.shortcuts import render, redirect, get_object_or_404
 from voting.forms import QuestionForm
 from .models import Voting
 from base.models import Key
@@ -21,10 +22,8 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
-from django.shortcuts import get_object_or_404, redirect, render
 from .forms import VotingForm
 from .forms import QuestionOptionsForm
-
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -172,6 +171,7 @@ def voting_details(request, voting_id):
                                                           'error': form.errors})
                                                   
 
+
 def create_voting(request):
     if request.method == 'GET':
         return render(request, 'create_voting.html', {'form': VotingForm})
@@ -183,6 +183,39 @@ def create_voting(request):
             return redirect('voting_list')
         except ValueError:
             return render(request, 'create_voting.html', {'form': VotingForm, 'error': form.errors})
+
+def sort_by_name(request):
+    voting = Voting.objects.all()
+    dic = {}
+    for v in voting:
+        name = v.name
+        dic[v] = name
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorted_by_name.html', {'sorted_voting_name':sorted_dic.keys})
+
+
+def sort_by_startDate(request):
+    voting = Voting.objects.all()
+    dic = {}
+    for v in voting:
+        fecha = v.start_date
+        if fecha != None:      
+            dic[v] = fecha
+
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorted_by_startDate.html', {'sorted_voting_startDate':sorted_dic.keys})
+
+def sort_by_endDate(request):
+    voting = Voting.objects.all()
+    dic = {}
+    for v in voting:
+        fecha = v.end_date  
+        if fecha != None:      
+            dic[v] = fecha
+
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorted_by_endDate.html', {'sorted_voting_endDate':sorted_dic.keys})
 
 
 def list_voting(request):
@@ -208,3 +241,4 @@ def stop_voting(request, voting_id):
     voting.end_date = timezone.now()
     voting.save()
     return redirect('voting_list')
+
