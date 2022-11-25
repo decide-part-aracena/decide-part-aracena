@@ -1,0 +1,31 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<link href="/static/import.css" rel="stylesheet" >
+
+<div class="divcenter">
+    <div class="container justify">
+        <h1 class="top-title">IMPORT</h1>
+    </div>
+
+
+    <h3 tlass="textH"> Add the excel here</h3>
+    <p class="textP"> Check that the format is correct before clicking on "Submit"</p>
+
+    <div class="top-header">
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <p>{{ ExcelFileForm.file_types }}</p>
+        <input type="file" requered name="file">
+        <button class="bottom-active" onclick="return confirm('Loading!')" type="submit">Submit</button>
+    </form>
+    </div>
+
+</div>
+
+
+{% endblock %}

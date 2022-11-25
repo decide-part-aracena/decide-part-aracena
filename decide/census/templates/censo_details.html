@@ -1,0 +1,33 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+{% endblock %}
+
+{% block content %}
+<div class="justify-content-center">
+    <center>
+        <h2>Census: {{censo.voter_id}}</h2>
+        <div class="col-8 align-self-center">
+            <form method="POST" style="text-align: initial;display: inline-block;">
+                {% csrf_token %}
+                {% if form.errors %}
+                    <div class="alert alert-danger">
+                        {{ form.errors }}
+                    </div>
+                {% endif %}
+                {% if messages %}
+                    {% for message in messages %}
+                        <div class="alert alert-success" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+                {{form.as_p}}
+                <button class="btn btn-outline-dark" type="submit">Update</button>
+                <a class="btn btn-outline-dark"href="{% url 'censo' %}">Back to list</a>
+            </form>
+            
+        </div>
+    </center>
+</div>
+{% endblock %}

@@ -6,11 +6,13 @@ MODULES = [
     'base',
     'booth',
     'census',
+    'graphic',
     'mixnet',
     'postproc',
     'store',
     'visualizer',
     'voting',
+    'users',
 ]
 BASEURL = 'http://localhost:8000'
 APIS = {
@@ -18,11 +20,13 @@ APIS = {
     'base': BASEURL,
     'booth': BASEURL,
     'census': BASEURL,
+    'graphic': BASEURL,
     'mixnet': BASEURL,
     'postproc': BASEURL,
     'store': BASEURL,
     'visualizer': BASEURL,
     'voting': BASEURL,
+    'users': BASEURL,
 }
 
 
@@ -40,3 +44,4 @@ DATABASES = {
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
+

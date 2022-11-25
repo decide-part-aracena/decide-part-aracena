@@ -1,0 +1,161 @@
+{% extends 'base_dashboard.html' %}
+
+{% load i18n static %}
+
+
+{% block extrahead %}
+    <link type="text/css" rel="stylesheet"
+    href="https://unpkg.com/bootstrap/dist/css/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet"
+    href="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.css" />
+    <link type="text/css" rel="stylesheet" href="{% static "graphic/style.css" %}" />
+
+    <!-- Import of Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@latest/dist/Chart.min.js"></script>
+
+    <!-- Import of the graph coloring plugin -->
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-colorschemes"></script>
+    
+    <script src="https://unpkg.com/chartjs-plugin-colorschemes"></script>
+
+{% endblock %}
+
+{% block content %}
+
+    <div id="graphic-visualizer" class="graphic-container">
+        <div class="row">
+            <h1 class="title">
+                Graphs with voting results
+            </h1>
+        </div>
+        
+        <h1 class="title-graphic">Bar type</h1>
+        <canvas id="graphic"></canvas>
+
+        <h1 class="title-graphic">Donut type</h1>
+        <canvas id="graphic2"></canvas>
+    </div>
+
+    <div class="row button-row">
+        <button id="return-button">
+            <a :href="'/visualizer/' + identificator">
+                Voting results displayed in table
+            </a>
+        </button>
+    </div>
+
+{% endblock %}
+
+{% block extrabody %}
+
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+        var voting = {{voting|safe}};
+
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-visualizer',
+            data: {
+                voting: voting
+            }
+        })
+
+        var identificator = voting.id
+
+        var app2 = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#return-button',
+            data: {
+                identificator: identificator
+            }
+        })
+
+
+        //                          //
+        //Data extraction for charts//
+        //                          //
+
+        var votingOptions = []
+        var votingResults = []
+
+        const postproc = voting.postproc
+        const len = postproc.length
+
+        var i = 0
+        while(i < len) {
+            votingOptions.push(postproc[i].option)
+            votingResults.push(postproc[i].votes)
+
+            i += 1;               
+        }
+
+    </script>
+
+    <!-- Graphic types -->
+    <script>
+
+        //Bar chart
+        const $graphic = document.getElementById("graphic");
+    
+        new Chart($graphic, {
+            type: 'bar',
+            data: {
+                labels: votingOptions,
+                datasets: [{
+                    label: 'Total votes per option',
+                    data: votingResults,
+                    borderWidth: 10,
+                }]                    
+            },
+            options: {
+                plugins: {
+                    colorschemes: {
+                        scheme: 'brewer.Paired10'
+                    }
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                },
+            }
+        });
+    
+        //Donut chart
+        const $graphic2 = document.getElementById("graphic2");
+    
+        new Chart($graphic2, {
+            type: 'doughnut',
+            data: {
+                labels: votingOptions,
+                datasets: [{
+                    label: 'Total votes per option',
+                    data: votingResults,
+                    borderWidth: 5,
+                }]      
+            },
+            options: {
+                plugins: {
+                    colorschemes: {
+                        scheme: 'brewer.SetOne5'
+                    }              
+                },
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }],
+                },
+            }
+        });
+    </script>
+
+{% endblock %}
+

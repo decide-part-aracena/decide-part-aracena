@@ -101,3 +101,9 @@ ENV/
 .mypy_cache/
 
 .vagrant
+
+# secrets
+secrets_settings.py
+
+# vscode settings
+.vscode/

@@ -6,11 +6,13 @@ MODULES = [
     'base',
     'booth',
     'census',
+    'graphic',
     'mixnet',
     'postproc',
     'store',
     'visualizer',
     'voting',
+    'users',
 ]
 BASEURL = 'http://localhost:8000'
 APIS = {
@@ -18,11 +20,13 @@ APIS = {
     'base': BASEURL,
     'booth': BASEURL,
     'census': BASEURL,
+    'graphic': BASEURL,
     'mixnet': BASEURL,
     'postproc': BASEURL,
     'store': BASEURL,
     'visualizer': BASEURL,
     'voting': BASEURL,
+    'users': BASEURL,
 }
 
 
@@ -30,9 +34,9 @@ APIS = {
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'decidedb',
-        'USER': 'decideusr',
-        'PASSWORD':'complexpassword',
+        'NAME': 'decide',
+        'USER': 'decide',
+        'PASSWORD': 'complexpassword',
         'HOST': 'localhost',
         'PORT': '5432',
     }
