@@ -23,3 +23,4 @@ for module in settings.MODULES:
     urlpatterns += [
         path('{}/'.format(module), include('{}.urls'.format(module)))
     ]
+    

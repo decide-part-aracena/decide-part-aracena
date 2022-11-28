@@ -18,6 +18,8 @@
     <div class="top-header">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+
+        <p>{{ ExcelFileForm.file_types }}</p>
         <input type="file" requered name="file">
         <button class="bottom-active" onclick="return confirm('Loading!')" type="submit">Submit</button>
     </form>
