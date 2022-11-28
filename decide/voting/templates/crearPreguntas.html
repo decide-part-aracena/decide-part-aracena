@@ -5,13 +5,27 @@
     <h1>Create Question</h1>
     {{error}}
     <form method="POST">
-        {% csrf_token %}
-        {{form.as_p}}
-        {% for i in v %}
-        {{form2.as_p}}
-        {% endfor %}
+        
+        <script>
+            function myFunction() {
+            const element = document.getElementById("plus");
+            const element2 = document.getElementById("plus2");
+            element.innerHTML += element2.innerHTML;
+            }
+            </script>
+                <div id = "plus">
+                    {% csrf_token %}
+                    {{form.as_p}}
+                    {{form2.as_p}}
+                    </div>
+        <div id = "plus2">
+            {% csrf_token %}
+            {{form2.as_p}}
+            </div>
 
         <br />
+        <button onclick="myFunction()">Plus</button>
+
         <button class="btn btn-secondary btn-lg" type="submit"
             onclick="return confirm('¿Seguro que quieres crear la pregunta?');">Create</button>
     </form>
@@ -19,4 +33,4 @@
 <br />
 <button class="btn btn-secondary btn-lg"><a href="{% url 'preguntas' %}">Back to list</a></button>
 
-{% endblock %}
+{% endblock %}3

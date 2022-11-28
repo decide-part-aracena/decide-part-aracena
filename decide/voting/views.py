@@ -6,15 +6,25 @@ from django.conf import settings
 from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
+
+from base.serializers import KeySerializer
+
 from django.shortcuts import render, redirect, get_object_or_404
 from voting.forms import QuestionForm
+from .models import Voting
+from base.models import Key
+from .filters import StartedFilter
+from django.utils.crypto import get_random_string
+from base import mods
+from base.models import Auth, Key
+from voting.forms import QuestionForm, QuestionOptionsForm
+from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 from .forms import VotingForm
-from .forms import QuestionOptionsForm
 
 
 class VotingView(generics.ListCreateAPIView):
@@ -111,20 +121,23 @@ def listaPreguntas(request):
     preguntas = Question.objects.all()
     return render(request, 'preguntas.html', {'preguntas':preguntas})
 
+
 def crearPreguntas(request):
     if request.method == 'GET':
-        v = range(0,3)
-        return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm, 'v':v})
+        return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
     else:
         try: 
             form = QuestionForm(request.POST)
             nuevaPregunta = form.save(commit = False)
             nuevaPregunta.save()
+            form2 = QuestionOptionsForm(request.POST)
+            nuevaPregunta2 = form2.save(commit = False)
+            print("=================================================", nuevaPregunta2)
+            nuevaPregunta2.save()           
             return redirect('preguntas')
         except ValueError:
-            v = range(0,3) 
-            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'v':v,'error': form.errors})
-
+            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
+        
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
     question.delete()
@@ -134,15 +147,18 @@ def showUpdateQuestions(request, question_id):
     if request.method == 'GET':
         question = get_object_or_404(Question, pk=question_id)
         form = QuestionForm(instance = question)
-        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form})
+        form2 = QuestionOptionsForm(instance=question)
+        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form, 'form2':QuestionOptionsForm})
     else:
         try:
             question = get_object_or_404(Question, pk=question_id)
             form = QuestionForm(request.POST, instance = question)
             form.save()
+            form2 = QuestionOptionsForm(request.POST, instance = question)
+            form2.save()
             return redirect('preguntas')
         except ValueError:
-            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'error': form.errors})
+            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
 
 
 
@@ -158,7 +174,9 @@ def voting_details(request, voting_id):
             form.save()
             return redirect('voting_list')
         except ValueError:
-            return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm, 'error': form.errors})
+            return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
+                                                          'error': form.errors})
+                                                  
 
 
 def create_voting(request):
@@ -217,3 +235,17 @@ def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
+
+def start_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    voting.create_pubkey()
+    voting.start_date = timezone.now()
+    voting.save()
+    return redirect('voting_list')
+
+def stop_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    voting.end_date = timezone.now()
+    voting.save()
+    return redirect('voting_list')
+
