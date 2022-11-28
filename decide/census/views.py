@@ -150,6 +150,16 @@ def import_datadb(request):
 def excel(request):
    return render(request, 'excel.html')
 
+def sort_by_voting(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voting_id = c.voting_id
+        dic[c] = voting_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
+
 #Creada para la task -----------------------------------------------------------------
 def export_csv(request):
 

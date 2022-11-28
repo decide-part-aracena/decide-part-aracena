@@ -18,6 +18,7 @@
 <div class="alert alert-light" role="alert" style="width: 95.5%;display: grid;
   justify-content: right;margin-bottom: 1px;">
   <a class="btn btn-outline-dark" href="{% url 'crear_censo' %}">New Census</a>
+  <a class="btn btn-outline-dark" href="census_exported">Exportar censo</a>
 </div>
 
 <div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
@@ -81,7 +82,7 @@
     </table>
     {% endif %}
     <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_censo' %}">Crear censo</a></button>
-    <button class="btn btn-secondary btn-lg"><a href="census_exported">Exportar censo</a></button>
+    
 </div>
 {% endblock %}
     <div>
