@@ -1,102 +1,112 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <title>{% block title %}Decide!{% endblock %}</title>
 
-        <link href="/static/base_dashboard.css" rel="stylesheet" >
-        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3" crossorigin="anonymous"></script>
-        {% block extrahead %}{% endblock %}
-    </head>
-    <body>
-        <!-- Navbar -->
-        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <div class="container-fluid">
-                <!-- Logo -->
-                <a class="navbar-brand" href="/base/">
-                    <span class="navbar-brand mb-0 h1"><strong>DECIDE</strong></span>
-                </a>
+<head>
+    <meta charset="utf-8" />
+    <title>{% block title %}Decide!{% endblock %}</title>
 
-                {% if user.is_authenticated %}
+    <link href="/static/base_dashboard.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-OERcA2EqjJCMA+/3y+gxIOqMEjwtxJY7qPCqsdltbNJuaOe923+mo//f6V8Qbsw3"
+        crossorigin="anonymous"></script>
+    {% block extrahead %}{% endblock %}
+</head>
 
-                <!-- Toggler -->
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <div class="container-fluid">
+            <!-- Logo -->
+            <a class="navbar-brand" href="/base/">
+                <span class="navbar-brand mb-0 h1"><strong>DECIDE</strong></span>
+            </a>
 
-                <!-- Items -->
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
-                    
-                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                        <li class="nav-item" id="nav-home">
-                            <a class="nav-link" href="/base/">Home</a>
-                        </li>
+            {% if user.is_authenticated %}
 
-                        {% if user.is_staff %}
-                        <li class="nav-item">
-                            <li class="nav-item me-3 me-lg-0 dropdown" id="nav-administration">
-                                <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Administration
-                                </a>
-                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                                    <li><a class="dropdown-item" href="/users">Users</a></li>
-                                    <li><a class="dropdown-item" href="#">Votings</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'import' %}">Import</a></li>
-                                    <li><a class="dropdown-item" href="{% url 'censo' %}">Census</a></li>
+            <!-- Toggler -->
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false"
+                aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-                                </ul>
+            <!-- Items -->
+            <div class="collapse navbar-collapse" id="navbarSupportedContent">
+
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item" id="nav-home">
+                        <a class="nav-link" href="/base/">Home</a>
+                    </li>
+
+                    {% if user.is_staff %}
+                    <li class="nav-item">
+                    <li class="nav-item me-3 me-lg-0 dropdown" id="nav-administration">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Administration
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                            <li><a class="dropdown-item" href="/users">Users</a></li>
+                            <li><a class="dropdown-item" href="{% url 'voting_list' %}">Votings</a></li>
+                            <li><a class="dropdown-item" href="{% url 'import' %}">Import</a></li>
+                            <li><a class="dropdown-item" href="{% url 'censo' %}">Census</a></li>
+
+                        </ul>
+                    </li>
+                    </li>
+
+                    {% endif %}
+
+                </ul>
+
+                <!-- Usuario -->
+                <ul class="navbar-nav d-flex flex-row ms-auto me-3" id="nav-user">
+                    <li class="nav-item me-3 me-lg-0 dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
+                            Logged as {{user.username}}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown1">
+                            <li><a class="dropdown-item" href="#">Action</a></li>
+                            <li>
+                                <hr class="dropdown-divider" />
                             </li>
-                        </li>
-                      
-                        {% endif %}
-                        
-                    </ul>
-
-                    <!-- Usuario -->
-                    <ul class="navbar-nav d-flex flex-row ms-auto me-3" id="nav-user">
-                        <li class="nav-item me-3 me-lg-0 dropdown">
-                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown1" role="button" data-bs-toggle="dropdown"
-                            aria-expanded="false">
-                             Logged as {{user.username}} 
-                            </a>
-                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown1">
-                                <li><a class="dropdown-item" href="#">Action</a></li>
-                                <li><hr class="dropdown-divider" /></li>
-                                <li><a class="dropdown-item" href="/authentication/logoutuser/">Logout</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                {% endif %}
-
+                            <li><a class="dropdown-item" href="/authentication/logoutuser/">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
             </div>
-        </nav>
-        
+            {% endif %}
 
-        <div class="container justify">
-            <div id="alertPlaceHolder" style="margin: 1%"></div>
-            {% block content %}{% endblock %}
         </div>
+    </nav>
 
-        {% block extrabody %}{% endblock %}
 
-        <script>
-            // Copiado de https://getbootstrap.com/docs/5.2/components/alerts/
-            const alertPlaceholder = document.getElementById('alertPlaceHolder')
-            const alertMsg = (message, type) => {
-                const wrapper = document.createElement('div')
-                wrapper.innerHTML = [
+    <div class="container justify">
+        <div id="alertPlaceHolder" style="margin: 1%"></div>
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block extrabody %}{% endblock %}
+
+    <script>
+        // Copiado de https://getbootstrap.com/docs/5.2/components/alerts/
+        const alertPlaceholder = document.getElementById('alertPlaceHolder')
+        const alertMsg = (message, type) => {
+            const wrapper = document.createElement('div')
+            wrapper.innerHTML = [
                 `<div class="alert alert-${type} alert-dismissible" role="alert">`,
                 `   <div>${message}</div>`,
                 '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
                 '</div>'
-                ].join('')
-            
-                alertPlaceholder.append(wrapper)
-            }
-        </script>
+            ].join('')
 
-    </body>
+            alertPlaceholder.append(wrapper)
+        }
+    </script>
+
+</body>
+
 </html>
