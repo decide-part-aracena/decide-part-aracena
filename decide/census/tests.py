@@ -73,3 +73,79 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
+
+class ImportTestCase(APITestCase):
+
+    # Básicas de configuración
+
+    def setUp(self):
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
+
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u = User(username='voter1')
+        u.set_password('123')
+        u.save()
+
+        u2 = User(username='admin')
+        u2.set_password('admin')
+        u2.is_superuser = True
+        u2.save()
+
+    def tearDown(self):
+        self.census = None
+        self.client = None
+
+    def test_login(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post(
+            '/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        token = response.json()
+        self.assertTrue(token.get('token'))
+
+    def test_login_fail(self):
+        data = {'username': 'voter1', 'password': '321'}
+        response = self.client.post(
+            '/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_getuser(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post(
+            '/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json()
+
+        response = self.client.post(
+            '/authentication/getuser/', token, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        user = response.json()
+        self.assertEqual(user['id'], 1)
+        self.assertEqual(user['username'], 'voter1')
+
+    # Concretos para importación
+    def test_import_ok(self):
+        data = {'voting_id': 2, 'voter_id':1}
+        response = self.client.get('/census/import_datadb/')
+        response = self.client.post(
+            '/census/import_datadb/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_import(self):
+        data = {}
+        response = self.client.get('/census/import_datadb/')
+        response = self.client.post(
+            '/census/import_datadb/', data, format='json')
+        self.assertEqual(response.status_code, 500)
+
+    def test_import_duplicated(self):
+        data = {'voting_id': 2, 'voter_id':1}
+        response = self.client.get('/census/import_datadb/')
+        response = self.client.post(
+            '/census/import_datadb/', data, format='json')
+        self.assertEqual(response.status_code, 500)
+
