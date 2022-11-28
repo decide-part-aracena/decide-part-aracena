@@ -1,4 +1,4 @@
-{% extends "base.html" %}
+{% extends 'base_dashboard.html' %}
 {% load i18n static %}
 
 {% block extrahead %}
@@ -11,16 +11,7 @@
 
 {% block content %}
     <div id="app-booth">
-        <!-- Navbar -->
-        <b-navbar type="dark" variant="secondary">
-            <b-navbar-brand tag="h1">Decide</b-navbar-brand>
-                <b-navbar-nav class="ml-auto" v-if="!signup">
-                    <b-nav-item href="#" v-on:click="decideLogout">
-                        {% trans "logout" %}
-                    </b-nav-item>
-                </b-navbar-nav>
-        </b-navbar>
-
+        
         <b-alert :variant="alertLvl" dismissible v-model="alertShow">
             [[ alertMsg ]]
         </b-alert>
@@ -49,25 +40,47 @@
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
 
-            <!-- Voting -->
+            <!-- Voting 
             <div v-if="!signup">
-                <h2>[[ voting.desc ]]</h2>
-                <h2>[[ voting.question ]]</h2>
-                <b-form-group v-for="quest in voting.question" :key="quest.number">
+                <h3>[[ voting.desc ]]</h3>
+                <div v-for="quest, x in voting.question" :key="quest.number">
                     <h2>[[ quest.desc ]]</h2>
                     <b-form-group v-for="opt in quest.options" :key="opt.number">
                         <b-form-radio v-model="selected"
-                                    :id="'quest' + opt.number"
-                                    name="question"
+                                    :id="'quest' + x +  opt.number"
+                                    :name="'question' + x"
                                     :value="opt.number">
                             [[ opt.option ]]
                         </b-form-radio>
                     </b-form-group>
-                </b-form-group>
+                    <b-button type="button" variant="primary" v-on:click="decideSend">
+                        {% trans "Vote" %}
+                    </b-button>
+                </div>
+                
+            </div>-->
+
+            <!-- Voting -->
+            <div v-if="!signup">
+                
+                <h3>[[ voting.desc ]]</h3>
+                <form-group v-for="quest, x in voting.question" :key="quest.number">
+                    <hr><h2>[[ quest.desc ]]</h2>
+                    <b-form-group v-for="opt in quest.options" :key="opt.number">
+                        <b-form-radio v-model="selected"
+                                    :id="'quest' + x +  opt.number"
+                                    :name="'question' + x"
+                                    :value="opt.number">
+                            [[ opt.option ]]
+                        </b-form-radio>
+                    </b-form-group>
+                    
+                </form-group>
                 <b-button type="button" variant="primary" v-on:click="decideSend">
                     {% trans "Vote" %}
                 </b-button>
             </div>
+            
         </div>
     </div>
 {% endblock %}
@@ -97,7 +110,7 @@
             data: {
                 keybits: {{ KEYBITS }},
                 voting: voting,
-                selected: "",
+                
                 signup: true,
                 alertShow: false,
                 alertMsg: "",
