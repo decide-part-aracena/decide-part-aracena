@@ -6,7 +6,7 @@ from rest_framework.test import APIClient
 from .models import Census
 from base import mods
 from base.tests import BaseTestCase
-
+from rest_framework.test import APITestCase
 
 class CensusTestCase(BaseTestCase):
 
@@ -76,6 +76,12 @@ class CensusTestCase(BaseTestCase):
 
 class ImportTestCase(APITestCase):
 
+
+    # Creación de excel
+
+    def generate_excel(self):
+        file = open('testImport.xlsx', 'wb')
+        
     # Básicas de configuración
 
     def setUp(self):
@@ -124,28 +130,30 @@ class ImportTestCase(APITestCase):
         self.assertEqual(response.status_code, 200)
 
         user = response.json()
-        self.assertEqual(user['id'], 1)
+        self.assertEqual(user['id'], 11)
         self.assertEqual(user['username'], 'voter1')
 
     # Concretos para importación
     def test_import_ok(self):
-        data = {'voting_id': 2, 'voter_id':1}
-        response = self.client.get('/census/import_datadb/')
+        #data = {'voting_id': 2, 'voter_id':1}
+        data = self.generate_excel()
+        response = self.client.get('/census/import_datadb')
         response = self.client.post(
-            '/census/import_datadb/', data, format='json')
+            '/census/import_datadb', data, format='json')
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_import(self):
         data = {}
-        response = self.client.get('/census/import_datadb/')
+        response = self.client.get('/census/import_datadb')
         response = self.client.post(
-            '/census/import_datadb/', data, format='json')
+            '/census/import_datadb', data, format='json')
         self.assertEqual(response.status_code, 500)
 
     def test_import_duplicated(self):
-        data = {'voting_id': 2, 'voter_id':1}
-        response = self.client.get('/census/import_datadb/')
+        #data = {'voting_id': 2, 'voter_id':1}
+        data = self.generate_excel()
+        response = self.client.get('/census/import_datadb')
         response = self.client.post(
-            '/census/import_datadb/', data, format='json')
+            '/census/import_datadb', data, format='json')
         self.assertEqual(response.status_code, 500)
 
