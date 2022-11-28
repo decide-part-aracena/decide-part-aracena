@@ -73,3 +73,18 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
+
+
+    ##TEST UNITARIOS CRUD CENSO
+
+    def test_list(self):
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 401)
+
+        self.login(user='noadmin')
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 403)
+
+        self.login()
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 200)
