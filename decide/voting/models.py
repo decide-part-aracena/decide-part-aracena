@@ -14,6 +14,15 @@ class Question(models.Model):
     def __str__(self):
         return self.desc
 
+@receiver(post_save, sender=Question)
+def sino(sender, instance, **kwargs):
+    options = instance.options.all()
+    if instance.sino==True and options.count()==0:
+        op1 = QuestionOption(question=instance, number=1, option="Sí")
+        op1.save()
+        op2 = QuestionOption(question=instance, number=2, option="No")
+        op2.save()
+
 
 class QuestionOption(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
