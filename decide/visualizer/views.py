@@ -19,20 +19,17 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = json.dumps(r[0])
-            num_census, num_votes, participation = 0,0,'0%'
+            num_census, num_votes, participation, num_questions = 0,0,'0%', 1
 
             if r[0].get('start_date'):
                 print(".............................")
                 num_census = Census.objects.filter(voting_id=vid).count()
                 num_votes = Vote.objects.filter(voting_id=vid).count()
-
-                # TODO: Al añadir la funcionalidad de más preguntas por votación:
-                # num_questions = len(r[0].get('questions'))
-                # participation = (f'{((num_votes/num_questions)/num_census)*100}')+'%'
+                num_questions = len(r[0].get('question'))
 
                 if num_census != 0:
-                    participation = (f'{(num_votes/num_census)*100}')+'%'    
-            
+                    participation = (f'{((num_votes/num_questions)/num_census)*100}')+'%'
+                
             realtimedata = {'num_census':num_census, 'num_votes':num_votes, 'participation':participation}
             context['realtimedata'] = realtimedata
         except:
