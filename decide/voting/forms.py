@@ -16,4 +16,4 @@ class QuestionOptionsForm(ModelForm):
 class VotingForm(ModelForm):
     class Meta:
         model = Voting
-        fields = ['name', 'desc', 'question','pub_key','auths']
+        fields = ['name', 'desc', 'question','auths']
