@@ -18,7 +18,7 @@
 <div class="alert alert-light" role="alert" style="width: 95.5%;display: grid;
   justify-content: right;margin-bottom: 1px;">
   <a class="btn btn-outline-dark" href="{% url 'crear_censo' %}">New Census</a>
-  <a class="btn btn-outline-dark" href="census_exported">Exportar censo</a>
+  <a class="btn btn-outline-dark" href="census_exported">Export Census</a>
 </div>
 
 <div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
@@ -46,47 +46,6 @@
 
 <div class="container justify" style="width: 90%;">
   <table class="table align-middle mb-0 bg-white">
-      <thead class="bg-light">
-        <tr>
-          <th>Voter Id</th>
-          <th>Voting Id</th>
-        </tr>
-      </thead>
-      <tbody id="myTable">
-        {% for c in censos %}
-          <tr>
-            <td>
-              <div class="d-flex align-items-center">
-                <div class="ms-3">
-                  <p class="fw-bold mb-1">{{c.voter_id}}</p>
-                </div>
-              </div>
-            </td>
-            
-             <td>
-              <p class="fw-normal mb-1">{{ c.voting_id}}</p>
-            </td>
-            <td>
-              <button type="button" class="btn btn-link btn-sm btn-rounded">
-                <a class="item" href="{% url 'censo_details' c.id %}">Edit</a>
-              </button>
-              <!-- Button trigger modal -->
-              <button type="button" class="btn btn-link btn-sm btn-rounded"
-              onClick="return confirm('¿Are you sure you want to delete {{c.voting_id}}?');">
-                <a class="item" href="{% url 'borrar_censo' c.id %}">Delete</a>
-              </button>
-            </td>
-          </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% endif %}
-    <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_censo' %}">Crear censo</a></button>
-    
-</div>
-{% endblock %}
-    <div>
-      {% include 'paginator.html' %}
     <thead class="bg-light">
       <tr>
         <th>Voter Id</th>
@@ -142,4 +101,3 @@
 </script>
 
 {% endblock extrabody %}
-
