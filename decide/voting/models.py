@@ -9,6 +9,7 @@ from base.models import Auth, Key
 
 class Question(models.Model):
     desc = models.TextField()
+    sino = models.BooleanField(default=False, help_text="Márcala si quieres que las respuestas sean Si/No. No se podrán añadir mas respuestas")
 
     def __str__(self):
         return self.desc
