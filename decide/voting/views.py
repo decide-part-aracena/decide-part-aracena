@@ -185,7 +185,7 @@ def create_voting(request):
     else:
         try:
             form = VotingForm(request.POST)
-            nuevo_question = form.save(commit=False)
+            nuevo_question = form.save(commit=True)
             nuevo_question.save()
             return redirect('voting_list')
         except ValueError:
