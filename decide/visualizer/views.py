@@ -19,7 +19,7 @@ class VisualizerView(TemplateView):
         try:
             r = mods.get('voting', params={'id': vid})
             context['voting'] = json.dumps(r[0])
-            num_census, num_votes, participation, num_questions = 0,0,'0%', 1
+            num_census, num_votes, participation, num_questions = 0,0,'-', 1
 
             if r[0].get('start_date'):
                 print(".............................")
