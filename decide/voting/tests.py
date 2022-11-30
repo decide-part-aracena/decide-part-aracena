@@ -6,7 +6,8 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
-
+from django.core.exceptions import ValidationError
+from django.urls import reverse
 from base import mods
 from base.tests import BaseTestCase
 from census.models import Census
@@ -202,6 +203,20 @@ class VotingModelTestCase(BaseTestCase):
         v.auths.add(a)
         v.question.add(q1)
         self.assertEqual(v.question.all().count(), 1)
+
+    
+    def create_question_sino(self):
+        q = Question(desc='Test Pregunta Sí/No', sino=True)
+        q.save()
+        opt = QuestionOption(question=q)
+        opt.save()
+        v = Voting(name='Test Votación', desc='Realicemos pregunta Sí/No', question=q)
+        v.save()
+        a,_=Auth.objects.get_or_create(url=settings.BASEURL,
+                                        defaults={'me':True, 'name':'test auth'})
+        a.save()
+        v.auths.add(a)
+        return v
 
 
     def test_create_multiquestion_voting(self):
