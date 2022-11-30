@@ -16,10 +16,13 @@ urlpatterns = [
     path('question/create/', views.crearPreguntas, name='crear_preguntas'),
     path('question/<int:question_id>/', views.showUpdateQuestions, name='showUpdateQuestions'),
     path('borrar/question/<int:question_id>/', views.borrarPreguntas, name='borrar_preguntas'),
-    path('', include('base.urls'))
+    path('', include('base.urls')),     
+    path('auth/create', views.create_auth, name = 'create_auth')
+
 ]
 
 for module in settings.MODULES:
     urlpatterns += [
         path('{}/'.format(module), include('{}.urls'.format(module)))
     ]
+    
