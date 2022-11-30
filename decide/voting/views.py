@@ -264,3 +264,28 @@ def create_auth(request):
             return redirect('create_voting')
         except ValueError:
             return render(request, 'create_auth.html', {'form':AuthForm, 'error':form.errors})
+
+def list_auth(request):
+    auth = Auth.objects.all()
+    return render(request, 'auth_list.html',{'auth':auth})
+
+def delete_auth(request, auth_id):
+    auth = Auth.objects.get(id = auth_id)
+    auth.delete()
+    return redirect('auth_list')
+
+
+def auth_details(request, auth_id):
+    if request.method == 'GET':
+        auth = get_object_or_404(Auth, pk=auth_id)
+        form = AuthForm(instance=auth)
+        return render(request, 'auth_details.html', {'auth': auth, 'form':form})
+    else:
+        try:
+            auth = get_object_or_404(Auth, pk=auth_id)
+            form = AuthForm(request.POST, instance=auth)
+            form.save()
+            return redirect('auth_list')
+        except ValueError:
+            return render(request, 'auth_details.html', {'auth': auth, 'form': AuthForm,
+                                                          'error': form.errors})
