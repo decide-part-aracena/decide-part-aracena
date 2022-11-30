@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.postgres.fields import JSONField
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.core.exceptions import ValidationError
 
 from base import mods
 from base.models import Auth, Key
@@ -36,6 +37,10 @@ class QuestionOption(models.Model):
 
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
+    
+    def clean(self):
+        if self.question.sino and not self.question.options.all().count()==2:
+            raise ValidationError('Este tipo de pregunta no debe tener otras opciones añadidas por usted')
 
 
 class Voting(models.Model):
