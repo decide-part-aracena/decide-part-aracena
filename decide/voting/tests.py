@@ -218,6 +218,12 @@ class VotingModelTestCase(BaseTestCase):
         v.auths.add(a)
         return v
 
+    def test_question_sino_validacion(self):
+        q = Question(desc='Test Pregunta Sí/No con más de 2 opciones', sino=True)
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            self.assertRaises(ValidationError, opt.clean)
+
 
     def test_create_multiquestion_voting(self):
         q1 = Question(desc='question1')
