@@ -101,10 +101,10 @@ class Voting(models.Model):
         tally = self.tally
         
         question = self.question.all()
+        opts = []
 
         for q in question:
             options = q.options.all()
-            opts = []
             for opt in options:
                 if isinstance(tally, list):
                     votes = tally.count(opt.number)
@@ -115,6 +115,7 @@ class Voting(models.Model):
                     'number': opt.number,
                     'votes': votes
                 })
+            
 
         data = { 'type': 'IDENTITY', 'options': opts }
         postp = mods.post('postproc', json=data)
