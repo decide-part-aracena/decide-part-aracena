@@ -120,7 +120,8 @@ def import_datadb(request):
         path = str(obj.file)
         
         df = pd.read_excel(path)
-    
+        #print(df.values)
+        #print(df.head)
         #df = pd.read_csv(path)
 
         users = User.objects.all()
@@ -135,13 +136,13 @@ def import_datadb(request):
             voting_id = vid.id
             votings_id.append(voting_id)
 
-        for i in range(df.shape[0]):
+        """for i in range(df.shape[0]):
            
             if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
                
                 census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                 census.save()
-
+        """
     return render(request, 'excel.html')
 
 

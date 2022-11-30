@@ -7,6 +7,9 @@ from .models import Census
 from base import mods
 from base.tests import BaseTestCase
 from rest_framework.test import APITestCase
+from .models import Census, ExcelFile
+from pandas.testing import assert_frame_equal
+import pandas as pd
 
 class CensusTestCase(BaseTestCase):
 
@@ -76,15 +79,18 @@ class CensusTestCase(BaseTestCase):
 
 class ImportTestCase(APITestCase):
 
-
-    # Creación de excel
-
-    def generate_excel(self):
-        file = open('testImport.xlsx', 'wb')
-        
     # Básicas de configuración
 
     def setUp(self):
+
+        #df1 = pd.DataFrame({'voting_id'=1, voter_id=1})
+        """data = {'voting_id': [1,2,3,4,5],
+                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
+                'sexo': ['F', 'M','F', 'M','M'],
+                'voter_id': [2,3,4,1,5]}
+        df = pd.DataFrame(data)
+        """
+
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
 
@@ -133,17 +139,36 @@ class ImportTestCase(APITestCase):
         self.assertEqual(user['id'], 11)
         self.assertEqual(user['username'], 'voter1')
 
-    # Concretos para importación
+    # Concretos para importación de excel
+
+    # ---- Creación de excel
+
+    def generate_excel(self):
+        file = open('testImport.xlsx', 'wb')
+        obj = ExcelFile.objects.create( file = file )
+        return obj
+    
+    def generate_dataFrame(self):
+        data = {'voting_id': [1,2,3,4,5],
+                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
+                'sexo': ['F', 'M','F', 'M','M'],
+                'voter_id': [2,3,4,1,5]}
+        df = pd.DataFrame(data)
+        return data
+
     def test_import_ok(self):
         #data = {'voting_id': 2, 'voter_id':1}
-        data = self.generate_excel()
+        #data = self.generate_excel()
+        data = self.generate_dataFrame()
         response = self.client.get('/census/import_datadb')
         response = self.client.post(
             '/census/import_datadb', data, format='json')
         self.assertEqual(response.status_code, 200)
 
     def test_invalid_import(self):
-        data = {}
+        #data = {}
+        data = self.generate_dataFrame()
+        data = data.clear
         response = self.client.get('/census/import_datadb')
         response = self.client.post(
             '/census/import_datadb', data, format='json')
