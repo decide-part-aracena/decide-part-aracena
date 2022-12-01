@@ -40,26 +40,6 @@
                 <b-button type="submit" variant="primary">{% trans "Login" %}</b-button>
             </b-form>
 
-            <!-- Voting 
-            <div v-if="!signup">
-                <h3>[[ voting.desc ]]</h3>
-                <div v-for="quest, x in voting.question" :key="quest.number">
-                    <h2>[[ quest.desc ]]</h2>
-                    <b-form-group v-for="opt in quest.options" :key="opt.number">
-                        <b-form-radio v-model="selected"
-                                    :id="'quest' + x +  opt.number"
-                                    :name="'question' + x"
-                                    :value="opt.number">
-                            [[ opt.option ]]
-                        </b-form-radio>
-                    </b-form-group>
-                    <b-button type="button" variant="primary" v-on:click="decideSend">
-                        {% trans "Vote" %}
-                    </b-button>
-                </div>
-                
-            </div>-->
-
             <!-- Voting -->
             <div v-if="!signup">
                 
