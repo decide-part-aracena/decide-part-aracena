@@ -158,3 +158,20 @@ class TestCrud(BaseTestCase):
         })
         self.assertEqual(response.status_code, 404)
         self.assertTemplateNotUsed('censo_details.html')
+
+
+    def test_delete_positive(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        censo.delete()
+        self.assertTrue(Census.objects.count() == 0)
+
+
+    def test_delete_negative(self):
+        Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        self.assertTrue(Census.objects.count() != 0)
