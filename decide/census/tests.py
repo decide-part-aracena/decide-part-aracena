@@ -91,8 +91,8 @@ class ImportTestCase(APITestCase):
         df = pd.DataFrame(data)
         """
 
-        self.census = Census(voting_id=1, voter_id=1)
-        self.census.save()
+        #self.census = Census(voting_id=1, voter_id=1)
+        #self.census.save()
 
         self.client = APIClient()
         mods.mock_query(self.client)
@@ -143,10 +143,14 @@ class ImportTestCase(APITestCase):
 
     # ---- Creación de excel
 
-    def generate_excel(self):
-        file = open('testImport.xlsx', 'wb')
-        obj = ExcelFile.objects.create( file = file )
-        return obj
+    """def generate_df_excel(self):
+        file = 'testImport.xlsx'
+        if not file.startswith("~") and file.endswith(".xlsx"):
+            #obj = ExcelFile.objects.create( file = file )
+            #path = str(obj.file)
+            dataframe = pd.read_excel(file, engine='openpyxl')
+            print(type(dataframe))
+        return dataframe
     
     def generate_dataFrame(self):
         data = {'voting_id': [1,2,3,4,5],
@@ -155,16 +159,26 @@ class ImportTestCase(APITestCase):
                 'voter_id': [2,3,4,1,5]}
         df = pd.DataFrame(data)
         return data
-
+    """
     def test_import_ok(self):
-        #data = {'voting_id': 2, 'voter_id':1}
-        #data = self.generate_excel()
-        data = self.generate_dataFrame()
-        response = self.client.get('/census/import_datadb')
-        response = self.client.post(
-            '/census/import_datadb', data, format='json')
-        self.assertEqual(response.status_code, 200)
 
+        data = {'voting_id': [1,2,3,4,5],
+                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
+                'sexo': ['F', 'M','F', 'M','M'],
+                'voter_id': [2,3,4,1,5]}
+        expected_dataframe = pd.DataFrame(data)
+        
+
+        file = 'testImport.xlsx'
+        if not file.startswith("~") and file.endswith(".xlsx"):
+            #obj = ExcelFile.objects.create( file = file )
+            #path = str(obj.file)
+            imported_dataframe =  pd.read_excel(file, engine='openpyxl')
+        
+
+        assert_equal(imported_dataframe, expected_dataframe)
+
+"""
     def test_invalid_import(self):
         #data = {}
         data = self.generate_dataFrame()
@@ -175,10 +189,10 @@ class ImportTestCase(APITestCase):
         self.assertEqual(response.status_code, 500)
 
     def test_import_duplicated(self):
-        #data = {'voting_id': 2, 'voter_id':1}
         data = self.generate_excel()
         response = self.client.get('/census/import_datadb')
         response = self.client.post(
             '/census/import_datadb', data, format='json')
         self.assertEqual(response.status_code, 500)
 
+"""
