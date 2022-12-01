@@ -2,13 +2,6 @@ from django.urls import reverse
 from .models import Census
 from base.tests import BaseTestCase
 
-from selenium.webdriver.common.keys import Keys
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from rest_framework.test import APIClient
-from base import mods
-
 class CensusTestCase(BaseTestCase):
 
     def setUp(self):
@@ -80,6 +73,9 @@ class CensusTestCase(BaseTestCase):
 
 class TestCrud(BaseTestCase):
 
+    def setUp(self):
+        super().setUp()
+
     def test_list(self):
         response = self.client.get('/census/')
         self.assertEqual(response.status_code, 401)
@@ -92,11 +88,25 @@ class TestCrud(BaseTestCase):
         response = self.client.get('/census/')
         self.assertEqual(response.status_code, 200)
 
-    def test_crear(self):
+    def test_create_positive(self):
         url = reverse('crear_censo')
         response = self.client.post(url, {
             'voting_id' : 5,
             'voter_id' : 7
         })
 
-        self.assertEqual(response.status_code, 302) 
+        self.assertEqual(response.status_code, 302)
+    
+    def test_create_negative(self):
+        Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+
+        url = reverse('crear_censo')
+        response = self.client.post(url, {
+            'voting_id' : 1,
+            'voter_id' : 1
+        })
+
+        self.assertEqual(response.status_code, 200) 
