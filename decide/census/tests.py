@@ -1,12 +1,13 @@
-import random
-from django.contrib.auth.models import User
-from django.test import TestCase
-from rest_framework.test import APIClient
-
+from django.urls import reverse
 from .models import Census
-from base import mods
 from base.tests import BaseTestCase
 
+from selenium.webdriver.common.keys import Keys
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from rest_framework.test import APIClient
+from base import mods
 
 class CensusTestCase(BaseTestCase):
 
@@ -77,6 +78,8 @@ class CensusTestCase(BaseTestCase):
 
     ##TEST UNITARIOS CRUD CENSO
 
+class TestCrud(BaseTestCase):
+
     def test_list(self):
         response = self.client.get('/census/')
         self.assertEqual(response.status_code, 401)
@@ -88,3 +91,12 @@ class CensusTestCase(BaseTestCase):
         self.login()
         response = self.client.get('/census/')
         self.assertEqual(response.status_code, 200)
+
+    def test_crear(self):
+        url = reverse('crear_censo')
+        response = self.client.post(url, {
+            'voting_id' : 5,
+            'voter_id' : 7
+        })
+
+        self.assertEqual(response.status_code, 302) 
