@@ -131,3 +131,30 @@ class TestCrud(BaseTestCase):
         response = self.client.get(f'/census/{censo.voting_id}')
         self.assertNotEqual(response.status_code, 404)
         self.assertTemplateUsed('censo_details.html')
+
+
+    def test_update_positive(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        response = self.client.post(f'/census/{censo.voting_id}', {
+            'voting_id' : 1,
+            'voter_id' : 4
+        })
+        self.assertEqual(response.status_code, 301)
+        self.assertTemplateUsed('censo_details.html')
+
+
+    def test_update_negative(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        url = reverse('censo_details', args=[censo.voting_id])
+        response = self.client.post(url, {
+            'voting_id' : 1,
+            'voter_id' : 1
+        })
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed('censo_details.html')
