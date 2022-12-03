@@ -245,6 +245,14 @@ class VotingModelTestCase(BaseTestCase):
         v.question.add(q)
         self.assertEqual(v.question.all().count(), 1)
     
+
+    def test_empty_question_to_sino(self):
+        q = Question(desc='Test Convertir Votación Pregunta Vacía a Pregunta Sí/No', sino=False)
+        q.save()
+        self.assertTrue(q.sino == False)
+        q.sino=True
+        self.assertTrue(q.sino == True)
+    
     
     def test_create_multiquestion_voting(self):
         q1 = Question(desc='question1')
