@@ -253,6 +253,17 @@ class VotingModelTestCase(BaseTestCase):
         q.sino=True
         self.assertTrue(q.sino == True)
     
+
+    def test_filled_question_to_sino(self):
+        q = Question(desc='Test Convertir Votación Pregunta Rellena a Pregunta Sí/No', sino=False)
+        q.save()
+        opt = QuestionOption(question=q, number= '3', option='Opción 3')
+        opt.save()
+        self.assertTrue(q.sino == False)
+        q.sino=True
+        self.assertTrue(q.sino == True)
+        self.assertRaises(ValidationError, opt.clean)
+    
     
     def test_create_multiquestion_voting(self):
         q1 = Question(desc='question1')
