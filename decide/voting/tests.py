@@ -265,18 +265,15 @@ class VotingModelTestCase(BaseTestCase):
         self.assertRaises(ValidationError, opt.clean)
     
     
-    def test_create_multiquestion_voting(self):
-        q1 = Question(desc='question1')
+    def test_create_multiquestion_sino_voting(self):
+        q1 = Question(desc='Pregunta con diferentes opciones')
         q1.save()
         for i in range(5):
             opt = QuestionOption(question=q1, option='option {}'.format(i+1))
             opt.save()
-        q2 = Question(desc='question2')
+        q2 = Question(desc='Pregunta Sí/No', sino=True)
         q2.save()
-        for i in range(5):
-            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
-            opt.save()
-        v = Voting(name='test voting')
+        v = Voting(name='Test Votación de todo tipo')
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -285,7 +282,9 @@ class VotingModelTestCase(BaseTestCase):
         v.question.add(q1)
         v.question.add(q2)
         a = v.question.all().count() == 2
+        b = v.question.all()[1].sino==True
         self.assertTrue(a)
+        self.assertTrue(b)
 
     def test_deleting_question_from_voting_multiquestion(self):
         q1 = Question(desc="test question1")
