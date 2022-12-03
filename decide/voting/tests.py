@@ -233,6 +233,18 @@ class VotingModelTestCase(BaseTestCase):
         response = self.client.delete(url)
         self.assertEqual(response.status_code, 204)
     
+    def test_voting_question_sino(self):
+        q = Question(desc='Test Votación Pregunta Sí/No', sino=True)
+        q.save()
+        v = Voting(name='Test Votación Pregunta Sí/No')
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.question.add(q)
+        self.assertEqual(v.question.all().count(), 1)
+    
     
     def test_create_multiquestion_voting(self):
         q1 = Question(desc='question1')
