@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, re_path
 from . import views
 from . import views as voting
 from django.urls import include
@@ -15,5 +15,6 @@ urlpatterns = [
     path('delete/voting/<int:voting_id>/', voting.delete_voting, name='delete_voting'),
     path('start/voting/<int:voting_id>/', voting.start_voting, name='start_voting'),
     path('stop/voting/<int:voting_id>/', voting.stop_voting, name='stop_voting'),
+    re_path(r'^question/(?P<pk>\d+)/delete', views.QuestionDelete.as_view(), name='delete_question'),
   
 ]

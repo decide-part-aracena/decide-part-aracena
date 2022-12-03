@@ -224,7 +224,16 @@ class VotingModelTestCase(BaseTestCase):
             opt = QuestionOption(question=q, option='option {}'.format(i+1))
             self.assertRaises(ValidationError, opt.clean)
 
-
+    def test_delete_question_sino(self):
+        q = Question.objects.create(
+            desc='Test Pregunta Sí/No',
+            sino=True,
+        )
+        url = reverse('delete_question', kwargs={'pk':q.pk})
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 204)
+    
+    
     def test_create_multiquestion_voting(self):
         q1 = Question(desc='question1')
         q1.save()
