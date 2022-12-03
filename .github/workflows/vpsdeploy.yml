@@ -1,0 +1,39 @@
+name: VPS Deploy Develop
+on:
+  push:
+    branches: [ develop ]
+
+  workflow_dispatch:
+
+jobs:
+  Deployment:
+    name: Continuous Deployment VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_SSH_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{secrets.VPS_SSH_PORT}}
+          script: |
+            screen -XS $(screen -ls | grep -m 1 'egc' | awk '{print $1}') quit
+            rm -rf decide-part-aracena/
+            git clone https://github.com/decide-part-aracena/decide-part-aracena.git
+            
+            rm -rf env/
+            python3.8 -m venv env
+            source env/bin/activate
+            
+            cd decide-part-aracena/
+            git switch develop
+            git status
+            pip install -r requirements.txt
+            
+            cd decide/
+            cp ../../secrets/local_settings.py local_settings.py
+            cp ../../secrets/secrets_settings.py secrets_settings.py
+            ./manage.py makemigrations
+            ./manage.py migrate
+            screen -d -m ./manage.py runserver 0.0.0.0:8080

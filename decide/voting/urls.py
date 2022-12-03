@@ -16,5 +16,5 @@ urlpatterns = [
     path('start/voting/<int:voting_id>/', voting.start_voting, name='start_voting'),
     path('stop/voting/<int:voting_id>/', voting.stop_voting, name='stop_voting'),
     re_path(r'^question/(?P<pk>\d+)/delete', views.QuestionDelete.as_view(), name='delete_question'),
-  
+    path('tally/voting/<int:voting_id>/', voting.tally_voting, name='tally_voting'),
 ]

@@ -11,7 +11,7 @@ from base.serializers import KeySerializer
 
 from django.shortcuts import render, redirect, get_object_or_404
 from voting.forms import QuestionForm
-from .models import Voting
+#from .models import Voting
 from base.models import Key
 from .filters import StartedFilter
 from django.utils.crypto import get_random_string
@@ -188,7 +188,7 @@ def create_voting(request):
     else:
         try:
             form = VotingForm(request.POST)
-            nuevo_question = form.save(commit=False)
+            nuevo_question = form.save(commit=True)
             nuevo_question.save()
             return redirect('voting_list')
         except ValueError:
@@ -238,10 +238,11 @@ def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
-
+    
 def start_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
-    voting.create_pubkey()
+
+    Voting.create_pubkey(voting)
     voting.start_date = timezone.now()
     voting.save()
     return redirect('voting_list')
@@ -252,3 +253,8 @@ def stop_voting(request, voting_id):
     voting.save()
     return redirect('voting_list')
 
+def tally_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    token = request.session.get('auth-token', '')
+    voting.tally_votes(token)
+    return redirect('voting_list')
