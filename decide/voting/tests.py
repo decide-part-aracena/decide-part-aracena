@@ -259,9 +259,9 @@ class VotingModelTestCase(BaseTestCase):
         q.save()
         opt = QuestionOption(question=q, number= '3', option='Opción 3')
         opt.save()
-        self.assertTrue(q.sino == False)
+        self.assertFalse(q.sino)
         q.sino=True
-        self.assertTrue(q.sino == True)
+        self.assertTrue(q.sino)
         self.assertRaises(ValidationError, opt.clean)
     
     

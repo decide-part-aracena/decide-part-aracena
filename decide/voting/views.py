@@ -221,7 +221,7 @@ def sort_by_endDate(request):
     dic = {}
     for v in voting:
         fecha = v.end_date  
-        if fecha != None:      
+        if fecha is not None:      
             dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
