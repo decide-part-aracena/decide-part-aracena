@@ -18,7 +18,7 @@ class Question(models.Model):
 @receiver(post_save, sender=Question)
 def sino(sender, instance, **kwargs):
     options = instance.options.all()
-    if instance.sino==True and options.count()==0:
+    if instance.sino and options.count()==0:
         op1 = QuestionOption(question=instance, number=1, option="Sí")
         op1.save()
         op2 = QuestionOption(question=instance, number=2, option="No")

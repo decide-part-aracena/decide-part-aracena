@@ -249,9 +249,9 @@ class VotingModelTestCase(BaseTestCase):
     def test_empty_question_to_sino(self):
         q = Question(desc='Test Convertir Votación Pregunta Vacía a Pregunta Sí/No', sino=False)
         q.save()
-        self.assertTrue(q.sino == False)
+        self.assertFalse(q.sino)
         q.sino=True
-        self.assertTrue(q.sino == True)
+        self.assertTrue(q.sino)
     
 
     def test_filled_question_to_sino(self):
@@ -282,7 +282,7 @@ class VotingModelTestCase(BaseTestCase):
         v.question.add(q1)
         v.question.add(q2)
         a = v.question.all().count() == 2
-        b = v.question.all()[1].sino==True
+        b = v.question.all()[1].sino
         self.assertTrue(a)
         self.assertTrue(b)
 
