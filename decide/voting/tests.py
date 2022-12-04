@@ -205,7 +205,7 @@ class VotingModelTestCase(BaseTestCase):
 
     
     def test_create_onequestion_SiNo_voting(self):
-        q1 = Question(desc='question1', optionSiNo=True)
+        q1 = Question(desc='question1', option_SiNo=True)
         q1.save()
         opt = QuestionOption(question=q1)
         opt.save()
@@ -219,13 +219,13 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEqual(v.question.all().count(), 1)
 
     def test_create_onequestion_SiNo_masOpciones(self):
-        q1 = Question(desc='question1', optionSiNo=True)
+        q1 = Question(desc='question1', option_SiNo=True)
         for i in range(5):
             opt = QuestionOption(question=q1, option='option {}'.format(i+1))
             self.assertRaises(ValidationError, opt.clean)
 
     def test_delete_onequestion_SiNo_voting(self):
-        q1 = Question(desc='question1',optionSiNo=True)
+        q1 = Question(desc='question1',option_SiNo=True)
         q1.save()
         v=Voting(name="test voting")
         v.save()
@@ -240,21 +240,21 @@ class VotingModelTestCase(BaseTestCase):
     
 
     def test_empty_question_to_SiNoQuestion(self):
-        q1 = Question(desc='question1', optionSiNo=False)
+        q1 = Question(desc='question1', option_SiNo=False)
         q1.save()
-        self.assertFalse(q1.optionSiNo)
-        q1.optionSiNo=True
-        self.assertTrue(q1.optionSiNo)
+        self.assertFalse(q1.option_SiNo)
+        q1.option_SiNo=True
+        self.assertTrue(q1.option_SiNo)
     
 
     def test_filled_question_to_SiNoQuestion(self):
-        q1 = Question(desc='question1', optionSiNo=False)
+        q1 = Question(desc='question1', option_SiNo=False)
         q1.save()
         opt = QuestionOption(question=q1, number= '1', option='Opción Extra')
         opt.save()
-        self.assertFalse(q1.optionSiNo)
-        q1.optionSiNo=True
-        self.assertTrue(q1.optionSiNo)
+        self.assertFalse(q1.option_SiNo)
+        q1.option_SiNo=True
+        self.assertTrue(q1.option_SiNo)
         self.assertRaises(ValidationError, opt.clean)
     
     
@@ -264,7 +264,7 @@ class VotingModelTestCase(BaseTestCase):
         for i in range(5):
             opt = QuestionOption(question=q1, option='option {}'.format(i+1))
             opt.save()
-        q2 = Question(desc='Pregunta Sí/No', optionSiNo=True)
+        q2 = Question(desc='Pregunta Sí/No', option_SiNo=True)
         q2.save()
         v = Voting(name='Test Votación de todo tipo')
         v.save()
@@ -275,7 +275,7 @@ class VotingModelTestCase(BaseTestCase):
         v.question.add(q1)
         v.question.add(q2)
         self.assertTrue(v.question.all().count(), 2)
-        self.assertTrue(v.question.all()[1].optionSiNo)
+        self.assertTrue(v.question.all()[1].option_SiNo)
 
     def test_delete_onequestion_from_multiquestion_voting(self):
         q1 = Question(desc="test question1")
