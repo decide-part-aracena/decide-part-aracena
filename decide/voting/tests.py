@@ -7,7 +7,6 @@ from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
 from django.core.exceptions import ValidationError
-from django.urls import reverse
 from base import mods
 from base.tests import BaseTestCase
 from census.models import Census
