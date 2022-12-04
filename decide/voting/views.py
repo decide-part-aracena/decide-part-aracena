@@ -21,7 +21,7 @@ from voting.forms import QuestionForm, QuestionOptionsForm
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Question, QuestionOption, Voting
-from .serializers import QuestionSerializer, SimpleVotingSerializer, VotingSerializer
+from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 from .forms import VotingForm
@@ -117,9 +117,6 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-class QuestionDelete(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Question.objects.all()
-    serializer_class = QuestionSerializer
 
 def listaPreguntas(request):
     preguntas = Question.objects.all()

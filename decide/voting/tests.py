@@ -205,73 +205,67 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEqual(v.question.all().count(), 1)
 
     
-    def create_question_sino(self):
-        q = Question(desc='Test Pregunta Sí/No', sino=True)
-        q.save()
-        opt = QuestionOption(question=q)
+    def test_create_onequestion_SiNo_voting(self):
+        q1 = Question(desc='question1', optionSiNo=True)
+        q1.save()
+        opt = QuestionOption(question=q1)
         opt.save()
-        v = Voting(name='Test Votación', desc='Realicemos pregunta Sí/No', question=q)
+        v = Voting(name='test voting')
         v.save()
         a,_=Auth.objects.get_or_create(url=settings.BASEURL,
                                         defaults={'me':True, 'name':'test auth'})
         a.save()
         v.auths.add(a)
-        return v
+        v.question.add(q1)
+        self.assertEqual(v.question.all().count(), 1)
 
-    def test_question_sino_validacion(self):
-        q = Question(desc='Test Pregunta Sí/No con más de 2 opciones', sino=True)
+    def test_create_onequestion_SiNo_masOpciones(self):
+        q1 = Question(desc='question1', optionSiNo=True)
         for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
             self.assertRaises(ValidationError, opt.clean)
 
-    def test_delete_question_sino(self):
-        q = Question.objects.create(
-            desc='Test Pregunta Sí/No',
-            sino=True,
-        )
-        url = reverse('delete_question', kwargs={'pk':q.pk})
-        response = self.client.delete(url)
-        self.assertEqual(response.status_code, 204)
-    
-    def test_voting_question_sino(self):
-        q = Question(desc='Test Votación Pregunta Sí/No', sino=True)
-        q.save()
-        v = Voting(name='Test Votación Pregunta Sí/No')
+    def test_delete_onequestion_SiNo_voting(self):
+        q1 = Question(desc='question1',optionSiNo=True)
+        q1.save()
+        v=Voting(name="test voting")
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
-        a.save()
         v.auths.add(a)
-        v.question.add(q)
-        self.assertEqual(v.question.all().count(), 1)
+        v.question.add(q1)
+
+        self.assertEquals(v.question.all().count(), 1)
+        v.question.remove(q1)
+        self.assertEquals(v.question.all().count(),0)
     
 
-    def test_empty_question_to_sino(self):
-        q = Question(desc='Test Convertir Votación Pregunta Vacía a Pregunta Sí/No', sino=False)
-        q.save()
-        self.assertFalse(q.sino)
-        q.sino=True
-        self.assertTrue(q.sino)
+    def test_empty_question_to_SiNoQuestion(self):
+        q1 = Question(desc='question1', optionSiNo=False)
+        q1.save()
+        self.assertFalse(q1.optionSiNo)
+        q1.optionSiNo=True
+        self.assertTrue(q1.optionSiNo)
     
 
-    def test_filled_question_to_sino(self):
-        q = Question(desc='Test Convertir Votación Pregunta Rellena a Pregunta Sí/No', sino=False)
-        q.save()
-        opt = QuestionOption(question=q, number= '3', option='Opción 3')
+    def test_filled_question_to_SiNoQuestion(self):
+        q1 = Question(desc='question1', optionSiNo=False)
+        q1.save()
+        opt = QuestionOption(question=q1, number= '1', option='Opción Extra')
         opt.save()
-        self.assertFalse(q.sino)
-        q.sino=True
-        self.assertTrue(q.sino)
+        self.assertFalse(q1.optionSiNo)
+        q1.optionSiNo=True
+        self.assertTrue(q1.optionSiNo)
         self.assertRaises(ValidationError, opt.clean)
     
     
-    def test_create_multiquestion_sino_voting(self):
+    def test_create_multiquestion_SiNo_voting(self):
         q1 = Question(desc='Pregunta con diferentes opciones')
         q1.save()
         for i in range(5):
             opt = QuestionOption(question=q1, option='option {}'.format(i+1))
             opt.save()
-        q2 = Question(desc='Pregunta Sí/No', sino=True)
+        q2 = Question(desc='Pregunta Sí/No', optionSiNo=True)
         q2.save()
         v = Voting(name='Test Votación de todo tipo')
         v.save()
@@ -281,21 +275,21 @@ class VotingModelTestCase(BaseTestCase):
         v.auths.add(a)
         v.question.add(q1)
         v.question.add(q2)
-        a = v.question.all().count() == 2
-        b = v.question.all()[1].sino
-        self.assertTrue(a)
-        self.assertTrue(b)
+        self.assertTrue(v.question.all().count(), 2)
+        self.assertTrue(v.question.all()[1].optionSiNo)
 
-    def test_deleting_question_from_voting_multiquestion(self):
+    def test_delete_onequestion_from_multiquestion_voting(self):
         q1 = Question(desc="test question1")
         q1.save()
         q2 = Question(desc="test question2")
         q2.save()
-        QuestionOption(question=q1,option="option1")
-        QuestionOption(question=q1,option="option2")
-        QuestionOption(question=q2,option="option3")
-        QuestionOption(question=q2,option="option4")
-        v=Voting(name="Votacion")
+        for i in range(2):
+            opt_q1 = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt_q1.save()
+            opt_q2 = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt_q2.save()
+
+        v=Voting(name="test voting")
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -306,16 +300,18 @@ class VotingModelTestCase(BaseTestCase):
         v.question.remove(q2)
         self.assertEquals(v.question.all().count(),1)
 
-    def test_adding_question_to_voting_multiquestion(self):
+    def test_add_onequestion_to_multiquestion_voting(self):
         q1 = Question(desc="test question1")
         q1.save()
         q2 = Question(desc="test question2")
         q2.save()
-        QuestionOption(question=q1,option="option1")
-        QuestionOption(question=q1,option="option2")
-        QuestionOption(question=q2,option="option3")
-        QuestionOption(question=q2,option="option4")
-        v=Voting(name="Votacion")
+        for i in range(2):
+            opt_q1 = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt_q1.save()
+            opt_q2 = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt_q2.save()
+            
+        v=Voting(name="test voting")
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})

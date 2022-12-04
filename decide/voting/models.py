@@ -10,15 +10,15 @@ from base.models import Auth, Key
 
 class Question(models.Model):
     desc = models.TextField()
-    sino = models.BooleanField(default=False, help_text="Márcala si quieres que las respuestas sean Si/No. No se podrán añadir mas respuestas")
+    optionSiNo = models.BooleanField(default=False, help_text="Marca esta casilla para que las respuestas sean Si o No. No podrás añadir más respuestas después")
 
     def __str__(self):
         return self.desc
 
 @receiver(post_save, sender=Question)
-def sino(sender, instance, **kwargs):
+def post_SiNo_Option(sender, instance, **kwargs):
     options = instance.options.all()
-    if instance.sino and options.count()==0:
+    if instance.optionSiNo and options.count() == 0:
         op1 = QuestionOption(question=instance, number=1, option="Sí")
         op1.save()
         op2 = QuestionOption(question=instance, number=2, option="No")
@@ -39,8 +39,8 @@ class QuestionOption(models.Model):
         return '{} ({})'.format(self.option, self.number)
     
     def clean(self):
-        if self.question.sino and not self.question.options.all().count()==2:
-            raise ValidationError('Este tipo de pregunta no debe tener otras opciones añadidas por usted')
+        if self.question.optionSiNo and self.question.options.all().count() != 2:
+            raise ValidationError('Las Preguntas Sí/No no deben tener opciones extras añadidas. Borre por favor todas las opciones añadidas para poder crear la pregunta')
 
 
 class Voting(models.Model):
