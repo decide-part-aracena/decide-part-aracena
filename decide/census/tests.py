@@ -10,6 +10,8 @@ from rest_framework.test import APITestCase
 from .models import Census, ExcelFile
 from pandas.testing import assert_frame_equal
 import pandas as pd
+import os.path
+
 
 class CensusTestCase(BaseTestCase):
 
@@ -83,16 +85,12 @@ class ImportTestCase(APITestCase):
 
     def setUp(self):
 
-        #df1 = pd.DataFrame({'voting_id'=1, voter_id=1})
         """data = {'voting_id': [1,2,3,4,5],
                 'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
                 'sexo': ['F', 'M','F', 'M','M'],
                 'voter_id': [2,3,4,1,5]}
         df = pd.DataFrame(data)
         """
-
-        #self.census = Census(voting_id=1, voter_id=1)
-        #self.census.save()
 
         self.client = APIClient()
         mods.mock_query(self.client)
@@ -104,6 +102,12 @@ class ImportTestCase(APITestCase):
         u2.set_password('admin')
         u2.is_superuser = True
         u2.save()
+
+        admin = User(username='admin5')
+        admin.set_password('12345')
+        admin.is_staff = True
+        admin.save()
+        self.client.force_login(admin)
 
     def tearDown(self):
         self.census = None
@@ -141,58 +145,36 @@ class ImportTestCase(APITestCase):
 
     # Concretos para importación de excel
 
-    # ---- Creación de excel
+    def test_import_positive(self):
 
-    """def generate_df_excel(self):
-        file = 'testImport.xlsx'
-        if not file.startswith("~") and file.endswith(".xlsx"):
-            #obj = ExcelFile.objects.create( file = file )
-            #path = str(obj.file)
-            dataframe = pd.read_excel(file, engine='openpyxl')
-            print(type(dataframe))
-        return dataframe
-    
-    def generate_dataFrame(self):
-        data = {'voting_id': [1,2,3,4,5],
-                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
-                'sexo': ['F', 'M','F', 'M','M'],
-                'voter_id': [2,3,4,1,5]}
-        df = pd.DataFrame(data)
-        return data
-    """
-    def test_import_ok(self):
-
-        data = {'voting_id': [1,2,3,4,5],
-                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
-                'sexo': ['F', 'M','F', 'M','M'],
-                'voter_id': [2,3,4,1,5]}
-        expected_dataframe = pd.DataFrame(data)
-        
-
-        file = 'testImport.xlsx'
-        if not file.startswith("~") and file.endswith(".xlsx"):
-            #obj = ExcelFile.objects.create( file = file )
-            #path = str(obj.file)
-            imported_dataframe =  pd.read_excel(file, engine='openpyxl')
-        
-
-        assert_equal(imported_dataframe, expected_dataframe)
-
-"""
-    def test_invalid_import(self):
-        #data = {}
-        data = self.generate_dataFrame()
-        data = data.clear
         response = self.client.get('/census/import_datadb')
-        response = self.client.post(
-            '/census/import_datadb', data, format='json')
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
 
-    def test_import_duplicated(self):
-        data = self.generate_excel()
+        # POST data
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_import_negative(self):
+
         response = self.client.get('/census/import_datadb')
-        response = self.client.post(
-            '/census/import_datadb', data, format='json')
-        self.assertEqual(response.status_code, 500)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
 
-"""
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)

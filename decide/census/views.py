@@ -26,6 +26,8 @@ from voting.models import Voting
 import operator
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib import messages
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -114,35 +116,40 @@ def borrar_censo(request, votacion_id):
 #Creada para la task -----------------------------------------------------------------
 
 def import_datadb(request):
-    if request.method == 'POST':
-        file = request.FILES['file']
-        obj = ExcelFile.objects.create( file = file )
-        path = str(obj.file)
-        
-        df = pd.read_excel(path)
-        #print(df.values)
-        #print(df.head)
-        #df = pd.read_csv(path)
+    if request.user.is_staff:
+        if request.method == 'POST':
+            try:
+                file = request.FILES['file']
+            except MultiValueDictKeyError:
+                    mensaje_error = messages.add_message(request, messages.ERROR, 
+                    "¡Cuidado! No has cargado ningún archivo.")
+                    return render(request, 'excel.html', {'mensaje_error': mensaje_error})
 
-        users = User.objects.all()
-        users_id = []
-        for us in users:
-            user_id = us.id
-            users_id.append(user_id)
-        
-        votings = Voting.objects.all()
-        votings_id = []
-        for vid in votings:
-            voting_id = vid.id
-            votings_id.append(voting_id)
+            obj = ExcelFile.objects.create( file = file )
+            path = str(obj.file)
+            
+            df = pd.read_excel(path)
 
-        """for i in range(df.shape[0]):
-           
-            if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
-               
-                census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-                census.save()
-        """
+            users = User.objects.all()
+            users_id = []
+            for us in users:
+                user_id = us.id
+                users_id.append(user_id)
+            
+            votings = Voting.objects.all()
+            votings_id = []
+            for vid in votings:
+                voting_id = vid.id
+                votings_id.append(voting_id)
+            """
+            for i in range(df.shape[0]):
+            
+                if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
+                
+                    census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                    census.save()
+            """      
+            
     return render(request, 'excel.html')
 
 
