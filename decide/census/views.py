@@ -141,15 +141,18 @@ def import_datadb(request):
             for vid in votings:
                 voting_id = vid.id
                 votings_id.append(voting_id)
-            """
+            
             for i in range(df.shape[0]):
             
                 if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
-                
-                    census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-                    census.save()
-            """      
-            
+                    
+                    try:
+                        census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                        census.save()
+                    except IntegrityError:
+                        print('Entra en error Duplicated key')
+                        error_duplicated = messages.add_message(request, messages.ERROR, "Duplicated Key")
+                        return render(request, 'excel.html', {'error_duplicated': error_duplicated})
     return render(request, 'excel.html')
 
 
