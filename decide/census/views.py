@@ -151,8 +151,8 @@ def import_datadb(request):
                         census.save()
                     except IntegrityError:
                         print('Entra en error Duplicated key')
-                        error_duplicated = messages.add_message(request, messages.ERROR, "Duplicated Key")
-                        return render(request, 'excel.html', {'error_duplicated': error_duplicated})
+                        messages.add_message(request, messages.ERROR, "Duplicated Key")
+                        
     return render(request, 'excel.html')
 
 

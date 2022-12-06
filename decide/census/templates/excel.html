@@ -19,11 +19,14 @@
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         
-        <div style="color: red;">
-            {{mensaje_error}} 
-            {{error_duplicated}}
-        </div>
-        
+        {% if messages %}
+        {% for message in messages %}
+            <div style="color: red;">
+                {{message}}
+            </div>
+        {% endfor %}
+        {% endif %}
+
         <p>{{ ExcelFileForm.file_types }}</p>
         <input type="file"  name="file">
         
