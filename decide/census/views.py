@@ -1,4 +1,5 @@
 import csv
+from import_export import resources
 from http.client import HTTPResponse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
@@ -180,6 +181,61 @@ def export_csv(request):
     
     return response
 
+def export_xls(request):
+
+    queryset = Census.objects.all()
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.xls, content_type='text/xls')
+    response['Content_Disposition'] = 'atachment; filename="census.xls"'
+    
+    return response
+
+def export_json(request):
+
+    queryset = Census.objects.all()
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.json, content_type='text/json')
+    response['Content_Disposition'] = 'atachment; filename="census.json"'
+    
+    return response
+
+def export_yaml(request):
+
+    queryset = Census.objects.all()
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.yaml, content_type='text/yaml')
+    response['Content_Disposition'] = 'atachment; filename="census.yaml"'
+    
+    return response
+
+def export_html(request):
+
+    queryset = Census.objects.all()
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.html, content_type='text/html')
+    response['Content_Disposition'] = 'atachment; filename="census.html"'
+    
+    return response
 
 
 
