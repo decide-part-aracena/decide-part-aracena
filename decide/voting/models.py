@@ -41,7 +41,7 @@ class Voting(models.Model):
 
     tally = JSONField(blank=True, null=True)
     postproc = JSONField(blank=True, null=True)
-
+ 
     def create_pubkey(self):
         if self.pub_key or not self.auths.count():
             return
@@ -67,7 +67,6 @@ class Voting(models.Model):
         '''
         The tally is a shuffle and then a decrypt
         '''
-
         votes = self.get_votes(token)
 
         auth = self.auths.first()
