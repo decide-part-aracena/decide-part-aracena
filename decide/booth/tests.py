@@ -3,9 +3,18 @@ from base.tests import BaseTestCase
 from voting.models import Voting, Question, QuestionOption
 from mixnet.models import Auth
 from django.conf import settings
+from census.models import Census
+from django.contrib.auth.models import User
+from base import mods
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from rest_framework.test import APIClient
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+import time
 
-class BoothTestCase(BaseTestCase):
-
+class BoothTestCase(StaticLiveServerTestCase):
+   
     def test_vote_multiple_questions_without_permission(self):
         #First we create the questions
         q1 = Question(desc='question1')
@@ -49,6 +58,36 @@ class BoothTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 401)
         response = self.client.post('/gateway/store/')
         self.assertEqual(response.status_code, 401)
+
+            
+    def test_voting_not_started(self):
+        #First we create the questions
+        q1 = Question(desc='question1')
+        q1.save()
+        for i in range(5):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt.save()
+        q2 = Question(desc='question2')
+        q2.save()
+        for i in range(5):
+            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt.save()
         
+        #Second we create the voting and add the questions to it
+        v = Voting(name='test voting')
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'url':'http://127.0.0.1:8000', 'name': 'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.question.add(q1)
+        v.question.add(q2)
+        a = v.question.all().count() == 2
+        self.assertTrue(a)
+
+        votingId = v.pk
+
+        #Access the booth
+        response = self.client.get('/booth/{}/'.format(votingId), format='json')
+        self.assertEqual(response.status_code, 404)
         
- 
