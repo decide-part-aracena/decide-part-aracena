@@ -13,6 +13,7 @@ urlpatterns = [
     path('census/census_exported_json', views.export_json,),
     path('census/census_exported_yaml', views.export_yaml,),
     path('census/census_exported_html', views.export_html,),
+    path('census/census_exported_ods', views.export_ods,),
     path('census/create', views.crear_censo, name = 'crear_censo'),
     path('census/<int:votacion_id>', views.censo_details, name = 'censo_details'),
     path('delete/census/<int:votacion_id>', views.borrar_censo, name = 'borrar_censo'),

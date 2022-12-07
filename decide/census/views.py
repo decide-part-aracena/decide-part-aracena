@@ -237,5 +237,19 @@ def export_html(request):
     
     return response
 
+def export_ods(request):
+
+    queryset = Census.objects.all()
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.ods, content_type='text/ods')
+    response['Content_Disposition'] = 'atachment; filename="census.ods"'
+    
+    return response
+
 
 
