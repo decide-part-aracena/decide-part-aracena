@@ -143,16 +143,27 @@ def import_datadb(request):
                 votings_id.append(voting_id)
             
             for i in range(df.shape[0]):
-            
-                if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
+                
+                if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
+                  
+                    newUser = User(username='user' + str(df['voter_id'][i]))
+                    print(newUser)
+                    newUser.set_password('newUser')
+                    newUser.is_superuser = True
+                    newUser.save()
+                    users_id.append(df['voter_id'][i])
+
+                if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
                     
                     try:
-                        census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-                        census.save()
-                        
+                         census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                         census.save()
+
                     except IntegrityError:
                         print('Entra en error Duplicated key')
-                        mensaje_error2 = messages.add_message(request, messages.ERROR, "Duplicated Key")
+                        mensaje_error2 = messages.add_message(request, 
+                        messages.ERROR, 
+                        "Duplicated Key")
                         return render(request, 'excel.html', {'mensaje_error': mensaje_error2})
 
     return render(request, 'excel.html')
