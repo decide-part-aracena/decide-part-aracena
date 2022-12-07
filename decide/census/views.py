@@ -113,7 +113,7 @@ def borrar_censo(request, votacion_id):
     censo.delete()
     return redirect('censo')
 
-#Creada para la task -----------------------------------------------------------------
+# Creada para la task de Importación de Censo -----------------------------------------------------------------
 
 def import_datadb(request):
     if request.user.is_staff:
@@ -149,10 +149,12 @@ def import_datadb(request):
                     try:
                         census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                         census.save()
+                        
                     except IntegrityError:
                         print('Entra en error Duplicated key')
-                        messages.add_message(request, messages.ERROR, "Duplicated Key")
-                        
+                        mensaje_error2 = messages.add_message(request, messages.ERROR, "Duplicated Key")
+                        return render(request, 'excel.html', {'mensaje_error': mensaje_error2})
+
     return render(request, 'excel.html')
 
 
