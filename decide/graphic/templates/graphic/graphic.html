@@ -23,17 +23,24 @@
 {% block content %}
 
     <div id="graphic-visualizer" class="graphic-container">
-        <div class="row">
-            <h1 class="title">
+         <div class="row">
+            <h1 class="title" id="info-title">
                 Graphs with voting results
             </h1>
         </div>
-        
-        <h1 class="title-graphic">Bar type</h1>
-        <canvas id="graphic"></canvas>
 
-        <h1 class="title-graphic">Donut type</h1>
-        <canvas id="graphic2"></canvas>
+        <br>
+        <h2 v-if="!voting.postproc" class="advertisement">Count not complete</h2>
+
+        <div v-else> 
+        
+            <h1 class="title-graphic">Bar type</h1>
+            <canvas id="graphic"></canvas>
+
+            <h1 class="title-graphic">Donut type</h1>
+            <canvas id="graphic2"></canvas>
+
+        </div>
     </div>
 
     <div class="row button-row">
