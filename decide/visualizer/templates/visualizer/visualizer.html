@@ -39,11 +39,10 @@
                     </table>
                 </div>
             </h2>
-            
-            <div v-else>
-                <h2 class="heading">Resultados:</h2>
 
             <div v-else>
+
+                <h2 class="heading">Resultados:</h2>
                 <h2 class="heading">[[voting.question.desc]]</h2>
             
                 <table class="table table-bordered table-striped">
@@ -64,41 +63,24 @@
                         </tr>
                     </tbody>
                 </table>
-                <h2 class="heading">[[voting.question.desc]]</h2>
-                
-                <table class="table table-bordered table-striped">
-                    
-                    <thead>
-                        <tr>
-                            <th>Opción</th>
-                            <th>Puntuación</th>
-                            <th>Votos</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
-                            
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
+                                
                 <br>
 
                 <div class="row">
                     <button id="button-graphic">
-                        <a :href="'/graphic/' + identificator">
+                        <a :href="'/graphic/' + voting.id">
                             Graphic representation of the results
                         </a>
                     </button>
                 </div>
+
             </div>
 
         </div>
         
     </div>
+
+    
 {% endblock %}
 
 {% block extrabody %}
@@ -121,12 +103,11 @@
             }
         })
 
-        var identificator = voting.id
         var app2 = new Vue({
             delimiters: ['[[', ']]'],
             el: '#button-graphic',
             data: {
-                identificator: identificator
+                voting: voting
             }
         })
 
