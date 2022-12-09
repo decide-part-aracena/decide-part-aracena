@@ -203,5 +203,21 @@ class TestSortedVoting(BaseTestCase):
         self.assertEqual(response2.status_code, 200)
         self.assertTemplateUsed('sorting_by_voting.html')
 
+class TestPaginacionCensus(BaseTestCase):
+    def setUp(self):
+        super().setUp()
+
+    def test_search_positive(self):
+        self.login()
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('censo.html')
+
+        response2 = self.client.get('/census/?page=2/')
+        self.assertEqual(response2.status_code, 200)
+        self.assertTemplateUsed('censo.html')
+
+    
+
 
 
