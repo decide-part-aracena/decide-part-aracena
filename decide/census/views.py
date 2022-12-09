@@ -1,6 +1,8 @@
+from http.client import HTTPResponse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import get_object_or_404, redirect, render
+
 from rest_framework import generics
 from rest_framework.response import Response
 from rest_framework.status import (
@@ -14,6 +16,16 @@ from rest_framework.status import (
 from base.perms import UserIsStaff
 from .models import Census
 from .forms import CensusForm
+from .models import Census, ExcelFile
+from django.shortcuts import get_object_or_404
+from django.conf import settings
+from django.shortcuts import render
+from django.contrib.auth.models import User
+import pandas as pd 
+from voting.models import Voting
+import operator
+from django.core.paginator import Paginator
+from django.http import Http404
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -36,7 +48,6 @@ class CensusCreate(generics.ListCreateAPIView):
             voting_id=voting_id).values_list('voter_id', flat=True)
         return Response({'voters': voters})
 
-
 class CensusDetail(generics.RetrieveDestroyAPIView):
 
     def destroy(self, request, voting_id, *args, **kwargs):
@@ -54,10 +65,17 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
-
 def listar_censos(request):
+
     censos = Census.objects.all()
-    return render(request, 'censo.html', {'censos': censos})
+    page = request.GET.get('page',1)
+    try:
+        paginator = Paginator(censos,2)
+        censos = paginator.page(page)
+    except:
+        raise Http404
+
+    return render(request, 'censo.html', {'censos': censos, 'paginator':paginator})
 
 
 def crear_censo(request):
@@ -92,3 +110,51 @@ def borrar_censo(request, votacion_id):
     censo = Census.objects.get(id = votacion_id)
     censo.delete()
     return redirect('censo')
+
+#Creada para la task -----------------------------------------------------------------
+
+def import_datadb(request):
+    if request.method == 'POST':
+        file = request.FILES['file']
+        obj = ExcelFile.objects.create( file = file )
+        path = str(obj.file)
+        
+        df = pd.read_excel(path)
+    
+        #df = pd.read_csv(path)
+
+        users = User.objects.all()
+        users_id = []
+        for us in users:
+            user_id = us.id
+            users_id.append(user_id)
+        
+        votings = Voting.objects.all()
+        votings_id = []
+        for vid in votings:
+            voting_id = vid.id
+            votings_id.append(voting_id)
+
+        for i in range(df.shape[0]):
+           
+            if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
+               
+                census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                census.save()
+
+    return render(request, 'excel.html')
+
+
+def excel(request):
+   return render(request, 'excel.html')
+
+def sort_by_voting(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voting_id = c.voting_id
+        dic[c] = voting_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
+

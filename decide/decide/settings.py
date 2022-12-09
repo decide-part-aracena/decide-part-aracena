@@ -12,9 +12,6 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 
 import os
 
-from dotenv import dotenv_values
-
-secrets = dotenv_values(".secrets")
 
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -50,6 +47,7 @@ INSTALLED_APPS = [
     'rest_framework_swagger',
     'gateway',
 
+
     'django.contrib.sites',
     'allauth',
     'allauth.account',
@@ -58,6 +56,9 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.facebook',
     'allauth.socialaccount.providers.discord',
+
+    'import_export',
+
 ]
 
 REST_FRAMEWORK = {
@@ -80,11 +81,13 @@ MODULES = [
     'base',
     'booth',
     'census',
+    'graphic',
     'mixnet',
     'postproc',
     'store',
     'visualizer',
     'voting',
+    'users',
 ]
 
 BASEURL = 'http://localhost:8000'
@@ -192,6 +195,12 @@ try:
     from local_settings import *
 except ImportError:
     print("local_settings.py not found")
+
+#Secrets import, if secrets_settings file is not found it might affect some features
+try:
+    from secrets_settings import *
+except ImportError:
+    print("secrets_settings.py not found")
 
 # loading jsonnet config
 if os.path.exists("config.jsonnet"):
