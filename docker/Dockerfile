@@ -1,7 +1,8 @@
-from python:3.7-alpine
+from python:3.8-buster
 
-RUN apk add --no-cache git postgresql-dev gcc libc-dev
-RUN apk add --no-cache gcc g++ make libffi-dev python3-dev build-base
+RUN apt-get update
+RUN apt-get -y install git postgresql gcc libc-dev
+RUN apt-get -y install gcc g++ make libffi-dev python3-dev build-essential
 
 RUN pip install gunicorn
 RUN pip install psycopg2
