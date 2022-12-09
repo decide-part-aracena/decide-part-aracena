@@ -13,12 +13,19 @@
 
 <p>{% blocktrans with provider.name as provider %}You are about to sign in using a third party account from {{ provider }}.{% endblocktrans %}</p>
 {% endif %}
-
+{% if user.is_authenticated %}
 <form method="post">
+  
+    <p>You are already logged in as {{user.username}}</p>
+    <a href="/authentication/logoutuser/">Logout </a>
+    <br>
+    <a href="http://localhost:8000/authentication/loginuser/">Go back </a>
+    {% else %}  
   {% csrf_token %}
   <button type="submit">{% trans "Continue" %}</button>
 </form>
 
 <br><br>
 <a href="http://localhost:8000/authentication/loginuser/"> Go back </a>
+{% endif %}
 {% endblock %}
