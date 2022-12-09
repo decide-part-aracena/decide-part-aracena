@@ -207,7 +207,7 @@ class TestPaginacionCensus(BaseTestCase):
     def setUp(self):
         super().setUp()
 
-    def test_search_positive(self):
+    def test_paginator_positive(self):
         self.login()
         response = self.client.get('/census/')
         self.assertEqual(response.status_code, 200)
@@ -215,6 +215,12 @@ class TestPaginacionCensus(BaseTestCase):
 
         response2 = self.client.get('/census/?page=2/')
         self.assertEqual(response2.status_code, 200)
+        self.assertTemplateUsed('censo.html')
+
+    def test_paginator_negative(self):
+
+        response2 = self.client.get('/census/?page=2/')
+        self.assertEqual(response2.status_code, 401)
         self.assertTemplateUsed('censo.html')
 
     
