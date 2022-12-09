@@ -194,4 +194,14 @@ class TestSortedVoting(BaseTestCase):
         self.assertTemplateUsed('sorting_by_voting.html')
 
     
-    
+    def test_list_negative(self):
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 401)
+        self.assertTemplateUsed('censo.html')
+
+        response2 = self.client.get('/census/sortedByVoting/')
+        self.assertEqual(response2.status_code, 200)
+        self.assertTemplateUsed('sorting_by_voting.html')
+
+
+
