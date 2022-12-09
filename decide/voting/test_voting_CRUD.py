@@ -115,3 +115,37 @@ class TestCrud(BaseTestCase):
          })
          self.assertEqual(response.status_code, 404)
          self.assertTemplateNotUsed('voting_details.html')
+
+
+    def test_delete_positive(self):
+         q = Question(desc='test question')
+         q.save()
+         for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+         v = Voting.objects.create(
+            desc='Hablamos del chocolate',
+        )
+         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+         a.save()
+         v.auths.add(a)
+         v.question.add(q)
+         v.delete()
+         self.assertTrue(Voting.objects.count() == 0)
+
+    def test_delete_negative(self):
+         q = Question(desc='test question')
+         q.save()
+         for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+         v = Voting.objects.create(
+            desc='Hablamos del chocolate',
+        )
+         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+         a.save()
+         v.auths.add(a)
+         v.question.add(q)
+         self.assertTrue(Voting.objects.count() != 0)
