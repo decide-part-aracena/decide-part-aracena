@@ -175,3 +175,23 @@ class TestCrud(BaseTestCase):
             voter_id = 1
         )
         self.assertTrue(Census.objects.count() != 0)
+
+##TEST UNITARIOS filtros y ordenacion
+
+class TestSortedVoting(BaseTestCase):
+
+    def setUp(self):
+        super().setUp()
+    
+    def test_list_positive(self):
+        self.login()
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('censo.html')
+
+        response2 = self.client.get('/census/sortedByVoting/')
+        self.assertEqual(response2.status_code, 200)
+        self.assertTemplateUsed('sorting_by_voting.html')
+
+    
+    
