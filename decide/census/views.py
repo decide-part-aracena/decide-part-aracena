@@ -70,7 +70,7 @@ def listar_censos(request):
     censos = Census.objects.all()
     page = request.GET.get('page',1)
     try:
-        paginator = Paginator(censos,2)
+        paginator = Paginator(censos,5)
         censos = paginator.page(page)
     except:
         raise Http404
@@ -157,4 +157,14 @@ def sort_by_voting(request):
     
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
+
+def sort_by_voter(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voter_id = c.voter_id
+        dic[c] = voter_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voter.html', {'sorted_census_voter_id':sorted_dic.keys})
 
