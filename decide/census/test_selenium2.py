@@ -9,7 +9,7 @@ from selenium.webdriver.common.keys import Keys
 
 from base.tests import BaseTestCase
 
-class TestSearch(StaticLiveServerTestCase):
+class TestPaginator(StaticLiveServerTestCase):
 
     def setUp(self):
         #Load base test functionality for decide
@@ -28,13 +28,12 @@ class TestSearch(StaticLiveServerTestCase):
 
         self.base.tearDown()
 
-    def test_search(self):
+    def test_pagina_2(self):
         self.driver.get("http://127.0.0.1:8000/authentication/loginuser/?next=/base/")
         self.driver.set_window_size(923, 1016)
         self.driver.find_element(By.ID, "id_username").send_keys("juaalvcam")
         self.driver.find_element(By.ID, "id_password").send_keys("JuanjoUS2023")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get("http://127.0.0.1:8000/census/census/")
-        self.driver.find_element(By.ID, "myInput").click()
-        self.driver.find_element(By.ID, "myInput").send_keys("4")
-        self.assertTrue("http://127.0.0.1:8000/census/census/"==self.driver.current_url)
+        self.driver.get("http://127.0.0.1:8000/census/census/?page=2#pagtable")
+        self.assertTrue("http://127.0.0.1:8000/census/census/?page=2#pagtable"==self.driver.current_url)
