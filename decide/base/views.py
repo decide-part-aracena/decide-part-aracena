@@ -1,9 +1,6 @@
-import csv
 from census.models import Census
 from voting.models import Voting
 from django.views.generic.base import TemplateView
-from django.shortcuts import render
-from django.http import HttpResponse
 
 
 
