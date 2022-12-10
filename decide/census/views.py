@@ -129,13 +129,13 @@ def import_datadb(request):
             path = str(obj.file)
             
             df = pd.read_excel(path)
-
+            
             users = User.objects.all()
             users_id = []
             for us in users:
                 user_id = us.id
                 users_id.append(user_id)
-            
+
             votings = Voting.objects.all()
             votings_id = []
             for vid in votings:
@@ -152,6 +152,7 @@ def import_datadb(request):
                     newUser.is_superuser = True
                     newUser.save()
                     users_id.append(df['voter_id'][i])
+
 
                 if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
                     
