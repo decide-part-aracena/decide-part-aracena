@@ -11,7 +11,7 @@ from base.serializers import KeySerializer
 
 from django.shortcuts import render, redirect, get_object_or_404
 from voting.forms import QuestionForm
-from .models import Voting
+#from .models import Voting
 from base.models import Key
 from .filters import StartedFilter
 from django.utils.crypto import get_random_string
@@ -46,7 +46,7 @@ class VotingView(generics.ListCreateAPIView):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
         for data in ['name', 'desc', 'question', 'question_opt']:
-            if not data in request.data:
+            if data not in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
         question = Question(desc=request.data.get('question'))
@@ -117,6 +117,7 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
+
 def listaPreguntas(request):
     preguntas = Question.objects.all()
     return render(request, 'preguntas.html', {'preguntas':preguntas})
@@ -184,7 +185,7 @@ def create_voting(request):
     else:
         try:
             form = VotingForm(request.POST)
-            nuevo_question = form.save(commit=False)
+            nuevo_question = form.save(commit=True)
             nuevo_question.save()
             return redirect('voting_list')
         except ValueError:
@@ -206,7 +207,7 @@ def sort_by_startDate(request):
     dic = {}
     for v in voting:
         fecha = v.start_date
-        if fecha != None:      
+        if fecha is not None:      
             dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
@@ -217,7 +218,7 @@ def sort_by_endDate(request):
     dic = {}
     for v in voting:
         fecha = v.end_date  
-        if fecha != None:      
+        if fecha is not None:      
             dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
@@ -234,10 +235,11 @@ def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
-
+    
 def start_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
-    voting.create_pubkey()
+
+    Voting.create_pubkey(voting)
     voting.start_date = timezone.now()
     voting.save()
     return redirect('voting_list')
@@ -248,3 +250,8 @@ def stop_voting(request, voting_id):
     voting.save()
     return redirect('voting_list')
 
+def tally_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    token = request.session.get('auth-token', '')
+    voting.tally_votes(token)
+    return redirect('voting_list')
