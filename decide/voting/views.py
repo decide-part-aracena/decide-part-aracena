@@ -46,7 +46,7 @@ class VotingView(generics.ListCreateAPIView):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
         for data in ['name', 'desc', 'question', 'question_opt']:
-            if not data in request.data:
+            if data not in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
         question = Question(desc=request.data.get('question'))
@@ -116,6 +116,7 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             msg = 'Action not found, try with start, stop or tally'
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
+
 
 def listaPreguntas(request):
     preguntas = Question.objects.all()
@@ -206,7 +207,7 @@ def sort_by_startDate(request):
     dic = {}
     for v in voting:
         fecha = v.start_date
-        if fecha != None:      
+        if fecha is not None:      
             dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
@@ -217,7 +218,7 @@ def sort_by_endDate(request):
     dic = {}
     for v in voting:
         fecha = v.end_date  
-        if fecha != None:      
+        if fecha is not None:      
             dic[v] = fecha
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
