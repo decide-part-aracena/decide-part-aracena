@@ -1,4 +1,4 @@
-from python:3.8-buster
+FROM python:3.8-buster
 
 RUN apt-get update
 RUN apt-get -y install git postgresql gcc libc-dev
@@ -10,15 +10,16 @@ RUN pip install ipdb
 RUN pip install ipython
 
 WORKDIR /app
-
-RUN git clone https://github.com/decide-part-aracena/decide-part-aracena.git .
+COPY decide ./decide
+COPY requirements.txt ./requirements.txt
 RUN pip install -r requirements.txt
 
+
 WORKDIR /app/decide
-
 # local settings.py
-ADD docker-settings.py /app/decide/local_settings.py
-
+COPY docker/web/docker_settings.py ./local_settings.py
+# copy secrets settings only if exist
+COPY docker/dummy decide/secrets_settings.py* ./
 RUN ./manage.py collectstatic
 
 #CMD ["gunicorn", "-w 5", "decide.wsgi", "--timeout=500", "-b 0.0.0.0:5000"]
