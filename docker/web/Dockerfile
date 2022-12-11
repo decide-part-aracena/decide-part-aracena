@@ -18,6 +18,7 @@ RUN pip install -r requirements.txt
 WORKDIR /app/decide
 # local settings.py
 COPY docker/web/docker_settings.py ./local_settings.py
+COPY docker/web/createsuperuser.py ./createsuperuser.py
 RUN ./manage.py collectstatic
 
 #CMD ["gunicorn", "-w 5", "decide.wsgi", "--timeout=500", "-b 0.0.0.0:5000"]
