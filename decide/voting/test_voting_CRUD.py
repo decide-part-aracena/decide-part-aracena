@@ -116,7 +116,6 @@ class TestCrud(BaseTestCase):
          self.assertEqual(response.status_code, 404)
          self.assertTemplateNotUsed('voting_details.html')
 
-
     def test_delete_positive(self):
          q = Question(desc='test question')
          q.save()
