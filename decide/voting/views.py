@@ -25,7 +25,10 @@ from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 from .forms import VotingForm
+from django.contrib.auth.decorators import user_passes_test
 
+def staff_required(login_url):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
 class VotingView(generics.ListCreateAPIView):
     queryset = Voting.objects.all()
@@ -161,7 +164,7 @@ def showUpdateQuestions(request, question_id):
             return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
 
 
-
+@staff_required(login_url="/base")
 def voting_details(request, voting_id):
     if request.method == 'GET':
         voting = get_object_or_404(Voting, pk=voting_id)
@@ -178,7 +181,7 @@ def voting_details(request, voting_id):
                                                           'error': form.errors})
                                                   
 
-
+@staff_required(login_url="/base")
 def create_voting(request):
     if request.method == 'GET':
         return render(request, 'create_voting.html', {'form': VotingForm})
@@ -224,18 +227,18 @@ def sort_by_endDate(request):
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorted_by_endDate.html', {'sorted_voting_endDate':sorted_dic.keys})
 
-
+@staff_required(login_url="/base")
 def list_voting(request):
     voting = Voting.objects.all()
     return render(request, 'voting_list.html',{
         'voting':voting
     })
-
+@staff_required(login_url="/base")
 def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
-    
+@staff_required(login_url="/base")  
 def start_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
 
@@ -243,13 +246,13 @@ def start_voting(request, voting_id):
     voting.start_date = timezone.now()
     voting.save()
     return redirect('voting_list')
-
+@staff_required(login_url="/base")
 def stop_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.end_date = timezone.now()
     voting.save()
     return redirect('voting_list')
-
+@staff_required(login_url="/base")
 def tally_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     token = request.session.get('auth-token', '')
