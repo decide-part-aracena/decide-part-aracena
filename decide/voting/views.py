@@ -24,8 +24,10 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
-from .forms import VotingForm
+from .forms import VotingForm, AuthForm
+
 from django.contrib.auth.decorators import user_passes_test
+
 
 def staff_required(login_url):
     return user_passes_test(lambda u: u.is_staff, login_url=login_url)
@@ -122,13 +124,14 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
 
 
 def listaPreguntas(request):
-    preguntas = Question.objects.all()
+    preguntas = Question.objects.all() 
     return render(request, 'preguntas.html', {'preguntas':preguntas})
 
 
 def crearPreguntas(request):
     if request.method == 'GET':
-        return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
+        # return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
+        return render(request, 'crearPreguntas.html', {'form':QuestionForm})
     else:
         try: 
             form = QuestionForm(request.POST)
@@ -139,7 +142,9 @@ def crearPreguntas(request):
             # nuevaPregunta2.save()           
             return redirect('preguntas')
         except ValueError:
-            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
+            # return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
+            return render(request, 'preguntas.html', {'form':QuestionForm, 'error': form.errors})
+
         
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
@@ -149,19 +154,27 @@ def borrarPreguntas(request, question_id):
 def showUpdateQuestions(request, question_id):
     if request.method == 'GET':
         question = get_object_or_404(Question, pk=question_id)
+        # question2 = get_object_or_404(QuestionOption, pk=question_id)
+
         form = QuestionForm(instance = question)
-        form2 = QuestionOptionsForm(instance=question)
-        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form, 'form2':QuestionOptionsForm})
+        #form2 = QuestionOptionsForm(instance=question2)
+        #return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form, 'form2':form2})
+        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form})
+
     else:
         try:
             question = get_object_or_404(Question, pk=question_id)
+            # question2 = get_object_or_404(QuestionOption, pk=question_id)
+
             form = QuestionForm(request.POST, instance = question)
             form.save()
-            form2 = QuestionOptionsForm(request.POST, instance = question)
-            form2.save()
+            # form2 = QuestionOptionsForm(request.POST, instance = question2)
+            # form2.save()
             return redirect('preguntas')
         except ValueError:
-            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
+            # return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
+            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'error': form.errors})
+
 
 
 @staff_required(login_url="/base")
@@ -252,9 +265,49 @@ def stop_voting(request, voting_id):
     voting.end_date = timezone.now()
     voting.save()
     return redirect('voting_list')
+
 @staff_required(login_url="/base")
 def tally_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     token = request.session.get('auth-token', '')
     voting.tally_votes(token)
     return redirect('voting_list')
+
+
+def create_auth(request):
+    if request.method == 'GET':
+        return render(request, 'create_auth.html', {'form': AuthForm})
+    else:
+        try:
+            form = AuthForm(request.POST)
+            new_auth = form.save(commit=True)
+            new_auth.save()
+            return redirect('create_voting')
+        except ValueError:
+            return render(request, 'create_auth.html', {'form':AuthForm, 'error':form.errors})
+
+def list_auth(request):
+    auth = Auth.objects.all()
+    return render(request, 'auth_list.html',{'auth':auth})
+
+def delete_auth(request, auth_id):
+    auth = Auth.objects.get(id = auth_id)
+    auth.delete()
+    return redirect('auth_list')
+
+
+def auth_details(request, auth_id):
+    if request.method == 'GET':
+        auth = get_object_or_404(Auth, pk=auth_id)
+        form = AuthForm(instance=auth)
+        return render(request, 'auth_details.html', {'auth': auth, 'form':form})
+    else:
+        try:
+            auth = get_object_or_404(Auth, pk=auth_id)
+            form = AuthForm(request.POST, instance=auth)
+            form.save()
+            return redirect('auth_list')
+        except ValueError:
+            return render(request, 'auth_details.html', {'auth': auth, 'form': AuthForm,
+                                                          'error': form.errors})
+
