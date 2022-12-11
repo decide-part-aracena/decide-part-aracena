@@ -16,6 +16,13 @@
                 {{ register_form.errors }}
             </div>
             {% endif %}
+            {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
             <div class="row form-outline mb-4">
                 <label for="id_username" class="form-label">Username :</label>
                 <span class="form-control-lg"> {{ register_form.username }} </span>

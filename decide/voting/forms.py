@@ -7,7 +7,7 @@ from base.models import Auth
 class QuestionForm(ModelForm):
     class Meta: 
         model= Question
-        fields = ['desc']
+        fields = ['desc', 'optionSiNo']
 
 class QuestionOptionsForm(ModelForm):
     class Meta:
