@@ -28,7 +28,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
-
+from random_username.generate import generate_username
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -115,6 +115,15 @@ def borrar_censo(request, votacion_id):
 
 # Creada para la task de Importación de Censo -----------------------------------------------------------------
 
+def generar_nombre():
+
+    newUser = generate_username
+    try:
+        User.objects.get(username=newUser)
+        return generar_nombre()
+    except User.DoesNotExist:
+        return newUser
+
 def import_datadb(request):
     if request.user.is_staff:
         if request.method == 'POST':
@@ -146,10 +155,10 @@ def import_datadb(request):
                 
                 if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
                   
-                    newUser = User(username='user' + str(df['voter_id'][i]))
+                    newUsername =  generar_nombre()
+                    newUser = User(username=newUsername)
                     print(newUser)
                     newUser.set_password('newUser')
-                    newUser.is_superuser = True
                     newUser.save()
                     users_id.append(df['voter_id'][i])
 
