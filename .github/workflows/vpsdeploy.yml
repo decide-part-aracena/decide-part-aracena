@@ -24,7 +24,7 @@ jobs:
             cd decide-part-aracena/
             git switch develop
 
-            cp ../configuration/local_settings.py decide/local_settings.py
+            cp ../configuration/docker_settings.py docker/web/docker_settings.py
             cp ../configuration/secrets_settings.py decide/secrets_settings.py
             cp ../configuration/.env .env
 
