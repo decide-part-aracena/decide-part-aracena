@@ -1,0 +1,61 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+<STYLE>
+  A {
+    text-decoration: none;
+  }
+</STYLE>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock extrahead %}
+
+{% block content %}
+<center>
+  <h3><strong>Census</strong></h3>
+</center>
+<div class="row text-center" style="width: 90%;">
+    <table class="table align-middle mb-0 bg-white">
+      <thead class="bg-light">
+        <tr>
+          <th>Voter Id</th>
+          <th>Voting Id</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for c in censos %}
+        <tr>
+          <td>
+            <div class="d-flex align-items-center">
+              <div class="ms-3">
+                <p class="fw-bold mb-1">{{c.voter_id}}</p>
+              </div>
+            </div>
+          </td>
+  
+          <td>
+            <p class="fw-normal mb-1">{{ c.voting_id}}</p>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div>
+{% endblock content %}
+
+{% block extrabody %}
+<script>
+  //Copiado de https://sutilweb.com/lenguajes/bootstrap/bootstrap-4/boostrap-4-filtros/
+  $(document).ready(function () {
+    $("#myInput").on("keyup", function () {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function () {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+
+{% endblock extrabody %}

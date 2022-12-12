@@ -30,6 +30,11 @@ import operator
 from django.core.paginator import Paginator
 from django.http import Http404
 
+from django.template.loader import render_to_string
+
+from weasyprint import HTML
+from weasyprint.text.fonts import FontConfiguration
+
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -184,8 +189,6 @@ def export_csv(request):
 def export_xls(request):
 
     queryset = Census.objects.all()
-    options = Census._meta
-    fields = [field.name for field in options.fields]
 
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -198,8 +201,6 @@ def export_xls(request):
 def export_json(request):
 
     queryset = Census.objects.all()
-    options = Census._meta
-    fields = [field.name for field in options.fields]
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -212,8 +213,6 @@ def export_json(request):
 def export_yaml(request):
 
     queryset = Census.objects.all()
-    options = Census._meta
-    fields = [field.name for field in options.fields]
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -226,8 +225,6 @@ def export_yaml(request):
 def export_html(request):
 
     queryset = Census.objects.all()
-    options = Census._meta
-    fields = [field.name for field in options.fields]
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -240,8 +237,6 @@ def export_html(request):
 def export_ods(request):
 
     queryset = Census.objects.all()
-    options = Census._meta
-    fields = [field.name for field in options.fields]
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -251,5 +246,17 @@ def export_ods(request):
     
     return response
 
+def export_pdf(request):
+
+    context = {}
+    html = render_to_string("censoToPDF.html", context)
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = "inline; census.pdf"
+
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+
+    return response
 
 

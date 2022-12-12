@@ -9,6 +9,7 @@ urlpatterns = [
     path('import_datadb', import_datadb, name='import'),
     path('census/', views.listar_censos, name = 'censo'),
     path('census/census_exported_csv', views.export_csv,),
+    path('census/census_exported_pdf', views.export_pdf,),
     path('census/census_exported_xls', views.export_xls,),
     path('census/census_exported_json', views.export_json,),
     path('census/census_exported_yaml', views.export_yaml,),
