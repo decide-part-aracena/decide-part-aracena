@@ -15,6 +15,17 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 
+import time
+import json
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 
 
 class VotingModelTestCase(BaseTestCase): 
@@ -265,18 +276,8 @@ class VotingModelTestCase(BaseTestCase):
         v.question.add(q2)
         self.assertEquals(v.question.all().count(),2)
 
-import time
-import json
-from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.action_chains import ActionChains
-from selenium.webdriver.support import expected_conditions
-from selenium.webdriver.support.wait import WebDriverWait
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-class TestSortbyname(StaticLiveServerTestCase):
+class TestSortVoting(StaticLiveServerTestCase):
     def setUp(self):
         # Load base test functionality for decide
         self.base = BaseTestCase()
@@ -296,13 +297,14 @@ class TestSortbyname(StaticLiveServerTestCase):
         self.vars = {}
         self.client = None
   
-    def test_sortbyname(self):
+    def test_sort(self):
         options = webdriver.ChromeOptions()
         options.headless = True
-        # self.driver.get("http://127.0.0.1:8000/")
         self.driver.get(f'{self.live_server_url}/voting/votingList/')
         self.driver.set_window_size(1386, 752)
-        # self.driver.find_element(By.ID, "navbarDropdown").click()
-        # self.driver.find_element(By.LINK_TEXT, "Votings").click()
         self.driver.find_element(By.LINK_TEXT, "Order by:").click()
         self.driver.find_element(By.LINK_TEXT, "Title").click() 
+        self.driver.find_element(By.LINK_TEXT, "Order by:").click()
+        self.driver.find_element(By.LINK_TEXT, "Start date").click() 
+        self.driver.find_element(By.LINK_TEXT, "Order by:").click()
+        self.driver.find_element(By.LINK_TEXT, "End date").click() 
