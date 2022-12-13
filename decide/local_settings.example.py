@@ -5,7 +5,7 @@ MODULES = [
     'authentication',
     'base',
     'booth',
-    'census',
+    '',
     'graphic',
     'mixnet',
     'postproc',
@@ -41,6 +41,7 @@ DATABASES = {
         'PORT': '5432',
     }
 }
+
 
 # number of bits for the key, all auths should use the same number of bits
 KEYBITS = 256
