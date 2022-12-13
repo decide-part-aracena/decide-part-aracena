@@ -6,7 +6,7 @@
     {{error}}
     <form method="POST">
         
-        <script>
+        <!-- <script>
             function myFunction() {
             const element = document.getElementById("plus");
             const element2 = document.getElementById("plus2");
@@ -14,8 +14,7 @@
             }
             </script>
                 <div id = "plus">
-                    {% csrf_token %}
-                    {{form.as_p}}
+                   
                     {{form2.as_p}}
                     </div>
         <div id = "plus2">
@@ -24,8 +23,10 @@
             </div>
 
         <br />
-        <button onclick="myFunction()">Plus</button>
+        <button onclick="myFunction()">Plus</button> -->
 
+                {% csrf_token %}
+                    {{form.as_p}}
         <button class="btn btn-secondary btn-lg" type="submit"
             onclick="return confirm('¿Seguro que quieres crear la pregunta?');">Create</button>
     </form>
