@@ -47,9 +47,8 @@ class Voting(models.Model):
     name = models.CharField(max_length=200)
     desc = models.TextField(blank=True, null=True)
     question = models.ManyToManyField(Question, related_name='votings')
-    typePostproc = models.CharField(max_length=8, help_text='Debe elegir entre IDENTITY o DHONT como método de recuento', 
-                        choices=(('IDENTITY', 'IDENTITY'), ('DHONT','DHONT')), default='IDENTITY')
-    seats = models.PositiveIntegerField(default=0, help_text='Introduzca el número de escaños a repartir en caso de elegir DHONT')
+    typepostproc = models.CharField(max_length=8,help_text='Elige método de recuento',choices=(('IDENTITY','IDENTITY'),('DHONT','DHONT')),default='IDENTITY')
+    seats = models.PositiveIntegerField(default=0, help_text='Introduzca número de escaños a repartir en caso de elegir DHONT')
 
     start_date = models.DateTimeField(blank=True, null=True)
     end_date = models.DateTimeField(blank=True, null=True)
@@ -134,7 +133,7 @@ class Voting(models.Model):
                 })
             
 
-        data = { 'type': self.typePostproc, 'options': opts, 'seats': self.seats }
+        data = { 'type': self.typepostproc, 'options': opts, 'seats': self.seats }
         postp = mods.post('postproc', json=data)
 
         self.postproc = postp
