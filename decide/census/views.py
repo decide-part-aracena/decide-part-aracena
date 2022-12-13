@@ -31,6 +31,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 
 from django.template.loader import render_to_string
+import tempfile
 
 from weasyprint import HTML
 from weasyprint.text.fonts import FontConfiguration
@@ -248,11 +249,12 @@ def export_ods(request):
 
 def export_pdf(request):
 
-    context = {}
-    html = render_to_string("censoToPDF.html", context)
+    censos = Census.objects.all()
+    html = render_to_string("censoToPDF.html", {'censos':censos})
 
     response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = "inline; census.pdf"
+    response["Content-Disposition"] = "inline; atachment; census.pdf"
+    response["Content-Transfer-Encoding"] = 'binary'
 
     font_config = FontConfiguration()
     HTML(string=html).write_pdf(response, font_config=font_config)
