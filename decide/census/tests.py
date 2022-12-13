@@ -102,7 +102,11 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_export_html(self):
-        response = self.client.get('/census/census/census_exported_html', format='json')
+        response = self.client.get('/census/census/census_exported_html', format='html')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_export_pdf(self):
+        response = self.client.get('/census/census/census_exported_pdf', format='pdf')
         self.assertEqual(response.status_code, 200)
 
 class CensusTestCaseSelenium(StaticLiveServerTestCase):
@@ -141,14 +145,22 @@ class CensusTestCaseSelenium(StaticLiveServerTestCase):
     def test_testYAML(self):
         self.driver.get("http://127.0.0.1:8000/census/census/")
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to YAML").click()
+        self.driver.find_element(By.LINK_TEXT, "Export to YAML").click()            
 
     def test_testJSON(self):
         self.driver.get("http://127.0.0.1:8000/census/census/")
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to JSON").click()
+        self.driver.get("http://127.0.0.1:8000/census/census/census_exported_json")
 
     def test_testHTML(self):
         self.driver.get("http://127.0.0.1:8000/census/census/")
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to HTML").click()
+        self.driver.get("http://127.0.0.1:8000/census/census/census_exported_html")
+        
+    def test_testPDF(self):
+        self.driver.get("http://127.0.0.1:8000/census/census/")
+        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
+        self.driver.find_element(By.LINK_TEXT, "Export to PDF").click()
+        self.driver.get("http://127.0.0.1:8000/census/census/census_exported_pdf")
