@@ -288,7 +288,7 @@ class TestSortVoting(StaticLiveServerTestCase):
         u.save()
 
         options = webdriver.ChromeOptions()
-        options.headless = True
+        options.headless = False
         self.driver = webdriver.Chrome(options=options)
 
     def tearDown(self):
@@ -297,14 +297,33 @@ class TestSortVoting(StaticLiveServerTestCase):
         self.vars = {}
         self.client = None
   
-    def test_sort(self):
+    def test_sortByName(self):
         options = webdriver.ChromeOptions()
-        options.headless = True
+        options.headless = False
         self.driver.get(f'{self.live_server_url}/voting/votingList/')
         self.driver.set_window_size(1386, 752)
+
         self.driver.find_element(By.LINK_TEXT, "Order by:").click()
         self.driver.find_element(By.LINK_TEXT, "Title").click() 
+        self.assertTemplateUsed('sorted_by_param.html')
+    
+    def test_sortByStartDate(self):
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.set_window_size(1386, 752)
+        
         self.driver.find_element(By.LINK_TEXT, "Order by:").click()
         self.driver.find_element(By.LINK_TEXT, "Start date").click() 
+        self.assertTemplateUsed('sorted_by_param.html')
+     
+    def test_sortByEndDate(self):
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.set_window_size(1386, 752)
+        
         self.driver.find_element(By.LINK_TEXT, "Order by:").click()
         self.driver.find_element(By.LINK_TEXT, "End date").click() 
+        self.assertTemplateUsed('sorted_by_param.html')
+    

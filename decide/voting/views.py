@@ -25,7 +25,10 @@ from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 from .forms import VotingForm
+from django.contrib.auth.decorators import user_passes_test
 
+def staff_required(login_url):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
 class VotingView(generics.ListCreateAPIView):
     queryset = Voting.objects.all()
@@ -190,6 +193,7 @@ def create_voting(request):
         except ValueError:
             return render(request, 'create_voting.html', {'form': VotingForm, 'error': form.errors})
 
+@staff_required(login_url="/base")
 def sort_by_param(request):
     cadena = str(request)
     spliter = cadena.split(sep = '/')
