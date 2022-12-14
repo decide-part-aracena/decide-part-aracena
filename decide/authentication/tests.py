@@ -7,6 +7,7 @@ from rest_framework.authtoken.models import Token
 from base import mods
 from decide.settings import LOGIN_URL
 from django.core.cache import cache
+import os
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -164,7 +165,7 @@ class AuthUserTestCase(StaticLiveServerTestCase):
         self.base = BaseTestCase()
         self.base.setUp()
 
-        u = User(username='seleniumVoter')
+        u = User(username='seleniumVoter', email="selenium@email.com")
         u.set_password('123')
         u.save()
 
@@ -208,6 +209,57 @@ class AuthUserTestCase(StaticLiveServerTestCase):
             "fire1234", Keys.ENTER)
         self.assertTrue(
             self.live_server_url+"/authentication/registeruser/" == self.driver.current_url)
+
+    def test_register_email_already_used(self):
+        self.driver.get(self.live_server_url+"/authentication/registeruser/")
+        self.driver.set_window_size(1366, 836)
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("seleniumVoter2")
+        self.driver.find_element(By.ID, "id_first_name").send_keys("usuario")
+        self.driver.find_element(By.ID, "id_last_name").send_keys("selenium")
+        self.driver.find_element(By.ID, "id_email").send_keys(
+            "selenium@email.com")
+        self.driver.find_element(By.ID, "id_password1").send_keys("fire1234")
+        self.driver.find_element(By.ID, "id_password2").send_keys(
+            "fire1234", Keys.ENTER)
+        self.assertTrue(
+            self.live_server_url+"/authentication/registeruser/" == self.driver.current_url)
+        email_used = 'This email is already being used'
+        self.assertTrue(email_used in self.driver.page_source)
+    
+    def test_different_passwords(self):
+        self.driver.get(self.live_server_url+"/authentication/registeruser/")
+        self.driver.set_window_size(1366, 836)
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("seleniumVoter2")
+        self.driver.find_element(By.ID, "id_first_name").send_keys("usuario")
+        self.driver.find_element(By.ID, "id_last_name").send_keys("selenium")
+        self.driver.find_element(By.ID, "id_email").send_keys(
+            "selenium@gmail.com")
+        self.driver.find_element(By.ID, "id_password1").send_keys("fire1234")
+        self.driver.find_element(By.ID, "id_password2").send_keys(
+            "fuego1234", Keys.ENTER)
+        self.assertTrue(
+            self.live_server_url+"/authentication/registeruser/" == self.driver.current_url)
+        incorrect_pass = "The two password fields didn't match."
+        self.assertTrue(incorrect_pass in self.driver.page_source)
+
+    def test_short_passwords(self):
+        self.driver.get(self.live_server_url+"/authentication/registeruser/")
+        self.driver.set_window_size(1366, 836)
+        self.driver.find_element(
+            By.ID, "id_username").send_keys("seleniumVoter2")
+        self.driver.find_element(By.ID, "id_first_name").send_keys("usuario")
+        self.driver.find_element(By.ID, "id_last_name").send_keys("selenium")
+        self.driver.find_element(By.ID, "id_email").send_keys(
+            "selenium@gmail.com")
+        self.driver.find_element(By.ID, "id_password1").send_keys("pass")
+        self.driver.find_element(By.ID, "id_password2").send_keys(
+            "pass", Keys.ENTER)
+        self.assertTrue(
+            self.live_server_url+"/authentication/registeruser/" == self.driver.current_url)
+        too_short_pass = "This password is too short. It must contain at least 8 characters"
+        self.assertTrue(too_short_pass in self.driver.page_source)
 
     def test_login(self):
         self.driver.get(self.live_server_url+"/authentication/loginuser/")
@@ -366,3 +418,66 @@ class MagicAuthTestCase(StaticLiveServerTestCase):
                 (take a break and check it later, you have gone through enough testing today :) )
         '''
         pass
+
+#Test Social Authentication
+class SocialAuthTestCase(StaticLiveServerTestCase):
+    ''' Test to test the social authentication feature, 
+    where you can choose between three different providers: Google, Facebook and Discord'''
+
+    def test_GoogleAuthPositive(self):
+        '''
+            Tests if you can log in with a google account
+
+            THIS TEST CANNOT BE EXECUTED IN DEVELOPMENT DUE TO THE ORGANIZATION INFRASTRUCTURE,
+                IN ORDER TO TEST THIS FEATURE ASK THE SECRETS KEYS ADMINISTRATOR
+
+            Procedure:
+                - Enter as guest to "http://localserver:port/authentication/loginuser/"
+                - Click the Google icon or text.
+                - You will get redirected to a page to confirm that you want to log in with said provider.
+                - Click the "Continue" button and you will get redirected to accounts.google.com where you can choose the account 
+                    you want to use to log in.
+                - When you are done logging in on accounts.google.com you will get redirected to "http://localhost:8000/base/" 
+                    and you will be logged using as a username the name that you have on your Google account if its not used yet on Decide. 
+                    If that username is already been used, you will get your name and a number after it as your name. 
+        '''
+    pass
+    def test_FacebookAuthPositive(self):
+        '''
+            Tests if you can log in with a facebook account
+
+            THIS TEST CANNOT BE EXECUTED IN DEVELOPMENT DUE TO THE ORGANIZATION INFRASTRUCTURE,
+                IN ORDER TO TEST THIS FEATURE ASK THE SECRETS KEYS ADMINISTRATOR
+
+            Procedure:
+                - Enter as guest to "http://localserver:port/authentication/loginuser/"
+                - Click the Facebook icon or text.
+                - You will get redirected to a page to confirm that you want to log in with said provider.
+                - Click the "Continue" button and you will get redirected to facebook.com where you can choose the account 
+                    you want to use to log in.
+                - When you are done logging in on facebook.com you will get redirected to "http://localhost:8000/base/" 
+                    and you will be logged using as a username the name that you have on your Facebook account if its not used yet on Decide. 
+                    If that username is already been used, you will get your name and a number after it as your name. 
+        '''
+        pass
+
+    def test_DiscordAuthPositive(self):
+        '''
+            Tests if you can log in with a discord account
+
+            THIS TEST CANNOT BE EXECUTED IN DEVELOPMENT DUE TO THE ORGANIZATION INFRASTRUCTURE,
+                IN ORDER TO TEST THIS FEATURE ASK THE SECRETS KEYS ADMINISTRATOR
+
+            Procedure:
+                - Enter as guest to "http://localserver:port/authentication/loginuser/"
+                - Click the Discord icon or text.
+                - You will get redirected to a page to confirm that you want to log in with said provider.
+                - Click the "Continue" button and you will get redirected to discord.com where you can choose the account 
+                    you want to use to log in.
+                - When you are done logging in on discord.com you will get redirected to "http://localhost:8000/base/" 
+                    and you will be logged using as a username the name that you have on your Discord account if its not used yet on Decide. 
+                    If that username is already been used, you will get your name and a number after it as your name. 
+        '''
+        pass
+
+

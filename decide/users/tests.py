@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from base.tests import BaseTestCase
 from selenium.webdriver.common.keys import Keys
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from django.contrib.auth.models import User
 
 class TestUsers(StaticLiveServerTestCase):
     def setUp(self):
@@ -134,3 +135,39 @@ class TestUsers(StaticLiveServerTestCase):
         
         self.driver.switch_to.alert.accept()
         self.assertTrue(self.live_server_url+"/users/" == self.driver.current_url)
+
+class TestUsersModel(StaticLiveServerTestCase):
+
+    def setUp(self):
+        self.users = User(email = "testuseremail@email.com", username= "TestUser", password="complexpassword")
+        self.users.save()
+
+    def tearDown(self):
+        self.users = None
+        super().tearDown()
+
+    def test_stored_user(self):
+        self.assertEqual(User.objects.count(),1)
+    
+    def test_delete_user(self):
+        self.users.delete()
+        self.assertEqual(User.objects.count(),0)
+    
+    def test_update_user(self):
+        user = User.objects.first()
+        user.username = "NewUser"
+        user.save()
+        self.assertEqual(User.objects.first().__getattribute__('username'),"NewUser")
+        self.assertNotEqual(User.objects.first().__getattribute__('username'),"TestUser")
+    
+    def test_create_user(self):
+        user = User.objects.create_superuser("ImNewHere", "thisis@valid.email", "newpass"),User.objects.create_user("notAdmin", "butvalid@email.com", "andpass")
+        self.users = self.users , user
+        self.assertEqual(User.objects.count(),3)
+        self.assertEqual(User.objects.first().__getattribute__('username'),"TestUser")
+        first_user = User.objects.get(email="thisis@valid.email")
+        second_user = User.objects.get(username="notAdmin")
+        self.assertEqual(first_user.__getattribute__('username'),"ImNewHere")
+        self.assertEqual(first_user.__getattribute__('is_staff'),True)
+        self.assertEqual(second_user.__getattribute__('email'),"butvalid@email.com")
+        self.assertEqual(second_user.__getattribute__('is_staff'),False)
