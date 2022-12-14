@@ -178,7 +178,7 @@ class ImportTestCase(APITestCase):
             response = self.client.post('/census/import_datadb', data)
         error = self.assertContains(response, "¡Cuidado! No has cargado ningún archivo.")
         print(error)
-        self.assertEqual(response.status_code, 200)
+        
         
 
     def test_duplicated_import(self):
@@ -192,17 +192,12 @@ class ImportTestCase(APITestCase):
                 'sexo': ['F', 'M','F', 'M','M'],
                 'voter_id': [2,3,4,1,5]}
 
-        response = self.client.post('/census/import_datadb', data1)
-        self.assertEqual(response.status_code, 200)
+        for i in range(len(data1["voting_id"])):
+            census = Census(voting_id=data1['voting_id'][i], voter_id=data1['voter_id'][i])
+            census.save()
 
-        #df = pd.DataFrame(data1)
-
-        #for i in range(df.shape[0]):
-          #  census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-           # census.save()
-
-        response = self.client.get('/census/import_datadb')
-        self.assertEqual(response.status_code, 200)
+        #response = self.client.get('/census/import_datadb')
+        #self.assertEqual(response.status_code, 200)
         
         input_format = 'file'
         filename = os.path.join(
@@ -213,7 +208,7 @@ class ImportTestCase(APITestCase):
             data = {'file': f,}
         
         response = self.client.post('/census/import_datadb', data)
-        self.assertEqual(response.status_code, 200)
-
-        error = self.assertContains(response, "Duplicated Key")
-        print(error)
+        #self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Duplicated Key")
+        
+        

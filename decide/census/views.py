@@ -28,7 +28,7 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
-from random_username.generate import generate_username
+import random
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -115,9 +115,19 @@ def borrar_censo(request, votacion_id):
 
 # Creada para la task de Importación de Censo -----------------------------------------------------------------
 
+def randletter(a,b):
+    return chr(random.randint(ord(a),ord(b)))
+
 def generar_nombre():
 
-    newUser = generate_username
+    newUser = "user"
+    letraMin = randletter('a','z')
+    letraMayusc = randletter('A', 'Z')
+    letraRand = (letraMin, letraMayusc)[random.randint(0,1)]
+
+    newUser = newUser + letraMin + letraMayusc + letraRand
+    print(newUser)
+    
     try:
         User.objects.get(username=newUser)
         return generar_nombre()
@@ -125,56 +135,68 @@ def generar_nombre():
         return newUser
 
 def import_datadb(request):
-    if request.user.is_staff:
-        if request.method == 'POST':
-            try:
-                file = request.FILES['file']
-            except MultiValueDictKeyError:
-                    mensaje_error = messages.add_message(request, messages.ERROR, 
-                    "¡Cuidado! No has cargado ningún archivo.")
-                    return render(request, 'excel.html', {'mensaje_error': mensaje_error})
 
+    if request.method == 'POST':
+
+        # Importación del archivo excel:
+        try:
+            file = request.FILES['file']
+            
             obj = ExcelFile.objects.create( file = file )
             path = str(obj.file)
-            
+        
             df = pd.read_excel(path)
             
+                    
+            
+            
+            # Ids de los usuarios de la bbdd:
             users = User.objects.all()
             users_id = []
             for us in users:
                 user_id = us.id
                 users_id.append(user_id)
 
+            # Ids de las votaciones de la bbdd:
             votings = Voting.objects.all()
             votings_id = []
             for vid in votings:
                 voting_id = vid.id
                 votings_id.append(voting_id)
             
+            # Añadir los datos del archivo excel a bbdd:
             for i in range(df.shape[0]):
                 
                 if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
                   
+                  # Crear un nuevo usuario con el votante no registrado en bbdd:
                     newUsername =  generar_nombre()
+                    print(newUsername)
                     newUser = User(username=newUsername)
-                    print(newUser)
+                    #print(newUser)
                     newUser.set_password('newUser')
                     newUser.save()
-                    users_id.append(df['voter_id'][i])
 
+                  # Añadirlo a la lista de ids de usuarios en bbdd:
+                    users_id.append(df['voter_id'][i])
+                    print("Users id 1:")
+                    print(users_id)
 
                 if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
                     
+                    print("Users id 2:")
+                    print(users_id)
                     try:
                          census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                          census.save()
 
                     except IntegrityError:
                         print('Entra en error Duplicated key')
-                        mensaje_error2 = messages.add_message(request, 
-                        messages.ERROR, 
-                        "Duplicated Key")
-                        return render(request, 'excel.html', {'mensaje_error': mensaje_error2})
+                        messages.add_message(request,  messages.ERROR, "Duplicated Key")
+                        
+        except MultiValueDictKeyError:
+                messages.add_message(request, messages.ERROR, 
+                    "¡Cuidado! No has cargado ningún archivo.")
 
     return render(request, 'excel.html')
 
