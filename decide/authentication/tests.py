@@ -7,7 +7,6 @@ from rest_framework.authtoken.models import Token
 from base import mods
 from decide.settings import LOGIN_URL
 from django.core.cache import cache
-import os
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -246,8 +245,8 @@ class AuthUserTestCase(StaticLiveServerTestCase):
         new_count = User.objects.count()
         self.assertTrue(
             self.live_server_url+"/authentication/registeruser/" == self.driver.current_url)
-        incorrect_pass = "The two password fields didn't match."
-        self.assertTrue(incorrect_pass in self.driver.page_source)
+        incorrect_msg = "The two password fields didn't match."
+        self.assertTrue(incorrect_msg in self.driver.page_source)
         self.assertEqual(old_count,new_count)
 
     def test_short_passwords(self):
@@ -266,8 +265,8 @@ class AuthUserTestCase(StaticLiveServerTestCase):
         new_count = User.objects.count()
         self.assertTrue(
             self.live_server_url+"/authentication/registeruser/" == self.driver.current_url)
-        too_short_pass = "This password is too short. It must contain at least 8 characters"
-        self.assertTrue(too_short_pass in self.driver.page_source)
+        too_short_msg = "This password is too short. It must contain at least 8 characters"
+        self.assertTrue(too_short_msg in self.driver.page_source)
         self.assertEqual(old_count,new_count)
 
     def test_login(self):

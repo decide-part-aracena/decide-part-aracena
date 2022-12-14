@@ -161,7 +161,8 @@ class TestUsersModel(StaticLiveServerTestCase):
         self.assertNotEqual(User.objects.first().__getattribute__('username'),"TestUser")
     
     def test_create_user(self):
-        user = User.objects.create_superuser("ImNewHere", "thisis@valid.email", "newpass"),User.objects.create_user("notAdmin", "butvalid@email.com", "andpass")
+        user = User.objects.create_superuser("ImNewHere", "thisis@valid.email", "newpass"),
+        User.objects.create_user("notAdmin", "butvalid@email.com", "andpass")
         self.users = self.users , user
         self.assertEqual(User.objects.count(),3)
         self.assertEqual(User.objects.first().__getattribute__('username'),"TestUser")
