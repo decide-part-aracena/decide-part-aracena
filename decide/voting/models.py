@@ -10,19 +10,19 @@ from base.models import Auth, Key
 
 class Question(models.Model):
     desc = models.TextField()
-    optionSiNo = models.BooleanField(default=False, help_text="Marca esta casilla para que las opciones sean Si o No. No podrás añadir más opciones")
+    # optionSiNo = models.BooleanField(default=False, help_text="Marca esta casilla para que las opciones sean Si o No. No podrás añadir más opciones")
 
     def __str__(self):
         return self.desc
 
-@receiver(post_save, sender=Question)
-def post_SiNo_Option(sender, instance, **kwargs):
-    options = instance.options.all()
-    if instance.optionSiNo and options.count() == 0:
-        op1 = QuestionOption(question=instance, number=1, option="Sí")
-        op1.save()
-        op2 = QuestionOption(question=instance, number=2, option="No")
-        op2.save()
+# @receiver(post_save, sender=Question)
+# def post_SiNo_Option(sender, instance, **kwargs):
+#     options = instance.options.all()
+#     if instance.optionSiNo and options.count() == 0:
+#         op1 = QuestionOption(question=instance, number=1, option="Sí")
+#         op1.save()
+#         op2 = QuestionOption(question=instance, number=2, option="No")
+#         op2.save()
 
 
 class QuestionOption(models.Model):
@@ -38,9 +38,9 @@ class QuestionOption(models.Model):
     def __str__(self):
         return '{} ({})'.format(self.option, self.number)
     
-    def clean(self):
-        if self.question.optionSiNo and self.question.options.all().count() != 2:
-            raise ValidationError('Las Preguntas Sí/No no deben tener opciones extras. Borre todas las opciones añadidas para poder crear la pregunta')
+    # def clean(self):
+    #     if self.question.optionSiNo and self.question.options.all().count() != 2:
+    #         raise ValidationError('Las Preguntas Sí/No no deben tener opciones extras. Borre todas las opciones añadidas para poder crear la pregunta')
 
 
 class Voting(models.Model):
