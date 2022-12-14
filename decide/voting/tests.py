@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 from rest_framework.test import APITestCase
-
+from django.core.exceptions import ValidationError
 from base import mods
 from base.tests import BaseTestCase
 from census.models import Census
@@ -214,19 +214,70 @@ class VotingModelTestCase(BaseTestCase):
         v.question.add(q1)
         self.assertEqual(v.question.all().count(), 1)
 
+    
+    def test_create_onequestion_SiNo_voting(self):
+        q1 = Question(desc='question1', optionSiNo=True)
+        q1.save()
+        opt = QuestionOption(question=q1)
+        opt.save()
+        v = Voting(name='test voting')
+        v.save()
+        a,_=Auth.objects.get_or_create(url=settings.BASEURL,
+                                        defaults={'me':True, 'name':'test auth'})
+        a.save()
+        v.auths.add(a)
+        v.question.add(q1)
+        self.assertEqual(v.question.all().count(), 1)
 
-    def test_create_multiquestion_voting(self):
-        q1 = Question(desc='question1')
+    def test_create_onequestion_SiNo_masOpciones(self):
+        q1 = Question(desc='question1', optionSiNo=True)
+        for i in range(5):
+            opt = QuestionOption(question=q1, option='option {}'.format(i+1))
+            self.assertRaises(ValidationError, opt.clean)
+
+    def test_delete_onequestion_SiNo_voting(self):
+        q1 = Question(desc='question1',optionSiNo=True)
+        q1.save()
+        v=Voting(name="test voting")
+        v.save()
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth'})
+        v.auths.add(a)
+        v.question.add(q1)
+
+        self.assertEquals(v.question.all().count(), 1)
+        v.question.remove(q1)
+        self.assertEquals(v.question.all().count(),0)
+    
+
+    def test_empty_question_to_SiNoQuestion(self):
+        q1 = Question(desc='question1', optionSiNo=False)
+        q1.save()
+        self.assertFalse(q1.optionSiNo)
+        q1.optionSiNo=True
+        self.assertTrue(q1.optionSiNo)
+    
+
+    def test_filled_question_to_SiNoQuestion(self):
+        q1 = Question(desc='question1', optionSiNo=False)
+        q1.save()
+        opt = QuestionOption(question=q1, number= '1', option='Opción Extra')
+        opt.save()
+        self.assertFalse(q1.optionSiNo)
+        q1.optionSiNo=True
+        self.assertTrue(q1.optionSiNo)
+        self.assertRaises(ValidationError, opt.clean)
+    
+    
+    def test_create_multiquestion_SiNo_voting(self):
+        q1 = Question(desc='Pregunta con diferentes opciones')
         q1.save()
         for i in range(5):
             opt = QuestionOption(question=q1, option='option {}'.format(i+1))
             opt.save()
-        q2 = Question(desc='question2')
+        q2 = Question(desc='Pregunta Sí/No', optionSiNo=True)
         q2.save()
-        for i in range(5):
-            opt = QuestionOption(question=q2, option='option {}'.format(i+1))
-            opt.save()
-        v = Voting(name='test voting')
+        v = Voting(name='Test Votación de todo tipo')
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -234,19 +285,21 @@ class VotingModelTestCase(BaseTestCase):
         v.auths.add(a)
         v.question.add(q1)
         v.question.add(q2)
-        a = v.question.all().count() == 2
-        self.assertTrue(a)
+        self.assertTrue(v.question.all().count(), 2)
+        self.assertTrue(v.question.all()[1].optionSiNo)
 
-    def test_deleting_question_from_voting_multiquestion(self):
+    def test_delete_onequestion_from_multiquestion_voting(self):
         q1 = Question(desc="test question1")
         q1.save()
         q2 = Question(desc="test question2")
         q2.save()
-        QuestionOption(question=q1,option="option1")
-        QuestionOption(question=q1,option="option2")
-        QuestionOption(question=q2,option="option3")
-        QuestionOption(question=q2,option="option4")
-        v=Voting(name="Votacion")
+        for i in range(2):
+            opt_q1 = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt_q1.save()
+            opt_q2 = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt_q2.save()
+
+        v=Voting(name="test voting")
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -257,16 +310,18 @@ class VotingModelTestCase(BaseTestCase):
         v.question.remove(q2)
         self.assertEquals(v.question.all().count(),1)
 
-    def test_adding_question_to_voting_multiquestion(self):
+    def test_add_onequestion_to_multiquestion_voting(self):
         q1 = Question(desc="test question1")
         q1.save()
         q2 = Question(desc="test question2")
         q2.save()
-        QuestionOption(question=q1,option="option1")
-        QuestionOption(question=q1,option="option2")
-        QuestionOption(question=q2,option="option3")
-        QuestionOption(question=q2,option="option4")
-        v=Voting(name="Votacion")
+        for i in range(2):
+            opt_q1 = QuestionOption(question=q1, option='option {}'.format(i+1))
+            opt_q1.save()
+            opt_q2 = QuestionOption(question=q2, option='option {}'.format(i+1))
+            opt_q2.save()
+            
+        v=Voting(name="test voting")
         v.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'name': 'test auth'})
@@ -326,4 +381,27 @@ class TestSortVoting(StaticLiveServerTestCase):
         self.driver.find_element(By.LINK_TEXT, "Order by:").click()
         self.driver.find_element(By.LINK_TEXT, "End date").click() 
         self.assertTemplateUsed('sorted_by_param.html')
+
+class TestCrudNegative(BaseTestCase):
+
+    def setUp(self):
+        self.logout()
+        super().setUp()
+
+    def test_sortByNameNegative(self):
+        self.logout()
+        response = self.client.get('/voting/name/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('voting_details.html')
     
+    def test_sortByStartDateNegative(self):
+        self.logout()
+        response = self.client.get('/voting/startDate/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('voting_details.html')
+    
+    def test_sortByEndDateNegative(self):
+        self.logout()
+        response = self.client.get('/voting/endDate/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('voting_details.html')
