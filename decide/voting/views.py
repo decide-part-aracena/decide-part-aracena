@@ -129,25 +129,17 @@ def listaPreguntas(request):
 
 
 def crearPreguntas(request):
-    listaOptions = []
     if request.method == 'GET':
         return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
     else:
         try: 
        
             form = QuestionForm(request.POST)
-            # form1 = form.save(commit = False)
             q = form.save()
-
-            opts = QuestionOptionsForm(request.POST)
-            num = opts.data.get('number')
-            opt = opts.data.get('option')
 
             e = dict(request.POST)
             numbers = e.pop('number')
             options = e.pop('option')
-            # print(numbers ,"**************************************")
-            # print(options)
 
             for i  in range(len(numbers)):
                 form2 = QuestionOption(question=q, option=options[i], number=numbers[i])
