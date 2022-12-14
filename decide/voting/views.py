@@ -214,16 +214,17 @@ def sort_by_param(request):
     dic = {}
     
     for v in voting:
+        print("##########################################", v.end_date)
         if(param == 'name'):
             name = v.name
             dic[v] = name
         elif(param == 'startDate'):
             date = v.start_date
-            if date != None:      
+            if date is not None:      
                 dic[v] = date
         else: 
             date = v.end_date  
-            if date != None:      
+            if date is not None:      
                 dic[v] = date
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
