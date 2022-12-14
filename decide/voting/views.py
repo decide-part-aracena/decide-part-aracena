@@ -24,7 +24,7 @@ from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
-from .forms import VotingForm
+from .forms import VotingForm, AuthForm
 from django.contrib.auth.decorators import user_passes_test
 
 def staff_required(login_url):
