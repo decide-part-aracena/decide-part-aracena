@@ -163,37 +163,6 @@ def borrarPreguntas(request, question_id):
     question.delete()
     return redirect('preguntas')
 
-def showUpdateQuestions(request, question_id):
-    if request.method == 'GET':
-        question = get_object_or_404(Question, pk=question_id)
-        question2 = get_object_or_404(QuestionOption, pk=question_id)
-        options = QuestionOption.objects.filter(question_id=question.id)
-        num_options = options.count()
-        for i in num_options:
-           form2 = QuestionOption(question=question, option=i.option, number=i.number)
-
-        form = QuestionForm(instance = question)
-        form2 = QuestionOptionsForm(request.POST)
-        
-        form2 = QuestionOptionsForm(instance=question2)
-        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form, 'form2':form2})
-
-    else:
-        try:
-            QuestionOption.objects.filter(question_id=question.id)
-            question = get_object_or_404(Question, pk=question_id)
-            question2 = get_object_or_404(QuestionOption, pk=question_id)
-
-            form = QuestionForm(request.POST, instance = question)
-            form.save()
-            form2 = QuestionOptionsForm(request.POST, instance = question2)
-            form2.save()
-            return redirect('preguntas')
-        except ValueError:
-            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
-
-
-
 @staff_required(login_url="/base")
 def voting_details(request, voting_id):
     if request.method == 'GET':
