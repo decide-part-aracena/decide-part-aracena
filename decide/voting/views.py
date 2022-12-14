@@ -227,7 +227,7 @@ def sort_by_param(request):
                 dic[v] = date
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_param.html', {'sorted_voting_name':sorted_dic.keys})
+    return render(request, 'sorted_by_param.html', {'sorted_voting':sorted_dic.keys})
     
 
 @staff_required(login_url="/base")
