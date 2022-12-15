@@ -118,7 +118,6 @@ class Voting(models.Model):
         
         question = self.question.all()
         opts = []
-
         for q in question:
             options = q.options.all()
             for opt in options:
@@ -127,15 +126,15 @@ class Voting(models.Model):
                 else:
                     votes = 0
                 opts.append({
+                    'question':q.desc,
                     'option': opt.option,
                     'number': opt.number,
                     'votes': votes
                 })
-            
+        
 
         data = { 'type': self.typepostproc, 'options': opts, 'seats': self.seats }
         postp = mods.post('postproc', json=data)
-
         self.postproc = postp
         self.save()
 
