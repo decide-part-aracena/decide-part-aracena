@@ -108,5 +108,5 @@ secrets_settings.py
 # vscode settings
 .vscode/
 
-# excel
+# excel importados
 excel/
