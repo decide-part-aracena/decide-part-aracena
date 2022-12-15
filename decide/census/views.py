@@ -147,9 +147,6 @@ def import_datadb(request):
         
             df = pd.read_excel(path)
             
-                    
-            
-            
             # Ids de los usuarios de la bbdd:
             users = User.objects.all()
             users_id = []
@@ -171,21 +168,15 @@ def import_datadb(request):
                   
                   # Crear un nuevo usuario con el votante no registrado en bbdd:
                     newUsername =  generar_nombre()
-                    print(newUsername)
                     newUser = User(username=newUsername)
-                    #print(newUser)
                     newUser.set_password('newUser')
                     newUser.save()
 
                   # Añadirlo a la lista de ids de usuarios en bbdd:
                     users_id.append(df['voter_id'][i])
-                    print("Users id 1:")
-                    print(users_id)
-
+                    
                 if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
                     
-                    print("Users id 2:")
-                    print(users_id)
                     try:
                          census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                          census.save()
