@@ -305,7 +305,7 @@ class AuthModelTestCase(BaseTestCase):
             url = 'perro'
         )
         url = reverse('create_auth')
-        response = self.client.post(url, {
+        self.client.post(url, {
             'name' : 'test auth',
             'url' : 'perro'
         })
@@ -322,19 +322,6 @@ class AuthModelTestCase(BaseTestCase):
             'url' : ''
         })
         self.assertTemplateNotUsed('voting_create.html')  
-
-    def test_create_negative2(self):
-        Auth.objects.create(
-            name = "hola",
-            url = ""
-        )
-        url = reverse('create_auth')
-        response = self.client.post(url, {
-            'name' : 'hola',
-            'url' : ''
-        })
-        self.assertTemplateNotUsed('voting_create.html')        
-
 
     def test_show_positive(self):
         auth = Auth.objects.create(
@@ -388,8 +375,8 @@ class AuthModelTestCase(BaseTestCase):
         self.assertTrue(Auth.objects.count() == 0)
 
 
-    def test_delete_positive(self):
-        auth =  Auth.objects.create(
+    def test_delete_negative(self):
+        Auth.objects.create(
             name = 'test auth',
             url = 'http://127.0.0.1:8000/'
         )
