@@ -214,7 +214,6 @@ def sort_by_param(request):
     dic = {}
     
     for v in voting:
-        print("##########################################", v.end_date)
         if(param == 'name'):
             name = v.name
             dic[v] = name
