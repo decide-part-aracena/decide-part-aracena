@@ -19,9 +19,9 @@
           Order by:
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="{% url 'sorted_by_name' %}">Title</a></li>
-              <li><a class="dropdown-item" href="{% url 'sorted_by_startDate' %}">Start date</a></li>
-              <li><a class="dropdown-item" href="{% url 'sorted_by_endDate' %}">End date</a></li>
+              <li><a class="dropdown-item" href="{% url 'name' %}">Title</a></li>
+              <li><a class="dropdown-item" href="{% url 'startDate' %}">Start date</a></li>
+              <li><a class="dropdown-item" href="{% url 'endDate' %}">End date</a></li>
           </ul>
       </li>
     </li>
@@ -93,6 +93,10 @@
               <button type="button" class="btn btn-link btn-sm btn-rounded">
               <a class="item" href="{% url 'stop_voting' votacion.id %}">Stop</a>
               </button> 
+              </button>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+              <a class="item" href="{% url 'tally_voting' votacion.id %}">Tally</a>
+              </button>
               <button type="button" class="btn btn-link btn-sm btn-rounded">
                 <a class="item" href="/booth/{{ votacion.id }}">booth</a>
               </button>

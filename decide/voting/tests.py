@@ -15,6 +15,11 @@ from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
 
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+
 
 
 class VotingModelTestCase(BaseTestCase): 
@@ -264,3 +269,90 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEquals(v.question.all().count(), 1)
         v.question.add(q2)
         self.assertEquals(v.question.all().count(),2)
+
+
+class TestSortVoting(StaticLiveServerTestCase):
+    def setUp(self):
+        # Load base test functionality for decide
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        u = User(username='seleniumVoter')
+        u.set_password('123')
+        u.save()
+        self.base.login()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()
+        self.base.tearDown()
+        self.vars = {}
+        self.client = None
+  
+    def test_sortByName(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.set_window_size(1386, 752)
+
+        self.driver.find_element(By.LINK_TEXT, "Order by:").click()
+        self.driver.find_element(By.LINK_TEXT, "Title").click() 
+        self.assertTemplateUsed('sorted_by_param.html')
+    
+    def test_sortByStartDate(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.set_window_size(1386, 752)
+        
+        self.driver.find_element(By.LINK_TEXT, "Order by:").click()
+        self.driver.find_element(By.LINK_TEXT, "Start date").click() 
+        self.assertTemplateUsed('sorted_by_param.html')
+     
+    def test_sortByEndDate(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.set_window_size(1386, 752)
+        
+        self.driver.find_element(By.LINK_TEXT, "Order by:").click()
+        self.driver.find_element(By.LINK_TEXT, "End date").click() 
+        self.assertTemplateUsed('sorted_by_param.html')
+        
+class TestCrudNegative(BaseTestCase):
+
+    def setUp(self):
+        self.logout()
+        super().setUp()
+
+    def test_list_name(self):
+        self.logout()
+        response = self.client.get('/voting/name/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('voting_details.html')
+    
+    def test_list_startDate(self):
+        self.logout()
+        response = self.client.get('/voting/startDate/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('voting_details.html')
+    
+    def test_list_endDate(self):
+        self.logout()
+        response = self.client.get('/voting/endDate/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('voting_details.html')
+    
+

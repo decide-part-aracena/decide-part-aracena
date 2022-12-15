@@ -1,0 +1,79 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+<STYLE>A {text-decoration: none;} </STYLE>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock extrahead %}
+
+{% block content %}
+<center><h3><strong>Auths</strong></h3></center>
+
+<div class="input-group container justify" style="width: 90%;margin-bottom: 9px;"> 
+  <div class="input-group-prepend" >
+    <span class="input-group-text" id="basic-addon1" style="height: 41px;margin-right: 4px;">
+      <i class="fa fa-search"></i>
+    </span>
+  </div>
+  <input id="myInput" type="text" class="form-control" aria-describedby="basic-addon1">
+  <hr>
+</div>
+
+<div class="container justify" style="width: 90%;"> 
+<table class="table align-middle mb-0 bg-white">
+      <thead class="bg-light">
+        <tr>
+          <th>Id Auth</th>
+          <th>Name</th>
+          <th>Url</th>       
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for auth in auth %}
+          <tr>
+            <td>
+              <div class="d-flex align-items-center">
+                <div class="ms-3">
+                  <p class="fw-bold mb-1">{{auth.id}}</p>
+                </div>
+              </div>
+            </td>
+            <td>
+                <p class="fw-bold mb-1">{{auth.name}}</p>
+            </td>
+            <td>
+              <p class="fw-bold mb-1">{{auth.url}}</p>
+          </td>
+            <td>
+              <button type="button" class="btn btn-link btn-sm btn-rounded">
+                <a class="item" href="{% url 'auth_details' auth.id %}">Edit</a>
+              <button type="button" class="btn btn-link btn-sm btn-rounded"
+              onClick="return confirm('¿Are you sure you want to delete {{ auth.id }}?');">
+                <a class="item" href="{% url 'delete_auth' auth.id %}">Delete</a>
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+    </tbody>
+  </table>
+</div>    
+      
+<button class="btn btn-secondary btn-lg"><a href="{% url 'create_auth' %}">Create auth</a></button>
+{% endblock content %}
+
+{% block extrabody %}
+<script>
+  //Copiado de https://sutilweb.com/lenguajes/bootstrap/bootstrap-4/boostrap-4-filtros/
+  $(document).ready(function(){
+    $("#myInput").on("keyup", function() {
+      var value = $(this).val().toLowerCase();
+      $("#myTable tr").filter(function() {
+        $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+      });
+    });
+  });
+</script>
+
+{% endblock extrabody %}
