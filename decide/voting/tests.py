@@ -14,6 +14,7 @@ from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 from mixnet.models import Auth
 from voting.models import Voting, Question, QuestionOption
+from django.urls import reverse
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -269,6 +270,117 @@ class VotingModelTestCase(BaseTestCase):
         self.assertEquals(v.question.all().count(), 1)
         v.question.add(q2)
         self.assertEquals(v.question.all().count(),2)
+
+# Test de frontend Auth 
+class AuthModelTestCase(BaseTestCase): 
+
+    def setUp(self):
+        super().setUp()
+
+    def test_list(self):
+
+        response = self.client.get('/auth_list/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('auth_list.html')
+
+        self.login()
+        response = self.client.get('/auth_list/')
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateNotUsed('auth_list.html')
+
+
+
+    def test_create_positive(self):
+        url = reverse('create_auth')
+        response = self.client.post(url, {
+            'name': 'test auth',
+            'url': 'http://127.0.0.1:8000/'
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed('voting_create.html')
+
+    def test_create_negative(self):
+        Auth.objects.create(
+            name = 'test auth',
+            url = 'perro'
+        )
+        url = reverse('create_auth')
+        self.client.post(url, {
+            'name' : 'test auth',
+            'url' : 'perro'
+        })
+        self.assertTemplateNotUsed('voting_create.html')
+
+    def test_create_negative2(self):
+        Auth.objects.create(
+            name = "",
+            url = ""
+        )
+        url = reverse('create_auth')
+        response = self.client.post(url, {
+            'name' : '',
+            'url' : ''
+        })
+        self.assertTemplateNotUsed('voting_create.html')  
+
+    def test_show_positive(self):
+        auth = Auth.objects.create(
+            name = 'test auth',
+            url = 'http://127.0.0.1:8000/'
+        )
+        response = self.client.get(f'/auth/{auth.pk}')
+        self.assertNotEqual(response.status_code, 404)
+        self.assertTemplateUsed('auth_details.html')
+
+
+    def test_show_negative(self):
+        url = 'auth/22'
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed('voting_details.html')
+
+    def test_update_positive(self):
+        auth = Auth.objects.create(
+            name = 'test auth',
+            url = 'http://127.0.0.1:8000/'
+        )
+        response = self.client.post(f'/auth/{auth.pk}', {
+            'name' :'test auth',
+            'url' : 'http://127.0.0.1:8000/'
+        })
+
+        self.assertNotEqual(response.status_code, 301)
+        self.assertTemplateUsed('auth_details.html')
+
+
+    def test_update_negative(self):
+        auth = Auth.objects.create(
+            name = 'test auth',
+            url = 'http://127.0.0.1:8000/'
+        )
+        url = reverse('auth_details', args=[auth.pk])
+        response = self.client.post(url, {
+            'name' :'test auth',
+            'url' : ' sdfsf'
+        })
+        self.assertTemplateNotUsed('auth_list.html')
+        self.assertTemplateUsed('auth_details.html')
+
+    def test_delete_positive(self):
+        auth =  Auth.objects.create(
+            name = 'test auth',
+            url = 'http://127.0.0.1:8000/'
+        )
+        auth.delete()
+        self.assertTrue(Auth.objects.count() == 0)
+
+
+    def test_delete_negative(self):
+        Auth.objects.create(
+            name = 'test auth',
+            url = 'http://127.0.0.1:8000/'
+        )
+        self.assertTrue(Auth.objects.count() != 0)
 
 
 class TestSortVoting(StaticLiveServerTestCase):
