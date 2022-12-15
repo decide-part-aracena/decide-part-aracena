@@ -181,7 +181,7 @@ class ImportTestCase(APITestCase):
         input_format = 'file'
         filename = os.path.join(
             os.path.dirname(__file__),
-            'testImport5.xlsx')
+            'testImport.xlsx')
 
         with open(filename, "rb") as f:
             data = {'file': f,}
