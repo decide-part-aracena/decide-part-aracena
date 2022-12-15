@@ -183,7 +183,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
             options = q.options.all()
             for opt in options:
                 clear[opt.number] = 0
-                for i in range(random.randint(0, 5)):
+                for i in range(4):
                     a, b = self.encrypt_msg(opt.number, v)
                     data = {
                         'voting': v.id,
