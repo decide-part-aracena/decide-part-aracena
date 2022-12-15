@@ -1,17 +1,12 @@
-import random
 from base.tests import BaseTestCase
 from census.models import Census
-from base.models import Auth, Key
-from voting.models import Question, QuestionOption, Voting
-from django.conf import settings
+from base.models import  Key
+from voting.models import Question, Voting
 from django.utils import timezone
-from django.contrib.auth.models import User
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from base import mods
-from mixnet.mixcrypt import ElGamal
-from mixnet.mixcrypt import MixCrypt
 
 from voting.tests import VotingModelTestCase
 
@@ -26,7 +21,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         options.headless = True
         self.driver = webdriver.Chrome(options=options)
 
-        super().setUp()            
+        # super().setUp()            
             
     def tearDown(self):           
         super().tearDown()
@@ -45,7 +40,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         vState= self.driver.find_element(By.TAG_NAME,"h2").text
         self.assertTrue(vState, "Voting not started")
     
-    def test_Visualizer_Started_No_Census(self):        
+    def test_visualizer_started_no_census(self):        
         q = Question(desc='test question')
         q.save()
         v = Voting(name='test voting', start_date=timezone.now())
