@@ -32,15 +32,17 @@
         <br>
         <h2 v-if="!voting.postproc" id="advertisement">Count not complete</h2>
 
-        <div v-else> 
-        
-            <h1 class="title-graphic">Bar type</h1>
+        <h1 id="graphic-title-1" class="title-graphic">Bar type</h1>
+        <div v-if="voting.postproc">
             <canvas id="graphic"></canvas>
-
-            <h1 class="title-graphic">Donut type</h1>
-            <canvas id="graphic2"></canvas>
-
         </div>
+        
+
+        <h1 id="graphic-title-2" class="title-graphic">Donut type</h1>
+        <div v-if="voting.postproc">
+            <canvas id="graphic2"></canvas>
+        </div>
+        
     </div>
 
     <div class="row button-row">

@@ -160,3 +160,65 @@ class AdminTestCase(StaticLiveServerTestCase):
         expectedUrl = f'{self.live_server_url}/visualizer/{v.pk}/'
         
         self.assertTrue(actualUrl, expectedUrl) 
+
+    # button visualizer -> graphic
+    def test_graphic_buttonVisualizerGraphic(self):
+        print("Creating voting")
+        v = self.create_voting()
+
+        self.create_voters(v)
+
+        print("Creating pubkey")
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        print("Storing votes")
+        clear = self.store_votes(v)
+
+        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+
+        self.driver.find_element(By.ID, "button-graphic").click()
+        actualUrl = self.driver.current_url
+        expectedUrl = f'{self.live_server_url}/graphic/{v.pk}/'
+        
+        self.assertTrue(actualUrl, expectedUrl)
+
+    # show graphic -> bar type
+    def test_graphic_BarType(self):        
+        print("Creating voting")
+        v = self.create_voting()
+
+        self.create_voters(v)
+
+        print("Creating pubkey")
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        print("Storing votes")
+        clear = self.store_votes(v)
+
+        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        vState= self.driver.find_element(By.ID,"graphic-title-1").text
+        self.assertTrue(vState, "Bar type")
+
+    # show graphic -> donut type
+    def test_graphic_DonutType(self):        
+        print("Creating voting")
+        v = self.create_voting()
+
+        self.create_voters(v)
+
+        print("Creating pubkey")
+        v.create_pubkey()
+        v.start_date = timezone.now()
+        v.save()
+
+        print("Storing votes")
+        clear = self.store_votes(v)
+
+        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        vState= self.driver.find_element(By.ID,"graphic-title-2").text
+        self.assertTrue(vState, "Donut type")
+    
