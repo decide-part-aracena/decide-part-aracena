@@ -51,7 +51,6 @@ class VisualizerView(TemplateView):
                             v.append(post)
                             context_results[post_q_desc] = v
 
-                print(context_results)
                 context['results'] = context_results
             
         except:
