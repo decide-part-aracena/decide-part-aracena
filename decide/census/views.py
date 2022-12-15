@@ -161,30 +161,34 @@ def import_datadb(request):
                 voting_id = vid.id
                 votings_id.append(voting_id)
             
-            # Añadir los datos del archivo excel a bbdd:
-            for i in range(df.shape[0]):
-                
-                if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
-                  
-                  # Crear un nuevo usuario con el votante no registrado en bbdd:
-                    newUsername =  generar_nombre()
-                    newUser = User(username=newUsername)
-                    newUser.set_password('newUser')
-                    newUser.save()
-
-                  # Añadirlo a la lista de ids de usuarios en bbdd:
-                    users_id.append(df['voter_id'][i])
-                    
-                if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
-                    
-                    try:
-                         census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-                         census.save()
-
-                    except IntegrityError:
-                        print('Entra en error Duplicated key')
-                        messages.add_message(request,  messages.ERROR, "Duplicated Key")
+            try:
+                cols = [col for col in df.columns if col.startswith('Unnamed:')]
+                print(cols)
+                if len(cols) > 0:
+                    for i in range(df.shape[0]):
                         
+                        if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
+                        
+                        # Crear un nuevo usuario con el votante no registrado en bbdd:
+                            newUsername =  generar_nombre()
+                            newUser = User(username=newUsername)
+                            newUser.set_password('newUser')
+                            newUser.save()
+
+                        # Añadirlo a la lista de ids de usuarios en bbdd:
+                            users_id.append(df['voter_id'][i])
+                            
+                        if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
+                            
+                            try:
+                                census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                                census.save()
+
+                            except IntegrityError:
+                                print('Entra en error Duplicated key')
+                                messages.add_message(request,  messages.ERROR, "Duplicated Key")
+            except KeyError:
+                   messages.add_message(request,  messages.ERROR, "Key Error")
         except MultiValueDictKeyError:
                 messages.add_message(request, messages.ERROR, 
                     "¡Cuidado! No has cargado ningún archivo.")
