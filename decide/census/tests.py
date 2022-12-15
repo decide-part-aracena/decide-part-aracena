@@ -1,12 +1,6 @@
-import random
-from django.contrib.auth.models import User
-from django.test import TestCase
-from rest_framework.test import APIClient
-
+from django.urls import reverse
 from .models import Census
-from base import mods
 from base.tests import BaseTestCase
-
 
 class CensusTestCase(BaseTestCase):
 
@@ -73,3 +67,111 @@ class CensusTestCase(BaseTestCase):
         response = self.client.delete('/census/{}/'.format(1), data, format='json')
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
+
+
+    ##TEST UNITARIOS CRUD CENSO
+
+class TestCrud(BaseTestCase):
+
+    def setUp(self):
+        super().setUp()
+
+    def test_list(self):
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 401)
+        self.assertTemplateNotUsed('censo.html')
+
+        self.login(user='noadmin')
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateNotUsed('censo.html')
+
+        self.login()
+        response = self.client.get('/census/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('censo.html')
+
+
+    def test_create_positive(self):
+        url = reverse('crear_censo')
+        response = self.client.post(url, {
+            'voting_id' : 5,
+            'voter_id' : 7
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTemplateUsed('crear_censo.html')
+    
+
+    def test_create_negative(self):
+        Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        url = reverse('crear_censo')
+        response = self.client.post(url, {
+            'voting_id' : 1,
+            'voter_id' : 1
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed('crear_censo.html')
+
+
+    def test_show_negative(self):
+        url = reverse('censo_details', args=['1'])
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed('censo_details.html')
+
+
+    def test_show_positive(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        response = self.client.get(f'/census/{censo.voting_id}')
+        self.assertNotEqual(response.status_code, 404)
+        self.assertTemplateUsed('censo_details.html')
+
+
+    def test_update_positive(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        response = self.client.post(f'/census/{censo.voting_id}', {
+            'voting_id' : 1,
+            'voter_id' : 4
+        })
+        self.assertEqual(response.status_code, 301)
+        self.assertTemplateUsed('censo_details.html')
+
+
+    def test_update_negative(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        url = reverse('censo_details', args=[censo.voting_id])
+        response = self.client.post(url, {
+            'voting_id' : 1,
+            'voter_id' : 1
+        })
+        self.assertEqual(response.status_code, 404)
+        self.assertTemplateNotUsed('censo_details.html')
+
+
+    def test_delete_positive(self):
+        censo =  Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        censo.delete()
+        self.assertTrue(Census.objects.count() == 0)
+
+
+    def test_delete_negative(self):
+        Census.objects.create(
+            voting_id = 1,
+            voter_id = 1
+        )
+        self.assertTrue(Census.objects.count() != 0)
