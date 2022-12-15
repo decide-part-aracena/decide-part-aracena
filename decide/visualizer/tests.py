@@ -1,24 +1,15 @@
 import random
-
-
 from base.tests import BaseTestCase
 from census.models import Census
-from base.models import Auth
+from base.models import Auth, Key
 from voting.models import Question, QuestionOption, Voting
 from django.conf import settings
 from django.utils import timezone
-
 from django.contrib.auth.models import User
-
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
 from base import mods
-
-
-
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 
