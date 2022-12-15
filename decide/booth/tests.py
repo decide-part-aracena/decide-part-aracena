@@ -63,6 +63,28 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.driver.quit()
         self.base.tearDown()
 
+    def test_vote_multiple_questions(self):
+        voting = Voting.objects.get(name="test voting")
+        user = User.objects.get(username="voter1")
+
+        census = Census(voting_id=voting.pk, voter_id=user.pk)
+        census.save()
+
+        #Start voting
+        self.driver.get(self.live_server_url+'/voting/votingList/')
+        self.driver.find_element(By.LINK_TEXT, "Start").click()
+
+        #Try to vote
+        self.driver.find_element(By.LINK_TEXT, "booth").click()
+        self.driver.find_element(By.ID, "username").send_keys('voter1')
+        self.driver.find_element(By.ID, "password").send_keys('complexpassword')
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        
+        time.sleep(1)
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__9 .custom-control-label").click()
+        self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .custom-control-label").click()
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+    
     def selenium_test_voting_multiple_questions_not_started(self):
         votingId = Voting.objects.get(name="test voting").pk
         
@@ -96,3 +118,4 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.assertEqual(response.status_code, 401)
         response = self.client.post('/gateway/store/')
         self.assertEqual(response.status_code, 401)
+    
