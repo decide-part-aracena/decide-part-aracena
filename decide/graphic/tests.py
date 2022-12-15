@@ -11,109 +11,11 @@ from django.contrib.auth.models import User
 
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
-from selenium import webdriver
+from voting.tests import VotingModelTestCase
+
 from selenium.webdriver.common.by import By
-from base.tests import BaseTestCase
-from voting.models import Question, Voting
-from base import mods
-from base.models import Auth, Key
-from django.contrib.auth.models import User
-from mixnet.mixcrypt import ElGamal
-from mixnet.mixcrypt import MixCrypt
 
-class AdminTestCase(StaticLiveServerTestCase):
-
-
-    def setUp(self):
-        #Load base test functionality for decide
-        self.base = BaseTestCase()
-        self.base.setUp()
-
-        options = webdriver.ChromeOptions()
-        options.headless = False
-        self.driver = webdriver.Chrome(options=options)
-
-        super().setUp()            
-            
-    def tearDown(self):           
-        super().tearDown()
-        self.driver.quit()
-
-        self.base.tearDown()
-
-    def create_voting(self):
-        q = Question(desc='test question')
-        q.save()
-        for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
-            opt.save()
-        v = Voting(name='test voting')
-        v.save()
-        v.question.add(q)
-
-        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
-                                          defaults={'me': True, 'name': 'test auth'})
-        a.save()
-        v.auths.add(a)
-
-        return v
-    
-    def create_question(self):
-        q = Question(desc='test question')
-        q.save()
-        for i in range(5):
-            opt = QuestionOption(question=q, option='option {}'.format(i+1))
-            opt.save()
-
-        return q
-
-    def create_voters(self, v):
-        for i in range(100):
-            u, _ = User.objects.get_or_create(username='testvoter{}'.format(i))
-            u.is_active = True
-            u.save()
-            c = Census(voter_id=u.id, voting_id=v.id)
-            c.save()
-
-    def get_or_create_user(self, pk):
-        user, _ = User.objects.get_or_create(pk=pk)
-        user.username = 'user{}'.format(pk)
-        user.set_password('qwerty')
-        user.save()
-        return user
-
-    def encrypt_msg(self, msg, v, bits=settings.KEYBITS):
-        pk = v.pub_key
-        p, g, y = (pk.p, pk.g, pk.y)
-        k = MixCrypt(bits=bits)
-        k.k = ElGamal.construct((p, g, y))
-        return k.encrypt(msg)
-
-    def store_votes(self, v):
-        voters = list(Census.objects.filter(voting_id=v.id))
-        voter = voters.pop()
-
-        clear = {}
-        question = v.question.all()
-        for q in question:
-            options = q.options.all()
-            for opt in options:
-                clear[opt.number] = 0
-                for i in range(random.randint(0, 5)):
-                    a, b = self.encrypt_msg(opt.number, v)
-                    data = {
-                        'voting': v.id,
-                        'voter': voter.voter_id,
-                        'vote': { 'a': a, 'b': b },
-                    }
-                    clear[opt.number] += 1
-                    user = self.get_or_create_user(voter.voter_id)
-                    self.base.login(user=user.username)
-                    voter = voters.pop()
-                    mods.post('store', json=data)
-        return clear
-        
-    ####### TESTS
+class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
 
     #enter URL
     def test_graphicEntry(self):        
@@ -218,7 +120,9 @@ class AdminTestCase(StaticLiveServerTestCase):
         print("Storing votes")
         clear = self.store_votes(v)
 
+        print(v.postproc)
+
         response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
-        vState= self.driver.find_element(By.ID,"graphic-title-2").text
-        self.assertTrue(vState, "Donut type")
+        vState= self.driver.find_element(By.ID,"graphic2")
+        self.assertTrue(vState, True)
     
