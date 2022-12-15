@@ -1,6 +1,5 @@
 from base.tests import BaseTestCase
 from census.models import Census
-from base.models import  Key
 from voting.models import Question, Voting
 from django.utils import timezone
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
@@ -20,8 +19,6 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         options = webdriver.ChromeOptions()
         options.headless = True
         self.driver = webdriver.Chrome(options=options)
-
-        # super().setUp()            
             
     def tearDown(self):           
         super().tearDown()
