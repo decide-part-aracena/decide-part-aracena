@@ -42,16 +42,18 @@
         <div v-if="voting.postproc">
             <canvas id="graphic2"></canvas>
         </div>
+
+        <div class="row button-row">
+            <button id="return-button">
+                <a :href="'/visualizer/' + voting.id">
+                    Voting results displayed in table
+                </a>
+            </button>
+        </div>
         
     </div>
 
-    <div class="row button-row">
-        <button id="return-button">
-            <a :href="'/visualizer/' + identificator">
-                Voting results displayed in table
-            </a>
-        </button>
-    </div>
+    
 
 {% endblock %}
 
