@@ -25,9 +25,7 @@ from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
 from .forms import VotingForm, AuthForm
-
 from django.contrib.auth.decorators import user_passes_test
-
 
 def staff_required(login_url):
     return user_passes_test(lambda u: u.is_staff, login_url=login_url)
@@ -185,38 +183,30 @@ def create_voting(request):
         except ValueError:
             return render(request, 'create_voting.html', {'form': VotingForm, 'error': form.errors})
 
-def sort_by_name(request):
+@staff_required(login_url="/base")
+def sort_by_param(request):
+    cadena = str(request)
+    spliter = cadena.split(sep = '/')
+    param = spliter[-2]
     voting = Voting.objects.all()
     dic = {}
-    for v in voting:
-        name = v.name
-        dic[v] = name
     
-    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_name.html', {'sorted_voting_name':sorted_dic.keys})
-
-
-def sort_by_startDate(request):
-    voting = Voting.objects.all()
-    dic = {}
     for v in voting:
-        fecha = v.start_date
-        if fecha is not None:      
-            dic[v] = fecha
+        if(param == 'name'):
+            name = v.name
+            dic[v] = name
+        elif(param == 'startDate'):
+            date = v.start_date
+            if date is not None:      
+                dic[v] = date
+        else: 
+            date = v.end_date  
+            if date is not None:      
+                dic[v] = date
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_startDate.html', {'sorted_voting_startDate':sorted_dic.keys})
-
-def sort_by_endDate(request):
-    voting = Voting.objects.all()
-    dic = {}
-    for v in voting:
-        fecha = v.end_date  
-        if fecha is not None:      
-            dic[v] = fecha
-
-    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_endDate.html', {'sorted_voting_endDate':sorted_dic.keys})
+    return render(request, 'sorted_by_param.html', {'sorted_voting':sorted_dic.keys})
+    
 
 @staff_required(login_url="/base")
 def list_voting(request):
