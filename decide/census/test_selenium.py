@@ -1,11 +1,8 @@
-from django.test import TestCase
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.common.keys import Keys
+from .models import Census
 
 from base.tests import BaseTestCase
 
@@ -16,11 +13,13 @@ class TestSelenium(StaticLiveServerTestCase):
         self.base = BaseTestCase()
         self.base.setUp()
 
+        for i in range(7):
+            census = Census(voting_id = i+1, voter_id = i +4)
+            census.save()
+
         options = webdriver.ChromeOptions()
         options.headless = False
         self.driver = webdriver.Chrome(options=options)
-
-        super().setUp()
 
     def tearDown(self):
         super().tearDown()
@@ -29,22 +28,20 @@ class TestSelenium(StaticLiveServerTestCase):
         self.base.tearDown()
 
     def test_search(self):
-        self.driver.get("http://127.0.0.1:8000/authentication/loginuser/?next=/base/")
-        self.driver.set_window_size(923, 1016)
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
         self.driver.find_element(By.ID, "id_username").send_keys("juaalvcam")
         self.driver.find_element(By.ID, "id_password").send_keys("JuanjoUS2023")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.driver.get("http://127.0.0.1:8000/census/census/")
+        self.driver.get(self.live_server_url+"/census/census/")
         self.driver.find_element(By.ID, "myInput").click()
         self.driver.find_element(By.ID, "myInput").send_keys("4")
-        self.assertTrue("http://127.0.0.1:8000/census/census/"==self.driver.current_url)
+        self.driver.get(self.live_server_url+"/census/census/")
 
     def test_pagina_2(self):
-        self.driver.get("http://127.0.0.1:8000/authentication/loginuser/?next=/base/")
-        self.driver.set_window_size(923, 1016)
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
         self.driver.find_element(By.ID, "id_username").send_keys("juaalvcam")
         self.driver.find_element(By.ID, "id_password").send_keys("JuanjoUS2023")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.driver.get("http://127.0.0.1:8000/census/census/")
-        self.driver.get("http://127.0.0.1:8000/census/census/?page=2#pagtable")
-        self.assertTrue("http://127.0.0.1:8000/census/census/?page=2#pagtable"==self.driver.current_url)
+        self.driver.get(self.live_server_url+"/census/census/")
+        self.driver.get(self.live_server_url+"/census/census/?page=2#pagtable")
+        self.assertTrue(self.live_server_url+"/census/census/?page=2#pagtable"==self.driver.current_url)
