@@ -202,8 +202,6 @@ def export_xls(request):
     return response
 
 def export_json(request):
-
-    queryset = Census.objects.all()
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -214,8 +212,6 @@ def export_json(request):
     return response
 
 def export_yaml(request):
-
-    queryset = Census.objects.all()
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -226,8 +222,6 @@ def export_yaml(request):
     return response
 
 def export_html(request):
-
-    queryset = Census.objects.all()
     
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
@@ -239,8 +233,6 @@ def export_html(request):
 
 def export_ods(request):
 
-    queryset = Census.objects.all()
-    
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
 
