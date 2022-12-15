@@ -1,0 +1,67 @@
+version: '3.5'
+
+services:
+  db:
+    restart: always
+    container_name: decide_db
+    image: postgres:10.15-alpine
+    volumes:
+      - db:/var/lib/postgresql/data
+    networks:
+      - decide
+    environment:
+      - POSTGRES_PASSWORD=postgres
+  web:
+    restart: always
+    container_name: decide_web
+    image: decide_web:latest
+    environment:
+      - SUPER_USER_NAME=${SUPER_USER_NAME}
+      - SUPER_USER_EMAIL=${SUPER_USER_EMAIL}
+      - SUPER_USER_PASSWORD=${SUPER_USER_PASSWORD}
+    build:
+        context: .
+        dockerfile: ./docker/web/Dockerfile
+    command:
+          - bash
+          - -c
+          - |
+            python manage.py shell < createsuperuser.py
+            python manage.py migrate && gunicorn -w 5 decide.wsgi --timeout=500 -b 0.0.0.0:5000
+    expose:
+      - "5000"
+    volumes:
+      - static:/app/static
+    depends_on:
+      - db
+    networks:
+      - decide
+  nginx:
+    restart: always
+    container_name: decide_nginx
+    image: decide_nginx:latest
+    build:
+        context: .
+        dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - static:/app/static
+    ports:
+      - "8000:80"
+    depends_on:
+      - web
+    networks:
+      - decide
+
+volumes:
+  static:
+    name: decide_static
+  db:
+    name: decide_db
+
+networks:
+  decide:
+    driver: bridge
+    ipam:
+     driver: default
+     config:
+       - subnet: 10.5.0.0/16

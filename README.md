@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/wadobo/decide.svg?branch=master)](https://travis-ci.com/wadobo/decide) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/94a85eaa0e974c71af6899ea3b0d27e0)](https://www.codacy.com/app/Wadobo/decide?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=wadobo/decide&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://api.codacy.com/project/badge/Coverage/94a85eaa0e974c71af6899ea3b0d27e0)](https://www.codacy.com/app/Wadobo/decide?utm_source=github.com&utm_medium=referral&utm_content=wadobo/decide&utm_campaign=Badge_Coverage)
+[![Build Status](https://travis-ci.com/wadobo/decide.svg?branch=master)](https://travis-ci.com/wadobo/decide) [![Codacy Badge](https://app.codacy.com/project/badge/Grade/1d74c8a60bd445e6bf124bd68747b76c)](https://www.codacy.com/gh/decide-part-aracena/decide-part-aracena/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=decide-part-aracena/decide-part-aracena&amp;utm_campaign=Badge_Grade) [![Codacy Badge](https://app.codacy.com/project/badge/Coverage/1d74c8a60bd445e6bf124bd68747b76c)](https://www.codacy.com/gh/decide-part-aracena/decide-part-aracena/dashboard?utm_source=github.com&utm_medium=referral&utm_content=decide-part-aracena/decide-part-aracena&utm_campaign=Badge_Coverage)
 
 Plataforma voto electrónico educativa
 =====================================
@@ -123,6 +123,14 @@ Lanzar tests:
 Lanzar una consola SQL:
 
     $ docker exec -ti decide_db ash -c "su - postgres -c 'psql postgres'"
+
+Existe la posibilidad de automatizar la creación de un super usuario configurando un archivo local. Para ello, creamos un archivo `.env` (en el mismo directorio que se encuentra el script `docker-compose.yml`) que contenga las siguientes variables (editar por el usuario):
+
+ * SUPER_USER_NAME="usuario"
+ * SUPER_USER_EMAIL="correo@valido.es"
+ * SUPER_USER_PASSWORD="contraseña"
+
+El archivo `.env` es local y no se sube al repositorio, cada usuario tiene su propia configuración. Este archivo no es necesario para el correcto funcionamiento del servicio, es opcional. Si alguna variable tiene un valor no válido, no se crea el super usuario.
 
 Ejecutar con vagrant + ansible
 ------------------------------
