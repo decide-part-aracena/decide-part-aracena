@@ -468,3 +468,82 @@ class TestCrudNegative(BaseTestCase):
         self.assertTemplateNotUsed('voting_details.html')
     
 
+# Test de frontend voting 
+class TestVotingSelenium(StaticLiveServerTestCase):
+    
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        u = User(username='seleniumVoter')
+        u.set_password('123')
+        u.save()
+        self.base.login()
+
+        q = Question(desc='test question')
+        q.save()
+        for i in range(5):
+            opt = QuestionOption(question=q, option='option {}'.format(i+1))
+            opt.save()
+              
+        a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
+                                          defaults={'me': True, 'name': 'test auth','url':'http://127.0.0.1:8000'})
+        a.save()
+        v = Voting(name='test voting')
+        v.save()
+        v.auths.add(a)
+        v.question.add(q)
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()
+        self.base.tearDown()
+        self.vars = {}
+        self.client = None
+
+    def test_crear_voting(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.find_element(By.LINK_TEXT, "Create voting").click()
+        self.driver.find_element(By.ID, "id_name").send_keys("prueba")
+        self.driver.find_element(By.ID, "id_desc").send_keys("prueba")
+        self.driver.find_element(By.ID, "id_question").send_keys('test question')  
+        self.driver.find_element(By.ID, "id_auths").send_keys('http://127.0.0.1:8000')  
+        self.driver.find_element(By.LINK_TEXT, "Create").click()
+        self.driver.switch_to.alert.accept()
+
+    def test_start(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.get(f'{self.live_server_url}/voting/start/voting/'+'id_voting'+'/')
+
+
+    def test_stop(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.get(f'{self.live_server_url}/voting/stop/voting/'+'id_voting'+'/')
+
+    def test_delete(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.get(f'{self.live_server_url}/voting/delete/voting/'+'id_voting'+'/')
+      
