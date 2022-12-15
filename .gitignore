@@ -109,4 +109,4 @@ secrets_settings.py
 .vscode/
 
 # excel
-/excel
+excel/
