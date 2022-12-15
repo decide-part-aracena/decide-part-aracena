@@ -130,52 +130,30 @@ def listaPreguntas(request):
 
 def crearPreguntas(request):
     if request.method == 'GET':
-        # return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
-        return render(request, 'crearPreguntas.html', {'form':QuestionForm})
+        return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
     else:
         try: 
+       
             form = QuestionForm(request.POST)
-            nuevaPregunta = form.save(commit = False)
-            nuevaPregunta.save()
-            # form2 = QuestionOptionsForm(request.POST)
-            # nuevaPregunta2 = form2.save(commit = False)
-            # nuevaPregunta2.save()           
+            q = form.save()
+
+            e = dict(request.POST)
+            numbers = e.pop('number')
+            options = e.pop('option')
+
+            for i  in range(len(numbers)):
+                form2 = QuestionOption(question=q, option=options[i], number=numbers[i])
+                form2.save()
+
             return redirect('preguntas')
         except ValueError:
-            # return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
-            return render(request, 'preguntas.html', {'form':QuestionForm, 'error': form.errors})
+            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOption,'error': form.errors})
 
         
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
     question.delete()
     return redirect('preguntas')
-
-def showUpdateQuestions(request, question_id):
-    if request.method == 'GET':
-        question = get_object_or_404(Question, pk=question_id)
-        # question2 = get_object_or_404(QuestionOption, pk=question_id)
-
-        form = QuestionForm(instance = question)
-        #form2 = QuestionOptionsForm(instance=question2)
-        #return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form, 'form2':form2})
-        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form})
-
-    else:
-        try:
-            question = get_object_or_404(Question, pk=question_id)
-            # question2 = get_object_or_404(QuestionOption, pk=question_id)
-
-            form = QuestionForm(request.POST, instance = question)
-            form.save()
-            # form2 = QuestionOptionsForm(request.POST, instance = question2)
-            # form2.save()
-            return redirect('preguntas')
-        except ValueError:
-            # return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
-            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'error': form.errors})
-
-
 
 @staff_required(login_url="/base")
 def voting_details(request, voting_id):
