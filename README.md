@@ -124,6 +124,14 @@ Lanzar una consola SQL:
 
     $ docker exec -ti decide_db ash -c "su - postgres -c 'psql postgres'"
 
+Existe la posibilidad de automatizar la creación de un super usuario configurando un archivo local. Para ello, creamos un archivo `.env` (en el mismo directorio que se encuentra el script `docker-compose.yml`) que contenga las siguientes variables (editar por el usuario):
+
+ * SUPER_USER_NAME="usuario"
+ * SUPER_USER_EMAIL="correo@valido.es"
+ * SUPER_USER_PASSWORD="contraseña"
+
+El archivo `.env` es local y no se sube al repositorio, cada usuario tiene su propia configuración. Este archivo no es necesario para el correcto funcionamiento del servicio, es opcional. Si alguna variable tiene un valor no válido, no se crea el super usuario.
+
 Ejecutar con vagrant + ansible
 ------------------------------
 

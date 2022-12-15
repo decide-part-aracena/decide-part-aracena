@@ -2,6 +2,7 @@ from voting.models import Question
 from django.forms import ModelForm
 from voting.models import Voting
 from voting.models import QuestionOption
+from base.models import Auth
 
 class QuestionForm(ModelForm):
     class Meta: 
@@ -16,4 +17,9 @@ class QuestionOptionsForm(ModelForm):
 class VotingForm(ModelForm):
     class Meta:
         model = Voting
-        fields = ['name', 'desc', 'question','auths']
+        fields = ['name', 'desc', 'question','typepostproc','seats','auths']
+
+class AuthForm(ModelForm):
+    class Meta:
+        model = Auth
+        fields = ['name', 'url']

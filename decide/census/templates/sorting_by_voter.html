@@ -42,23 +42,23 @@
   <table class="table align-middle mb-0 bg-white">
       <thead class="bg-light">
         <tr>
-          <th>Voting Id</th>
           <th>Voter Id</th>
+          <th>Voting Id</th>
         </tr>
       </thead>
       <tbody id="myTable">
-        {% for c in sorted_census_voting_id %}
+        {% for c in sorted_census_voter_id %}
           <tr>
             <td>
               <div class="d-flex align-items-center">
                 <div class="ms-3">
-                  <p class="fw-bold mb-1">{{c.voting_id}}</p>
+                  <p class="fw-bold mb-1">{{c.voter_id}}</p>
                 </div>
               </div>
             </td>
             
              <td>
-              <p class="fw-normal mb-1">{{c.voter_id}}</p>
+              <p class="fw-normal mb-1">{{c.voting_id}}</p>
             </td>
             <td>
               <button type="button" class="btn btn-link btn-sm btn-rounded">

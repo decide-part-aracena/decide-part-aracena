@@ -29,6 +29,8 @@ from django.http import Http404
 from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
 import random
+from django.contrib.auth.decorators import user_passes_test
+
 
 class CensusCreate(generics.ListCreateAPIView):
     permission_classes = (UserIsStaff,)
@@ -67,12 +69,16 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
+def staff_required(login_url):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
+
+@staff_required(login_url="/base")
 def listar_censos(request):
 
     censos = Census.objects.all()
     page = request.GET.get('page',1)
     try:
-        paginator = Paginator(censos,2)
+        paginator = Paginator(censos,5)
         censos = paginator.page(page)
     except:
         raise Http404
@@ -164,9 +170,9 @@ def import_datadb(request):
             try:
                 cols = [col for col in df.columns if col.startswith('Unnamed:')]
                 print(cols)
-                if len(cols) > 0:
+                if not len(cols) > 0:
                     for i in range(df.shape[0]):
-                        
+                        print("ha entrado")
                         if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
                         
                         # Crear un nuevo usuario con el votante no registrado en bbdd:
@@ -181,6 +187,7 @@ def import_datadb(request):
                         if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
                             
                             try:
+                                print("entra pa guardarlo")
                                 census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                                 census.save()
 
@@ -208,4 +215,14 @@ def sort_by_voting(request):
     
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
+
+def sort_by_voter(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voter_id = c.voter_id
+        dic[c] = voter_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voter.html', {'sorted_census_voter_id':sorted_dic.keys})
 

@@ -15,8 +15,8 @@
             <h1>[[ voting.id ]] - [[ voting.name ]]</h1>
 
             <h2 v-if="!voting.start_date">Voting not started</h2>
-            
-            <h2 v-else-if="!voting.end_date">Voting in progress 
+
+            <h2 v-else-if="!voting.end_date">Voting in progress
 
                 <div>
                     <p>Realtime data:</p>
@@ -30,39 +30,41 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td>[[ realtimedata.num_census ]]</td>
-                                <td>[[ realtimedata.participation ]]</td>
+                                <td id="census">[[ realtimedata.num_census ]]</td>
+                                <td id="participation">[[ realtimedata.participation ]]</td>
                             </tr>
-                        </tbody>                
+                        </tbody>
                     </table>
                 </div>
             </h2>
-            
+
             <div v-else>
-                <h2 class="heading">Results:</h2>
+                <h2 class="heading">Results: </h2>
 
-                <div v-for="quest in voting.question" :key="quest.id">
-                    <h2 class="heading">[[quest.desc]]</h2>
+                <div v-for="quest in results">
+                    <h2 class="heading">[[ quest[0].question ]]</h2>
+                    <table class="table table-bordered table-striped">
+
+                        <thead>
+                            <tr>
+                                <th>Option</th>
+                                <th>Score</th>
+                                <th>Votes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="opt in quest" :key="opt.number">
+                                {% if opt.question == quest.desc %}
+                                    <th>[[opt.option]]</th>
+                                    <td>[[opt.postproc]]</td>
+                                    <td class="text-muted">[[opt.votes]]</td>
+                                {% endif %}
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-                <table class="table table-bordered table-striped">
-                    
-                    <thead>
-                        <tr>
-                            <th>Option</th>
-                            <th>Score</th>
-                            <th>Votes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="opt in voting.postproc" :key="opt.number">
 
-                            <th>[[opt.option]]</th>
-                            <td>[[opt.postproc]]</td>
-                            <td class="text-muted">[[opt.votes]]</td>
-                        </tr>
-                    </tbody>
-                </table>
-                
+
                 <br>
 
                 <div class="row">
@@ -75,7 +77,7 @@
 
             </div>
         </div>
-        
+
     </div>
 {% endblock %}
 
@@ -85,17 +87,19 @@
     <script src="https://unpkg.com/vue@2.7.10"></script>
     <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
     <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
-    
+
     <script>
 
         var voting = {{voting|safe}};
         var realtimedata = {{realtimedata|safe}};
+        var results = {{results|safe}};
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
             data: {
                 voting: voting,
-                realtimedata: realtimedata
+                realtimedata: realtimedata,
+                results: results
             }
         })
 
@@ -108,8 +112,10 @@
             }
         })
 
+
+
     </script>
-    
+
 </body>
 {% endblock %}
 
