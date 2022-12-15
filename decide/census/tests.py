@@ -170,7 +170,59 @@ class ImportTestCase(APITestCase):
             data = {}
             response = self.client.post('/census/import_datadb', data)
         self.assertContains(response, "¡Cuidado! No has cargado ningún archivo.")
-        
+    
+    def test_same_voters(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport5.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_import_emptyvalues(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport4.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_import_emptykeys(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport6.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
     def test_invalid_census_filtered(self):
 
         response = self.client.get('/census/import_datadb')
