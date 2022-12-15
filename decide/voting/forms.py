@@ -17,7 +17,7 @@ class QuestionOptionsForm(ModelForm):
 class VotingForm(ModelForm):
     class Meta:
         model = Voting
-        fields = ['name', 'desc', 'question','auths']
+        fields = ['name', 'desc', 'question','typepostproc','seats','auths']
 
 class AuthForm(ModelForm):
     class Meta:

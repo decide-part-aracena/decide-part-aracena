@@ -26,6 +26,7 @@ from voting.models import Voting
 import operator
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.contrib.auth.decorators import user_passes_test
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -65,6 +66,10 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
+def staff_required(login_url):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
+
+@staff_required(login_url="/base")
 def listar_censos(request):
 
     censos = Census.objects.all()
