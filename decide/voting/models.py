@@ -118,7 +118,6 @@ class Voting(models.Model):
         
         question = self.question.all()
         opts = []
-        res = []
         for q in question:
             options = q.options.all()
             for opt in options:

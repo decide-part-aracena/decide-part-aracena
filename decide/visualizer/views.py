@@ -40,10 +40,10 @@ class VisualizerView(TemplateView):
                         post = postproc_list[i]
                         post_q_desc = post.get('question')
 
-                        if not post_q_desc in context_results:
+                        if post_q_desc not in context_results:
 
-                            posts.append(post)
-                            context_results[post_q_desc] = posts
+                           posts.append(post)
+                           context_results[post_q_desc] = posts
 
                         else:
 

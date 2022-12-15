@@ -14,11 +14,11 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from base.tests import BaseTestCase
-from voting.models import Question, Voting
+
 from base import mods
-from base.models import Auth, Key
-from django.contrib.auth.models import User
+
+
+
 from mixnet.mixcrypt import ElGamal
 from mixnet.mixcrypt import MixCrypt
 
@@ -47,7 +47,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         v.save()
         v.question.add(q)
 
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         vState= self.driver.find_element(By.TAG_NAME,"h2").text
         self.assertTrue(vState, "Voting not started")
     
@@ -58,7 +58,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         v.save()
         v.question.add(q)
 
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         assert self.driver.find_element(By.ID, "participation").text == "-"
 
     def test_visualizer_started_no_noted(self):        
@@ -72,7 +72,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         c1.save()
         c2 = Census(voter_id=2, voting_id=v.id)
         c2.save()
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         assert self.driver.find_element(By.ID, "participation").text == "0.0%"
 
     def test_visualizer_census_change(self):        
@@ -81,7 +81,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         v = Voting(name='test voting', start_date=timezone.now())
         v.save()
         v.question.add(q)
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
 
         census_before = self.driver.find_element(By.ID, "census").text
 
@@ -89,7 +89,7 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         c1.save()
         c2 = Census(voter_id=2, voting_id=v.id)
         c2.save()
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
 
         census_after = self.driver.find_element(By.ID, "census").text
 
@@ -107,14 +107,14 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         v.start_date = timezone.now()
         v.save()
 
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         participation_before = self.driver.find_element(By.ID, "participation").text
         print(participation_before)
 
         print("Storing votes")
-        clear = self.store_votes(v)
+        self.store_votes(v)
         
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
         participation_after = self.driver.find_element(By.ID, "participation").text
         print(participation_after)
         assert participation_after != participation_before
