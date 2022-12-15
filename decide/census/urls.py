@@ -19,4 +19,5 @@ urlpatterns = [
     path('census/<int:votacion_id>', views.censo_details, name = 'censo_details'),
     path('delete/census/<int:votacion_id>', views.borrar_censo, name = 'borrar_censo'),
     path('sortedByVoting/', views.sort_by_voting, name = 'sorted_by_voting'),
+    path('sortedByVoter/', views.sort_by_voter, name = 'sorted_by_voter'),
 ]

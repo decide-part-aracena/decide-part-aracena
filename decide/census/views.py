@@ -29,6 +29,7 @@ from voting.models import Voting
 import operator
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.contrib.auth.decorators import user_passes_test
 
 from django.template.loader import render_to_string
 
@@ -73,12 +74,16 @@ class CensusDetail(generics.RetrieveDestroyAPIView):
             return Response('Invalid voter', status=ST_401)
         return Response('Valid voter')
 
+def staff_required(login_url):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
+
+@staff_required(login_url="/base")
 def listar_censos(request):
 
     censos = Census.objects.all()
     page = request.GET.get('page',1)
     try:
-        paginator = Paginator(censos,2)
+        paginator = Paginator(censos,5)
         censos = paginator.page(page)
     except:
         raise Http404
@@ -258,4 +263,13 @@ def export_pdf(request):
 
     return response
 
+def sort_by_voter(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voter_id = c.voter_id
+        dic[c] = voter_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voter.html', {'sorted_census_voter_id':sorted_dic.keys})
 
