@@ -79,3 +79,20 @@ class BoothTestCase(StaticLiveServerTestCase):
         response = self.client.get('/booth/{}/'.format(votingId), format='json')
         self.assertEqual(response.status_code, 404)
     
+    def test_vote_multiple_questions_without_permission(self):
+        #Start the voting
+        votingId = Voting.objects.get(name="test voting").pk
+        response = self.client.get('/voting/start/voting/{}/'.format(votingId))
+        self.assertEqual(response.status_code, 302)
+
+        #Access the booth
+        response = self.client.get('/booth/{}/'.format(votingId), format='json')
+        self.assertEqual(response.status_code, 200)
+        
+        #Try to vote
+        response = self.client.get('/census/{}/?voter_id={}'.format(votingId,1), format='json')
+        self.assertEqual(response.status_code, 401)
+        response = self.client.post('/store/')
+        self.assertEqual(response.status_code, 401)
+        response = self.client.post('/gateway/store/')
+        self.assertEqual(response.status_code, 401)
