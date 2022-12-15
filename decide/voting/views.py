@@ -122,12 +122,12 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-
+@staff_required(login_url="/base")        
 def listaPreguntas(request):
     preguntas = Question.objects.all() 
     return render(request, 'preguntas.html', {'preguntas':preguntas})
 
-
+@staff_required(login_url="/base")        
 def crearPreguntas(request):
     if request.method == 'GET':
         return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
@@ -149,7 +149,7 @@ def crearPreguntas(request):
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOption,'error': form.errors})
 
-        
+@staff_required(login_url="/base")        
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
     question.delete()
@@ -251,7 +251,7 @@ def tally_voting(request, voting_id):
     voting.tally_votes(token)
     return redirect('voting_list')
 
-
+@staff_required(login_url="/base")        
 def create_auth(request):
     if request.method == 'GET':
         return render(request, 'create_auth.html', {'form': AuthForm})
@@ -264,16 +264,18 @@ def create_auth(request):
         except ValueError:
             return render(request, 'create_auth.html', {'form':AuthForm, 'error':form.errors})
 
+@staff_required(login_url="/base")        
 def list_auth(request):
     auth = Auth.objects.all()
     return render(request, 'auth_list.html',{'auth':auth})
 
+@staff_required(login_url="/base")        
 def delete_auth(request, auth_id):
     auth = Auth.objects.get(id = auth_id)
     auth.delete()
     return redirect('auth_list')
 
-
+@staff_required(login_url="/base")        
 def auth_details(request, auth_id):
     if request.method == 'GET':
         auth = get_object_or_404(Auth, pk=auth_id)
