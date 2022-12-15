@@ -62,7 +62,7 @@ class BoothTestCase(StaticLiveServerTestCase):
         super().tearDown()
         self.driver.quit()
         self.base.tearDown()
-
+    
     def test_vote_multiple_questions(self):
         voting = Voting.objects.get(name="test voting")
         user = User.objects.get(username="voter1")
@@ -85,7 +85,7 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .custom-control-label").click()
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
     
-    def selenium_test_voting_multiple_questions_not_started(self):
+    def selenium_test_vote_multiple_questions_not_started(self):
         votingId = Voting.objects.get(name="test voting").pk
         
         self.driver.get(self.live_server_url+'/voting/votingList/')
@@ -119,3 +119,31 @@ class BoothTestCase(StaticLiveServerTestCase):
         response = self.client.post('/gateway/store/')
         self.assertEqual(response.status_code, 401)
     
+    ### SELENIUM TESTS 
+    def selenium_test_vote_multiple_questions_not_started(self):
+        votingId = Voting.objects.get(name="test voting").pk
+        
+        self.driver.get(self.live_server_url+'/voting/votingList/')
+        self.driver.find_element(By.LINK_TEXT, "booth").click()
+        self.assertTrue(
+            self.live_server_url+"/booth/{}/".format(votingId) == self.driver.current_url)
+        self.assertTrue(
+            self.driver.find_element(By.CSS_SELECTOR, "h1").text == "Not Found")
+
+    def selenium_test_vote_multiple_questions_incorrect_login(self):
+        voting = Voting.objects.get(name="test voting")
+        user = User.objects.get(username="voter1")
+
+        #Start voting
+        self.driver.get(self.live_server_url+'/voting/votingList/')
+        self.driver.find_element(By.LINK_TEXT, "Start").click()
+
+        #Try to vote
+        self.driver.find_element(By.LINK_TEXT, "booth").click()
+        self.driver.find_element(By.ID, "username").send_keys('incorrectVoter')
+        self.driver.find_element(By.ID, "password").send_keys('incorrectPassword')
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        time.sleep(2)
+        print(self.driver.find_element(By.CSS_SELECTOR, "div.alert.alert-dismissible.alert-danger").text)
+        self.assertTrue(
+            self.driver.find_element(By.CSS_SELECTOR, "div.alert.alert-dismissible.alert-danger").text == "× Error: Bad Request")
