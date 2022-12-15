@@ -169,10 +169,10 @@ def import_datadb(request):
             
             try:
                 cols = [col for col in df.columns if col.startswith('Unnamed:')]
-                print(cols)
+                
                 if not len(cols) > 0:
                     for i in range(df.shape[0]):
-                        print("ha entrado")
+                        
                         if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
                         
                         # Crear un nuevo usuario con el votante no registrado en bbdd:
@@ -187,7 +187,7 @@ def import_datadb(request):
                         if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
                             
                             try:
-                                print("entra pa guardarlo")
+                                
                                 census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
                                 census.save()
 
