@@ -85,13 +85,6 @@ class ImportTestCase(APITestCase):
 
     def setUp(self):
 
-        """data = {'voting_id': [1,2,3,4,5],
-                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
-                'sexo': ['F', 'M','F', 'M','M'],
-                'voter_id': [2,3,4,1,5]}
-        df = pd.DataFrame(data)
-        """
-
         self.client = APIClient()
         mods.mock_query(self.client)
         u = User(username='voter1')
@@ -176,39 +169,25 @@ class ImportTestCase(APITestCase):
         with open(filename, "rb") as f:
             data = {}
             response = self.client.post('/census/import_datadb', data)
-        error = self.assertContains(response, "¡Cuidado! No has cargado ningún archivo.")
-        print(error)
+        self.assertContains(response, "¡Cuidado! No has cargado ningún archivo.")
         
-        
-
-    def test_duplicated_import(self):
+    def test_invalid_census_filtered(self):
 
         response = self.client.get('/census/import_datadb')
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'excel.html')
 
-        data1 = {'voting_id': [1,2,3,4,5],
-                'username': ['Marina', 'Juanjo', 'Laura', 'Rubén', 'Nico'],
-                'sexo': ['F', 'M','F', 'M','M'],
-                'voter_id': [2,3,4,1,5]}
-
-        for i in range(len(data1["voting_id"])):
-            census = Census(voting_id=data1['voting_id'][i], voter_id=data1['voter_id'][i])
-            census.save()
-
-        #response = self.client.get('/census/import_datadb')
-        #self.assertEqual(response.status_code, 200)
-        
+        # POST data
         input_format = 'file'
         filename = os.path.join(
             os.path.dirname(__file__),
-            'testImport.xlsx')
+            'testImport3.xlsx')
 
         with open(filename, "rb") as f:
             data = {'file': f,}
-        
-        response = self.client.post('/census/import_datadb', data)
-        #self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "Duplicated Key")
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+    
         
         
