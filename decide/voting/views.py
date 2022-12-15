@@ -143,7 +143,7 @@ def crearPreguntas(request):
                 form2 = QuestionOption(question=q, option=options[i], number=numbers[i])
                 form2.save()
 
-            return redirect('preguntas')
+            return redirect('create_voting')
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOption,'error': form.errors})
 
