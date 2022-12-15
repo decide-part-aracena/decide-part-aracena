@@ -10,8 +10,6 @@ from base.tests import BaseTestCase
 #selenium
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 
@@ -109,11 +107,13 @@ class CensusTestCase(BaseTestCase):
         response = self.client.get('/census/census/census_exported_pdf', format='pdf')
         self.assertEqual(response.status_code, 200)
 
-class CensusTestCaseSelenium(StaticLiveServerTestCase):
+class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
     #Selenium tests de exportación
     def setUp(self):
         self.base = BaseTestCase()
         self.base.setUp()
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
 
         options = webdriver.ChromeOptions()
         options.headless = False
@@ -125,42 +125,25 @@ class CensusTestCaseSelenium(StaticLiveServerTestCase):
         super().tearDown()
         self.driver.quit()
 
-        self.base.tearDown()
-  
-    def test_testCSV(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to CSV").click()
-    
-    def test_testXLS(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to XLS").click()
-
-    def test_testODS(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to ODS").click()
-
-    def test_testYAML(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to YAML").click()            
+        self.base.tearDown()          
 
     def test_testJSON(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
+        self.driver.get(self.live_server_url+'/census/census')
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to JSON").click()
-        self.driver.get("http://127.0.0.1:8000/census/census/census_exported_json")
+        self.assertTrue(
+            self.live_server_url+"/census/census/census_exported_json" == self.driver.current_url)
 
     def test_testHTML(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
+        self.driver.get(self.live_server_url+'/census/census')
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to HTML").click()
-        self.driver.get("http://127.0.0.1:8000/census/census/census_exported_html")
+        self.assertTrue(
+            self.live_server_url+"/census/census/census_exported_html" == self.driver.current_url)
         
     def test_testPDF(self):
-        self.driver.get("http://127.0.0.1:8000/census/census/")
+        self.driver.get(self.live_server_url+'/census/census')
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to PDF").click()
-        self.driver.get("http://127.0.0.1:8000/census/census/census_exported_pdf")
+        self.assertTrue(
+            self.live_server_url+"/census/census/census_exported_pdf" == self.driver.current_url)

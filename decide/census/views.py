@@ -31,7 +31,6 @@ from django.core.paginator import Paginator
 from django.http import Http404
 
 from django.template.loader import render_to_string
-import tempfile
 
 from weasyprint import HTML
 from weasyprint.text.fonts import FontConfiguration
@@ -189,8 +188,6 @@ def export_csv(request):
 
 def export_xls(request):
 
-    queryset = Census.objects.all()
-
     census_resource = resources.modelresource_factory(model=Census)()
     dataset = census_resource.export()
 
@@ -253,7 +250,7 @@ def export_pdf(request):
     html = render_to_string("censoToPDF.html", {'censos':censos})
 
     response = HttpResponse(content_type="application/pdf")
-    response["Content-Disposition"] = "inline; atachment; census.pdf"
+    response["Content-Disposition"] = "inline; attachment; census.pdf"
     response["Content-Transfer-Encoding"] = 'binary'
 
     font_config = FontConfiguration()
