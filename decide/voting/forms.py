@@ -9,6 +9,11 @@ class QuestionForm(ModelForm):
         model= Question
         fields = ['desc']
 
+class QuestionYNForm(ModelForm):
+    class Meta: 
+        model= Question
+        fields = ['desc', 'optionSiNo']
+
 class QuestionOptionsForm(ModelForm):
     class Meta:
         model = QuestionOption
