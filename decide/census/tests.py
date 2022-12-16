@@ -1,4 +1,7 @@
 from rest_framework.test import APIClient
+from django.contrib.auth.models import User
+from rest_framework.test import APIClient
+from base import mods
 from django.urls import reverse
 from .models import Census
 from base.tests import BaseTestCase
@@ -10,6 +13,11 @@ from decide.settings import LOGIN_URL
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from rest_framework.test import APITestCase
+from .models import Census, ExcelFile
+from pandas.testing import assert_frame_equal
+import pandas as pd
+import os.path
 
 class CensusTestCase(BaseTestCase):
 
@@ -160,6 +168,170 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.driver.find_element(By.LINK_TEXT, "Export to PDF").click()
         self.assertTrue(
             self.live_server_url+"/census/census/census_exported_pdf" == self.driver.current_url)
+class ImportTestCase(APITestCase):
+
+    # Básicas de configuración
+
+    def setUp(self):
+
+        self.client = APIClient()
+        mods.mock_query(self.client)
+        u = User(username='voter1')
+        u.set_password('123')
+        u.save()
+
+        u2 = User(username='admin')
+        u2.set_password('admin')
+        u2.is_superuser = True
+        u2.save()
+
+        admin = User(username='admin5')
+        admin.set_password('12345')
+        admin.is_staff = True
+        admin.save()
+        self.client.force_login(admin)
+
+    def tearDown(self):
+        self.census = None
+        self.client = None
+
+    def test_login(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post(
+            '/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        token = response.json()
+        self.assertTrue(token.get('token'))
+
+    def test_login_fail(self):
+        data = {'username': 'voter1', 'password': '321'}
+        response = self.client.post(
+            '/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 400)
+
+    def test_getuser(self):
+        data = {'username': 'voter1', 'password': '123'}
+        response = self.client.post(
+            '/authentication/login/', data, format='json')
+        self.assertEqual(response.status_code, 200)
+        token = response.json()
+
+        response = self.client.post(
+            '/authentication/getuser/', token, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        user = response.json()
+        self.assertEqual(user['username'], 'voter1')
+
+    # Concretos para importación de excel
+
+    def test_import_positive(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # POST data
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_import_negative(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertContains(response, "¡Cuidado! No has cargado ningún archivo.")
+    
+    def test_same_voters(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+
+    def test_import_emptyvalues(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport4.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_import_emptykeys(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # Not POST DATA
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport6.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+    def test_invalid_census_filtered(self):
+
+        response = self.client.get('/census/import_datadb')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'excel.html')
+
+        # POST data
+        input_format = 'file'
+        filename = os.path.join(
+            os.path.dirname(__file__),
+            'testImport3.xlsx')
+
+        with open(filename, "rb") as f:
+            data = {'file': f,}
+            response = self.client.post('/census/import_datadb', data)
+        self.assertEqual(response.status_code, 200)
+
+
+
+    ##TEST UNITARIOS CRUD CENSO
 
 class TestCrud(BaseTestCase):
 
@@ -211,7 +383,6 @@ class TestCrud(BaseTestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
         self.assertTemplateNotUsed('censo_details.html')
-
 
     def test_show_positive(self):
         censo =  Census.objects.create(

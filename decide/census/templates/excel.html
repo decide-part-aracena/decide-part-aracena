@@ -18,9 +18,18 @@
     <div class="top-header">
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+        
+        {% if messages %}
+        {% for message in messages %}
+            <div style="color: red;">
+                <p> Error: </p>{{message}}
+            </div>
+        {% endfor %}
+        {% endif %}
 
         <p>{{ ExcelFileForm.file_types }}</p>
-        <input type="file" requered name="file">
+        <input type="file"  name="file">
+        
         <button class="bottom-active" onclick="return confirm('Loading!')" type="submit">Submit</button>
     </form>
     </div>
