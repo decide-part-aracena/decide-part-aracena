@@ -179,6 +179,7 @@ def import_datadb(request):
                             newUsername =  generar_nombre()
                             newUser = User(username=newUsername)
                             newUser.set_password('newUser')
+                            newUser.pk =  (df['voter_id'][i])
                             newUser.save()
 
                         # Añadirlo a la lista de ids de usuarios en bbdd:
