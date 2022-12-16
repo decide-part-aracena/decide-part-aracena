@@ -25,6 +25,30 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         self.driver.quit()
 
         self.base.tearDown()
+    
+    def store_votes_multiquestion(self, v):
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
+
+        clear = {}
+        question = v.question.all()
+        for q in question:
+            options = q.options.all()
+            for opt in options:
+                clear[opt.number] = 0
+                for i in range(4):
+                    a, b = self.voting.encrypt_msg(opt.number, v)
+                    data = {
+                        'voting': v.id,
+                        'voter': voter.voter_id,
+                        'vote': { 'a': a, 'b': b },
+                    }
+                    clear[opt.number] += 1
+                    user = self.voting.get_or_create_user(voter.voter_id)
+                    self.base.login(user=user.username)
+                    voter = voters.pop()
+                    mods.post('store', json=data)
+        return clear
         
     def test_visualizer_not_started(self):        
         q = Question(desc='test question')
@@ -99,26 +123,3 @@ class VisualizerTestCase(StaticLiveServerTestCase):
         participation_after = self.driver.find_element(By.ID, "participation").text
         assert participation_after != participation_before
 
-    def store_votes_multiquestion(self, v):
-        voters = list(Census.objects.filter(voting_id=v.id))
-        voter = voters.pop()
-
-        clear = {}
-        question = v.question.all()
-        for q in question:
-            options = q.options.all()
-            for opt in options:
-                clear[opt.number] = 0
-                for i in range(4):
-                    a, b = self.voting.encrypt_msg(opt.number, v)
-                    data = {
-                        'voting': v.id,
-                        'voter': voter.voter_id,
-                        'vote': { 'a': a, 'b': b },
-                    }
-                    clear[opt.number] += 1
-                    user = self.voting.get_or_create_user(voter.voter_id)
-                    self.base.login(user=user.username)
-                    voter = voters.pop()
-                    mods.post('store', json=data)
-        return clear
