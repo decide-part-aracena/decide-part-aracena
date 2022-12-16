@@ -26,6 +26,9 @@ from voting.models import Voting
 import operator
 from django.core.paginator import Paginator
 from django.http import Http404
+from django.utils.datastructures import MultiValueDictKeyError
+from django.contrib import messages
+import random
 from django.contrib.auth.decorators import user_passes_test
 
 
@@ -75,7 +78,7 @@ def listar_censos(request):
     censos = Census.objects.all()
     page = request.GET.get('page',1)
     try:
-        paginator = Paginator(censos,2)
+        paginator = Paginator(censos,5)
         censos = paginator.page(page)
     except:
         raise Http404
@@ -116,36 +119,86 @@ def borrar_censo(request, votacion_id):
     censo.delete()
     return redirect('censo')
 
-#Creada para la task -----------------------------------------------------------------
+# Creada para la task de Importación de Censo -----------------------------------------------------------------
+
+def randletter(a,b):
+    return chr(random.randint(ord(a),ord(b)))
+
+def generar_nombre():
+
+    newUser = "user"
+    letraMin = randletter('a','z')
+    letraMayusc = randletter('A', 'Z')
+    letraRand = (letraMin, letraMayusc)[random.randint(0,1)]
+
+    newUser = newUser + letraMin + letraMayusc + letraRand
+    print(newUser)
+    
+    try:
+        User.objects.get(username=newUser)
+        return generar_nombre()
+    except User.DoesNotExist:
+        return newUser
 
 def import_datadb(request):
+
     if request.method == 'POST':
-        file = request.FILES['file']
-        obj = ExcelFile.objects.create( file = file )
-        path = str(obj.file)
-        
-        df = pd.read_excel(path)
-    
-        #df = pd.read_csv(path)
 
-        users = User.objects.all()
-        users_id = []
-        for us in users:
-            user_id = us.id
-            users_id.append(user_id)
+        # Importación del archivo excel:
+        try:
+            file = request.FILES['file']
+            
+            obj = ExcelFile.objects.create( file = file )
+            path = str(obj.file)
         
-        votings = Voting.objects.all()
-        votings_id = []
-        for vid in votings:
-            voting_id = vid.id
-            votings_id.append(voting_id)
+            df = pd.read_excel(path)
+            
+            # Ids de los usuarios de la bbdd:
+            users = User.objects.all()
+            users_id = []
+            for us in users:
+                user_id = us.id
+                users_id.append(user_id)
 
-        for i in range(df.shape[0]):
-           
-            if df['voter_id'][i] in  users_id and df['voting_id'][i] in votings_id:
-               
-                census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
-                census.save()
+            # Ids de las votaciones de la bbdd:
+            votings = Voting.objects.all()
+            votings_id = []
+            for vid in votings:
+                voting_id = vid.id
+                votings_id.append(voting_id)
+            
+            try:
+                cols = [col for col in df.columns if col.startswith('Unnamed:')]
+                
+                if not len(cols) > 0:
+                    for i in range(df.shape[0]):
+                        
+                        if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
+                        
+                        # Crear un nuevo usuario con el votante no registrado en bbdd:
+                            newUsername =  generar_nombre()
+                            newUser = User(username=newUsername)
+                            newUser.set_password('newUser')
+                            newUser.save()
+
+                        # Añadirlo a la lista de ids de usuarios en bbdd:
+                            users_id.append(df['voter_id'][i])
+                            
+                        if df['voter_id'][i] in users_id and df['voting_id'][i] in votings_id and len(str(df['voting_id'][i])) > 0:
+                            
+                            try:
+                                
+                                census = Census(voting_id=df['voting_id'][i], voter_id=df['voter_id'][i])
+                                census.save()
+
+                            except IntegrityError:
+                                print('Entra en error Duplicated key')
+                                messages.add_message(request,  messages.ERROR, "Duplicated Key")
+            except KeyError:
+                   messages.add_message(request,  messages.ERROR, "Key Error")
+        except MultiValueDictKeyError:
+                messages.add_message(request, messages.ERROR, 
+                    "¡Cuidado! No has cargado ningún archivo.")
 
     return render(request, 'excel.html')
 
@@ -162,4 +215,14 @@ def sort_by_voting(request):
     
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
+
+def sort_by_voter(request):
+    census = Census.objects.all()
+    dic = {}
+    for c in census:
+        voter_id = c.voter_id
+        dic[c] = voter_id
+    
+    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
+    return render(request, 'sorting_by_voter.html', {'sorted_census_voter_id':sorted_dic.keys})
 
