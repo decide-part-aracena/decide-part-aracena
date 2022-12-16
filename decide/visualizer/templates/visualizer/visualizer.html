@@ -63,19 +63,18 @@
                         </tbody>
                     </table>
                 </div>
-
-
-                <br>
-
-                <div class="row">
-                    <button id="button-graphic">
-                        <a :href="'/graphic/' + identificator">
-                            Graphic representation of the results
-                        </a>
-                    </button>
-                </div>
-
             </div>
+
+            <br>
+
+            <div class="row">
+                <button id="button-graphic">
+                    <a :href="'/graphic/' + voting.id">
+                        Graphic representation of the results
+                    </a>
+                </button>
+            </div>
+            
         </div>
 
     </div>
@@ -90,9 +89,9 @@
 
     <script>
 
-        var voting = {{voting|safe}};
-        var realtimedata = {{realtimedata|safe}};
-        var results = {{results|safe}};
+        var voting = {{voting|safe}}
+        var realtimedata = {{realtimedata|safe}}
+        var results = {{results|safe}}
         var app = new Vue({
             delimiters: ['[[', ']]'],
             el: '#app-visualizer',
@@ -102,18 +101,7 @@
                 results: results
             }
         })
-
-        var identificator = voting.id
-        var app2 = new Vue({
-            delimiters: ['[[', ']]'],
-            el: '#button-graphic',
-            data: {
-                identificator: identificator
-            }
-        })
-
-
-
+        
     </script>
 
 </body>
