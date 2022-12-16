@@ -546,4 +546,12 @@ class TestVotingSelenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
         self.driver.get(f'{self.live_server_url}/voting/votingList/')
         self.driver.get(f'{self.live_server_url}/voting/delete/voting/'+'id_voting'+'/')
-      
+
+    def test_tally(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/voting/votingList/')
+        self.driver.get(f'{self.live_server_url}/voting/tally/voting/'+'id_voting'+'/')
