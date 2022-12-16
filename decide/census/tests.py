@@ -156,16 +156,6 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.assertTrue(
             self.live_server_url+"/census/census/census_exported_html" == self.driver.current_url)
         
-    def test_testPDF(self):
-        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
-        self.driver.find_element(By.ID, "id_username").send_keys("exporta")
-        self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.driver.get(self.live_server_url+'/census/census')
-        self.driver.get(self.live_server_url+'/census/census/census_exported_pdf')
-        self.assertTrue(
-        self.live_server_url+"/census/census/census_exported_pdf" == self.driver.current_url)
-
 class ImportTestCase(APITestCase):
 
     # Básicas de configuración
