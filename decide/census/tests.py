@@ -124,7 +124,7 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.census.save()
 
         options = webdriver.ChromeOptions()
-        options.headless = True
+        options.headless = False
         self.driver = webdriver.Chrome(options=options)
 
         super().setUp()
@@ -142,8 +142,7 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/census/census')
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to JSON").click()
+        self.driver.get(self.live_server_url+'/census/census/census_exported_json')
         self.assertTrue(
             self.live_server_url+"/census/census/census_exported_json" == self.driver.current_url)
 
@@ -153,8 +152,7 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/census/census')
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to HTML").click()
+        self.driver.get(self.live_server_url+'/census/census/census_exported_html')
         self.assertTrue(
             self.live_server_url+"/census/census/census_exported_html" == self.driver.current_url)
         
@@ -164,8 +162,7 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/census/census')
-        self.driver.find_element(By.LINK_TEXT, "Export to:").click()
-        self.driver.find_element(By.LINK_TEXT, "Export to PDF").click()
+        self.driver.get(self.live_server_url+'/census/census/census_exported_pdf')
         self.assertTrue(
         self.live_server_url+"/census/census/census_exported_pdf" == self.driver.current_url)
 
