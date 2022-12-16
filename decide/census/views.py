@@ -169,8 +169,10 @@ def import_datadb(request):
             
             try:
                 cols = [col for col in df.columns if col.startswith('Unnamed:')]
-                
-                if not len(cols) > 0:
+                filas = [f for f in df.values if ( len(list(v for v in f if str(v).startswith('nan'))) > 0 ) ]
+                print(filas)
+                if not len(cols) > 0 and not len(filas) > 0:
+
                     for i in range(df.shape[0]):
                         
                         if df['voter_id'][i] not in users_id and str(df['voter_id'][i]) != 'nan':
@@ -179,6 +181,7 @@ def import_datadb(request):
                             newUsername =  generar_nombre()
                             newUser = User(username=newUsername)
                             newUser.set_password('newUser')
+                            newUser.pk =  (df['voter_id'][i])
                             newUser.save()
 
                         # Añadirlo a la lista de ids de usuarios en bbdd:
