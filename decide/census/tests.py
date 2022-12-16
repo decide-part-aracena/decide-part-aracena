@@ -130,6 +130,7 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
 
     def test_testHTML(self):
         self.driver.get(self.live_server_url+'/census/census')
+        self.driver.set_window_size(1208, 896)
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to HTML").click()
         self.assertTrue(
