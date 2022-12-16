@@ -1,9 +1,17 @@
-from django.contrib.auth.models import User
+from rest_framework.test import APIClient
 from rest_framework.test import APIClient
 from base import mods
 from django.urls import reverse
 from .models import Census
 from base.tests import BaseTestCase
+
+from django.contrib.auth.models import User
+
+
+#selenium
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from rest_framework.test import APITestCase
 from .models import Census, ExcelFile
 from pandas.testing import assert_frame_equal
@@ -80,6 +88,78 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
 
+#Tests Exportación
+    def test_export_csv(self):
+        response = self.client.get('/census/census/census_exported_csv', format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_export_xls(self):
+        response = self.client.get('/census/census/census_exported_xls', format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_export_yaml(self):
+        response = self.client.get('/census/census/census_exported_yaml', format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_export_json(self):
+        response = self.client.get('/census/census/census_exported_json', format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_export_ods(self):
+        response = self.client.get('/census/census/census_exported_ods', format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_export_html(self):
+        response = self.client.get('/census/census/census_exported_html', format='html')
+        self.assertEqual(response.status_code, 200)
+    
+    def test_export_pdf(self):
+        response = self.client.get('/census/census/census_exported_pdf', format='pdf')
+        self.assertEqual(response.status_code, 200)
+
+class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
+    #Selenium tests de exportación
+    def setUp(self):
+        self.client = APIClient()
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        self.census = Census(voting_id=1, voter_id=1)
+        self.census.save()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+        super().setUp()
+
+    def tearDown(self):
+        self.client = None
+        super().tearDown()
+        self.driver.quit()
+
+        self.base.tearDown()          
+
+    def test_testJSON(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("exporta")
+        self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.get(self.live_server_url+'/census/census')
+        self.driver.get(self.live_server_url+'/census/census/census_exported_json')
+        self.assertTrue(
+            self.live_server_url+"/census/census/census_exported_json" == self.driver.current_url)
+
+    def test_testHTML(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("exporta")
+        self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+        self.driver.get(self.live_server_url+'/census/census')
+        self.driver.get(self.live_server_url+'/census/census/census_exported_html')
+        self.assertTrue(
+            self.live_server_url+"/census/census/census_exported_html" == self.driver.current_url)
+        
 class ImportTestCase(APITestCase):
 
     # Básicas de configuración
@@ -296,7 +376,6 @@ class TestCrud(BaseTestCase):
         self.assertEqual(response.status_code, 404)
         self.assertTemplateNotUsed('censo_details.html')
 
-
     def test_show_positive(self):
         censo =  Census.objects.create(
             voting_id = 1,
@@ -458,4 +537,4 @@ class TestSortedVoter(BaseTestCase):
         response2 = self.client.get('/census/sortedByVoter/')
         self.assertEqual(response2.status_code, 200)
         self.assertTemplateUsed('sorting_by_voter.html')
-    
+

@@ -1,3 +1,5 @@
+import csv
+from import_export import resources
 from http.client import HTTPResponse
 from django.db.utils import IntegrityError
 from django.core.exceptions import ObjectDoesNotExist
@@ -17,6 +19,7 @@ from base.perms import UserIsStaff
 from .models import Census
 from .forms import CensusForm
 from .models import Census, ExcelFile
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.conf import settings
 from django.shortcuts import render
@@ -30,6 +33,11 @@ from django.utils.datastructures import MultiValueDictKeyError
 from django.contrib import messages
 import random
 from django.contrib.auth.decorators import user_passes_test
+
+from django.template.loader import render_to_string
+
+from weasyprint import HTML
+from weasyprint.text.fonts import FontConfiguration
 
 
 class CensusCreate(generics.ListCreateAPIView):
@@ -218,6 +226,90 @@ def sort_by_voting(request):
     
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorting_by_voting.html', {'sorted_census_voting_id':sorted_dic.keys})
+
+#Creada para la task -----------------------------------------------------------------
+def export_csv(request):
+
+    queryset = Census.objects.all()
+
+    options = Census._meta
+    fields = [field.name for field in options.fields]
+
+    response = HttpResponse(content_type='text/csv')
+    response['Content_Disposition'] = 'atachment; filename="census.csv"'
+
+    writer = csv.writer(response)
+
+    writer.writerow([options.get_field(field).verbose_name for field in fields])
+
+    for obj in queryset:
+        writer.writerow([getattr(obj, field) for field in fields])
+    
+    return response
+
+def export_xls(request):
+
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.xls, content_type='text/xls')
+    response['Content_Disposition'] = 'atachment; filename="census.xls"'
+    
+    return response
+
+def export_json(request):
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.json, content_type='text/json')
+    response['Content_Disposition'] = 'atachment; filename="census.json"'
+    
+    return response
+
+def export_yaml(request):
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.yaml, content_type='text/yaml')
+    response['Content_Disposition'] = 'atachment; filename="census.yaml"'
+    
+    return response
+
+def export_html(request):
+    
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.html, content_type='text/html')
+    response['Content_Disposition'] = 'atachment; filename="census.html"'
+    
+    return response
+
+def export_ods(request):
+
+    census_resource = resources.modelresource_factory(model=Census)()
+    dataset = census_resource.export()
+
+    response = HttpResponse(dataset.ods, content_type='text/ods')
+    response['Content_Disposition'] = 'atachment; filename="census.ods"'
+    
+    return response
+
+def export_pdf(request):
+
+    censos = Census.objects.all()
+    html = render_to_string("censoToPDF.html", {'censos':censos})
+
+    response = HttpResponse(content_type="application/pdf")
+    response["Content-Disposition"] = "inline; attachment; census.pdf"
+    response["Content-Transfer-Encoding"] = 'binary'
+
+    font_config = FontConfiguration()
+    HTML(string=html).write_pdf(response, font_config=font_config)
+
+    return response
 
 def sort_by_voter(request):
     census = Census.objects.all()
