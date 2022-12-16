@@ -4,11 +4,14 @@
     {% if preguntas.count > 0 %}
     <table border="5" style="margin: 0 auto;">
         <tr>
+            <td>Id</td>
             <td>Description</td>
             <td>Action</td>
         </tr>
         {% for p in preguntas %}
         <tr>
+            <td><a>{{p.id}}</a></td>
+
             <td><a>{{p.desc}}</a></td>
             <td><a class="fa fa-trash-o" href="{% url 'borrar_preguntas' p.id %}" 
                 onClick="return confirm('¿Quieres borrar la pregunta cuya Descripción es {{p.desc}}?');">

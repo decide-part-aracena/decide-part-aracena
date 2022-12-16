@@ -1,5 +1,6 @@
 import random
 import itertools
+import time
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -547,3 +548,87 @@ class TestVotingSelenium(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/voting/votingList/')
         self.driver.get(f'{self.live_server_url}/voting/delete/voting/'+'id_voting'+'/')
       
+      
+# Test de frontend question 
+class TestQuestionSelenium(StaticLiveServerTestCase):
+    
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()     
+
+        u = User(username='seleniumVoter')
+        u.set_password('123')
+        u.save()
+        self.base.login()
+
+        # q = Question(desc='test question')
+        # q.save()
+
+        # for i in range(5):
+        #     opt = QuestionOption(question=q, option='option {}'.format(i+1))
+        #     opt.save()
+        
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()
+        self.base.tearDown()
+        self.vars = {}
+        self.client = None
+    
+    def test_create_question(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/question/')
+        self.driver.find_element(By.LINK_TEXT, "Create question").click()
+        self.driver.find_element(By.ID, "id_desc").send_keys("prueba1")
+        self.driver.find_element(By.ID, "id_number").send_keys('1')  
+        self.driver.find_element(By.ID, "id_option").send_keys('op1')  
+        self.driver.find_element(By.CSS_SELECTOR, "#plus2 #id_number").send_keys("2")
+        self.driver.find_element(By.CSS_SELECTOR, "#plus2 #id_option").send_keys("op2")
+        time.sleep(5)
+        self.driver.find_element(By.LINK_TEXT, "Create").click()
+        self.driver.switch_to.alert.accept()
+
+# Test de frontend Auth 
+class TestAuthSelenium(StaticLiveServerTestCase):
+
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        
+
+        u = User(username='seleniumVoter')
+        u.set_password('123')
+        u.save()
+        self.base.login()
+
+        options = webdriver.ChromeOptions()
+        options.headless = False
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()
+        self.base.tearDown()
+        self.vars = {}
+        self.client = None
+
+    def test_create_auth(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/auth_list/')
+        self.driver.find_element(By.LINK_TEXT, "Create auth").click()
+        self.driver.find_element(By.ID, "id_name").send_keys("prueba1")
+        self.driver.find_element(By.ID, "id_url").send_keys('http://127.0.0.1:8000')  
+        time.sleep(5)
+        self.driver.find_element(By.LINK_TEXT, "Create").click()
+        self.driver.switch_to.alert.accept()
+
