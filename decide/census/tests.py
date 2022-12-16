@@ -1,6 +1,10 @@
+from rest_framework.test import APIClient
 from django.urls import reverse
 from .models import Census
 from base.tests import BaseTestCase
+
+from django.contrib.auth.models import User
+from decide.settings import LOGIN_URL
 
 #selenium
 from selenium import webdriver
@@ -104,24 +108,31 @@ class CensusTestCase(BaseTestCase):
 class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
     #Selenium tests de exportación
     def setUp(self):
+        self.client = APIClient()
         self.base = BaseTestCase()
         self.base.setUp()
+
         self.census = Census(voting_id=1, voter_id=1)
         self.census.save()
 
         options = webdriver.ChromeOptions()
-        options.headless = True
+        options.headless = False
         self.driver = webdriver.Chrome(options=options)
 
         super().setUp()
 
     def tearDown(self):
+        self.client = None
         super().tearDown()
         self.driver.quit()
 
         self.base.tearDown()          
 
     def test_testJSON(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("exporta")
+        self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/census/census')
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to JSON").click()
@@ -129,14 +140,21 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
             self.live_server_url+"/census/census/census_exported_json" == self.driver.current_url)
 
     def test_testHTML(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("exporta")
+        self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/census/census')
-        self.driver.set_window_size(1208, 896)
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to HTML").click()
         self.assertTrue(
             self.live_server_url+"/census/census/census_exported_html" == self.driver.current_url)
         
     def test_testPDF(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("exporta")
+        self.driver.find_element(By.ID, "id_password").send_keys("porta1234")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/census/census')
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to PDF").click()
