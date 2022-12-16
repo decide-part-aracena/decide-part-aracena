@@ -125,7 +125,7 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.census.save()
 
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
 
         super().setUp()
