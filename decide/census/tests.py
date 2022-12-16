@@ -1,5 +1,4 @@
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
 from rest_framework.test import APIClient
 from base import mods
 from django.urls import reverse
@@ -7,7 +6,7 @@ from .models import Census
 from base.tests import BaseTestCase
 
 from django.contrib.auth.models import User
-from decide.settings import LOGIN_URL
+
 
 #selenium
 from selenium import webdriver
