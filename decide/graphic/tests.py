@@ -8,7 +8,6 @@ from selenium.webdriver.common.by import By
 from base import mods
 
 from voting.tests import VotingModelTestCase
-from visualizer.tests import VisualizerTestCase
 
 class GraphicTestCase(StaticLiveServerTestCase):
     
@@ -90,9 +89,9 @@ class GraphicTestCase(StaticLiveServerTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes_multiquestion(v)
+        self.store_votes_multiquestion(v)
 
-        response = self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
 
         self.driver.implicitly_wait(5)
         self.driver.find_element(By.ID, "return-button").click()
@@ -114,9 +113,9 @@ class GraphicTestCase(StaticLiveServerTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes_multiquestion(v)
+        self.store_votes_multiquestion(v)
 
-        response = self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
 
         self.driver.implicitly_wait(5)
         self.driver.find_element(By.ID, "button-graphic").click()
@@ -138,9 +137,9 @@ class GraphicTestCase(StaticLiveServerTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes_multiquestion(v)
+        self.store_votes_multiquestion(v)
 
-        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
         vState= self.driver.find_element(By.ID,"graphic-title-1").text
         self.assertTrue(vState, "Bar type")
 
@@ -157,9 +156,9 @@ class GraphicTestCase(StaticLiveServerTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes_multiquestion(v)
+        self.store_votes_multiquestion(v)
 
-        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
         vState= self.driver.find_element(By.ID,"graphic-title-2").text
         self.assertTrue(vState, "Donut type")
     
