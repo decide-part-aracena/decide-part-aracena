@@ -9,6 +9,10 @@ from .models import Census, ExcelFile
 from pandas.testing import assert_frame_equal
 import pandas as pd
 import os.path
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 
 class CensusTestCase(BaseTestCase):
 
@@ -345,6 +349,44 @@ class TestCrud(BaseTestCase):
             voter_id = 1
         )
         self.assertTrue(Census.objects.count() != 0)
+
+class TestSeleniumCRUD(StaticLiveServerTestCase):
+    def setUp(self):
+        # Load base test functionality for decide
+        self.base = BaseTestCase()
+        self.base.setUp()
+
+        u = User(username='seleniumVoter')
+        u.set_password('123')
+        u.save()
+        self.base.login()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()
+        self.base.tearDown()
+        self.vars = {}
+        self.client = None
+
+    def test_create_positive_with_selenium(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        
+        self.driver.get(f'{self.live_server_url}/census/census/create')
+        self.assertTemplateUsed('crear_censo.html')
+
+        self.driver.find_element(By.ID, "id_voting_id").send_keys("1")
+        self.driver.find_element(By.ID, "id_voter_id").send_keys("3")
+        self.driver.find_element(By.ID, "id_voter_id").send_keys(Keys.ENTER)
+        self.driver.switch_to.alert.accept()
+
+        self.driver.get(f'{self.live_server_url}/census/census/')
+        self.assertTemplateUsed('censo.html')
 
 ##TEST UNITARIOS filtros y ordenacion
 
