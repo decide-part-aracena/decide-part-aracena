@@ -30,7 +30,7 @@
                     </div>
                 </li>
             {% endfor %}
-            {% if not tally_votings %}
+            {% if not on_going_votings %}
                 <center><h6 class="mb-2 text-muted">You do not have open votings</h6></center>
             {% endif %}
             </ul>
@@ -56,7 +56,7 @@
                 </div>
             </li>
             {% endfor %}
-            {% if not tally_votings %}
+            {% if not finished_votings %}
                 <center><h6 class="mb-2 text-muted">You do not have votings waiting for result</h6></center>
             {% endif %}
             </ul>
