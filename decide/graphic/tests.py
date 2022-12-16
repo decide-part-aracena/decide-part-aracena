@@ -1,22 +1,58 @@
-import random
-
 from base.tests import BaseTestCase
 from census.models import Census
-from base.models import Auth
-from voting.models import Question, QuestionOption, Voting
-from django.conf import settings
+from voting.models import Question, Voting
 from django.utils import timezone
-
-from django.contrib.auth.models import User
-
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from selenium import webdriver
+from selenium.webdriver.common.by import By
+from base import mods
 
 from voting.tests import VotingModelTestCase
+from visualizer.tests import VisualizerTestCase
 
-from selenium.webdriver.common.by import By
+class GraphicTestCase(StaticLiveServerTestCase):
+    
+    def setUp(self):
+        #Load base test functionality for decide
+        self.base = BaseTestCase()
+        self.base.setUp()
 
-class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
+        self.voting = VotingModelTestCase()
 
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):           
+        super().tearDown()
+        self.driver.quit()
+
+        self.base.tearDown()
+
+    def store_votes_multiquestion(self, v):
+        voters = list(Census.objects.filter(voting_id=v.id))
+        voter = voters.pop()
+
+        clear = {}
+        question = v.question.all()
+        for q in question:
+            options = q.options.all()
+            for opt in options:
+                clear[opt.number] = 0
+                for i in range(4):
+                    a, b = self.voting.encrypt_msg(opt.number, v)
+                    data = {
+                        'voting': v.id,
+                        'voter': voter.voter_id,
+                        'vote': { 'a': a, 'b': b },
+                    }
+                    clear[opt.number] += 1
+                    user = self.voting.get_or_create_user(voter.voter_id)
+                    self.base.login(user=user.username)
+                    voter = voters.pop()
+                    mods.post('store', json=data)
+        return clear
+                 
     #enter URL
     def test_graphicEntry(self):        
         q = Question(desc='test question')
@@ -24,11 +60,12 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
         v = Voting(name='test voting')
         v.save()
         v.question.add(q)
-        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+
+        self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
         vState= self.driver.find_element(By.ID,"info-title").text
         self.assertTrue(vState, "Graphs with voting results")
 
-    #votation without tally
+    #votation without tally -> show advise
     def test_graphic_not_tally(self):        
         q = Question(desc='test question')
         q.save()
@@ -36,16 +73,16 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
         v.save()
         v.question.add(q)
 
-        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
         vState= self.driver.find_element(By.ID,"advertisement").text
         self.assertTrue(vState, "Count not complete")
 
     # button graphic -> visualizer
     def test_graphic_buttonGraphicVisualizer(self):
         print("Creating voting")
-        v = self.create_voting()
+        v = self.voting.create_voting()
 
-        self.create_voters(v)
+        self.voting.create_voters(v)
 
         print("Creating pubkey")
         v.create_pubkey()
@@ -53,22 +90,23 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes(v)
+        clear = self.store_votes_multiquestion(v)
 
-        response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
+        response = self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
 
+        self.driver.implicitly_wait(5)
         self.driver.find_element(By.ID, "return-button").click()
         actualUrl = self.driver.current_url
         expectedUrl = f'{self.live_server_url}/visualizer/{v.pk}/'
         
-        self.assertTrue(actualUrl, expectedUrl) 
+        self.assertTrue(actualUrl, expectedUrl)
 
     # button visualizer -> graphic
     def test_graphic_buttonVisualizerGraphic(self):
         print("Creating voting")
-        v = self.create_voting()
+        v = self.voting.create_voting()
 
-        self.create_voters(v)
+        self.voting.create_voters(v)
 
         print("Creating pubkey")
         v.create_pubkey()
@@ -76,10 +114,11 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes(v)
+        clear = self.store_votes_multiquestion(v)
 
-        response =self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
+        response = self.driver.get(f'{self.live_server_url}/visualizer/{v.pk}/')
 
+        self.driver.implicitly_wait(5)
         self.driver.find_element(By.ID, "button-graphic").click()
         actualUrl = self.driver.current_url
         expectedUrl = f'{self.live_server_url}/graphic/{v.pk}/'
@@ -89,9 +128,9 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
     # show graphic -> bar type
     def test_graphic_BarType(self):        
         print("Creating voting")
-        v = self.create_voting()
+        v = self.voting.create_voting()
 
-        self.create_voters(v)
+        self.voting.create_voters(v)
 
         print("Creating pubkey")
         v.create_pubkey()
@@ -99,7 +138,7 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes(v)
+        clear = self.store_votes_multiquestion(v)
 
         response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
         vState= self.driver.find_element(By.ID,"graphic-title-1").text
@@ -108,9 +147,9 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
     # show graphic -> donut type
     def test_graphic_DonutType(self):        
         print("Creating voting")
-        v = self.create_voting()
+        v = self.voting.create_voting()
 
-        self.create_voters(v)
+        self.voting.create_voters(v)
 
         print("Creating pubkey")
         v.create_pubkey()
@@ -118,11 +157,9 @@ class AdminTestCase(StaticLiveServerTestCase, VotingModelTestCase):
         v.save()
 
         print("Storing votes")
-        clear = self.store_votes(v)
-
-        print(v.postproc)
+        clear = self.store_votes_multiquestion(v)
 
         response =self.driver.get(f'{self.live_server_url}/graphic/{v.pk}/')
-        vState= self.driver.find_element(By.ID,"graphic2")
-        self.assertTrue(vState, True)
+        vState= self.driver.find_element(By.ID,"graphic-title-2").text
+        self.assertTrue(vState, "Donut type")
     
