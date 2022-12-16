@@ -85,6 +85,7 @@ class CensusTestCase(BaseTestCase):
         self.assertEqual(response.status_code, 204)
         self.assertEqual(0, Census.objects.count())
 
+#Tests Exportación
     def test_export_csv(self):
         response = self.client.get('/census/census/census_exported_csv', format='json')
         self.assertEqual(response.status_code, 200)
@@ -167,7 +168,8 @@ class CensusTestCaseExportacionSelenium(StaticLiveServerTestCase):
         self.driver.find_element(By.LINK_TEXT, "Export to:").click()
         self.driver.find_element(By.LINK_TEXT, "Export to PDF").click()
         self.assertTrue(
-            self.live_server_url+"/census/census/census_exported_pdf" == self.driver.current_url)
+        self.live_server_url+"/census/census/census_exported_pdf" == self.driver.current_url)
+
 class ImportTestCase(APITestCase):
 
     # Básicas de configuración
