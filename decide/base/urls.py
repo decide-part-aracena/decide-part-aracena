@@ -4,6 +4,7 @@ from .views import mainView
 from census import views 
 
 urlpatterns = [
-    path('', login_required(mainView.as_view()), name='index'),
+    path('', login_required(mainView.as_view()), name='index'), 
    
+
 ]

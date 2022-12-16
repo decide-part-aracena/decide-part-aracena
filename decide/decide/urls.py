@@ -15,6 +15,7 @@ urlpatterns = [
     path('voting/', include('voting.urls')),
     path('question/', views.listaPreguntas, name='preguntas'),
     path('question/create/', views.crearPreguntas, name='crear_preguntas'),
+    path('question/createYesNo/', views.create_question_YesNo, name='create_questionYesNo'),
     path('borrar/question/<int:question_id>/', views.borrarPreguntas, name='borrar_preguntas'),
     path('', include('base.urls')),     
     path('auth/create', views.create_auth, name = 'create_auth'),

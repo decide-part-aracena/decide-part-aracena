@@ -1,0 +1,43 @@
+{% extends 'base_dashboard.html' %}
+
+{% block extrahead %}
+<STYLE>
+  A {
+    text-decoration: none;
+  }
+</STYLE>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock extrahead %}
+
+{% block content %}
+<center>
+  <h3><strong>Census</strong></h3>
+</center>
+<div class="row text-center" style="width: 60%;">
+    <table class="table align-middle mb-0 bg-white">
+      <thead class="bg-light">
+        <tr>
+          <th>Voter Id</th>
+          <th>Voting Id</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="myTable">
+        {% for c in censos %}
+      <thead class="bg-light">
+        <tr>
+          <th><div class="ms-3">
+                <p class="fw-bold mb-1">{{c.voter_id}}</p>
+              </div>
+          </th>
+          <th><p class="fw-normal mb-1">{{ c.voting_id}}</p></th>
+        </tr>
+      </thead>
+        {% endfor %}
+      </tbody>
+    </table>
+    <div>
+{% endblock content %}
+
