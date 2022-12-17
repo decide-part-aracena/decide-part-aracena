@@ -1,13 +1,16 @@
 
+import json
+from django.http import Http404
 import django_filters.rest_framework
 import operator
 
 from django.conf import settings
 from django.utils import timezone
+from django.views.generic import TemplateView
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from django.shortcuts import render, redirect, get_object_or_404
+from base import mods
 from voting.forms import QuestionForm
 from base.models import Auth
 from voting.forms import QuestionOptionsForm, QuestionYNForm
@@ -113,18 +116,47 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
-@staff_required(login_url="/base")        
+class QuestionDetailsView(TemplateView):
+    template_name = 'questiondetails.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qid = kwargs.get('question_id', 0)
+
+        try:
+            quest = Question.objects.get(id=qid)
+            
+            options = QuestionOption.objects.filter(question_id=qid)
+
+            context_options = "Options: "
+            context['question'] = quest.desc
+            for opt in options:
+                o = opt.option
+                n = opt.number
+                context_option = str(o)+"-"+str(n)
+                context_options += context_option+"\n"
+
+            context['options'] = context_options
+        
+
+        except:
+            raise Http404
+
+        return context
+
+
+@staff_required(login_url="/base")
 def listaPreguntas(request):
-    preguntas = Question.objects.all() 
+    preguntas = Question.objects.all()
     return render(request, 'preguntas.html', {'preguntas':preguntas})
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def crearPreguntas(request):
     if request.method == 'GET':
         return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
     else:
-        try: 
-       
+        try:
+
             form = QuestionForm(request.POST)
             q = form.save()
 
@@ -140,27 +172,24 @@ def crearPreguntas(request):
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOption,'error': form.errors})
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def create_question_YesNo(request):
     if request.method == 'GET':
         return render(request, 'crearPreguntas.html', {'form':QuestionForm})
     else:
-        try: 
+        try:
             form = QuestionForm(request.POST)
             q = form.save()
             q.optionSiNo = True
             q.save()
-        
+
             return redirect('preguntas')
 
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionYNForm})
 
-def show_question(request):
-    if request.method == 'GET':
-        return render(request, 'showQuestion.html')
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
     question.delete()
@@ -181,7 +210,7 @@ def voting_details(request, voting_id):
         except ValueError:
             return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
                                                           'error': form.errors})
-                                                  
+
 
 @staff_required(login_url="/base")
 def create_voting(request):
@@ -203,23 +232,23 @@ def sort_by_param(request):
     param = spliter[-2]
     voting = Voting.objects.all()
     dic = {}
-    
+
     for v in voting:
         if(param == 'name'):
             name = v.name
             dic[v] = name
         elif(param == 'startDate'):
             date = v.start_date
-            if date is not None:      
+            if date is not None:
                 dic[v] = date
-        else: 
-            date = v.end_date  
-            if date is not None:      
+        else:
+            date = v.end_date
+            if date is not None:
                 dic[v] = date
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
     return render(request, 'sorted_by_param.html', {'sorted_voting':sorted_dic.keys})
-    
+
 
 @staff_required(login_url="/base")
 def list_voting(request):
@@ -232,7 +261,7 @@ def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
-@staff_required(login_url="/base")  
+@staff_required(login_url="/base")
 def start_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
 
@@ -254,7 +283,7 @@ def tally_voting(request, voting_id):
     voting.tally_votes(token)
     return redirect('voting_list')
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def create_auth(request):
     if request.method == 'GET':
         return render(request, 'create_auth.html', {'form': AuthForm})
@@ -267,18 +296,18 @@ def create_auth(request):
         except ValueError:
             return render(request, 'create_auth.html', {'form':AuthForm, 'error':form.errors})
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def list_auth(request):
     auth = Auth.objects.all()
     return render(request, 'auth_list.html',{'auth':auth})
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def delete_auth(request, auth_id):
     auth = Auth.objects.get(id = auth_id)
     auth.delete()
     return redirect('auth_list')
 
-@staff_required(login_url="/base")        
+@staff_required(login_url="/base")
 def auth_details(request, auth_id):
     if request.method == 'GET':
         auth = get_object_or_404(Auth, pk=auth_id)
@@ -293,4 +322,3 @@ def auth_details(request, auth_id):
         except ValueError:
             return render(request, 'auth_details.html', {'auth': auth, 'form': AuthForm,
                                                           'error': form.errors})
-

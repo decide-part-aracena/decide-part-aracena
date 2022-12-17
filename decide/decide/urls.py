@@ -18,6 +18,7 @@ urlpatterns = [
     path('question/createYesNo/', views.create_question_YesNo, name='create_questionYesNo'),
     path('borrar/question/<int:question_id>/', views.borrarPreguntas, name='borrar_preguntas'),
     path('', include('base.urls')),     
+    path('question/questiondetails/<int:question_id>/', views.QuestionDetailsView.as_view()),
     path('auth/create', views.create_auth, name = 'create_auth'),
     path('auth_list/', views.list_auth, name='auth_list'),
     path('auth/<int:auth_id>', views.auth_details, name = 'auth_details'),
