@@ -7,16 +7,9 @@ from django.utils import timezone
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from base.serializers import KeySerializer
-
 from django.shortcuts import render, redirect, get_object_or_404
 from voting.forms import QuestionForm
-#from .models import Voting
-from base.models import Key
-from .filters import StartedFilter
-from django.utils.crypto import get_random_string
-from base import mods
-from base.models import Auth, Key
+from base.models import Auth
 from voting.forms import QuestionOptionsForm, QuestionYNForm
 from django.shortcuts import render, redirect, get_object_or_404
 
@@ -147,6 +140,7 @@ def crearPreguntas(request):
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOption,'error': form.errors})
 
+@staff_required(login_url="/base")        
 def create_question_YesNo(request):
     if request.method == 'GET':
         return render(request, 'crearPreguntas.html', {'form':QuestionForm})
@@ -162,6 +156,9 @@ def create_question_YesNo(request):
         except ValueError:
             return render(request, 'preguntas.html', {'form':QuestionYNForm})
 
+def show_question(request):
+    if request.method == 'GET':
+        return render(request, 'showQuestion.html')
 
 @staff_required(login_url="/base")        
 def borrarPreguntas(request, question_id):
