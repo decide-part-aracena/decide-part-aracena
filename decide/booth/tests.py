@@ -87,21 +87,6 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .custom-control-label").click()
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
     
-    
-    def selenium_test_vote_multiple_questions_not_started(self):
-        votingId = Voting.objects.get(name="test voting").pk
-        
-        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
-        self.driver.find_element(By.ID, "id_username").send_keys("voter1")
-        self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
-        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        self.driver.get(self.live_server_url+'/voting/votingList/')
-        self.driver.find_element(By.LINK_TEXT, "booth").click()
-        self.assertTrue(
-            self.live_server_url+"/booth/{}/".format(votingId) == self.driver.current_url)
-        self.assertTrue(
-            self.driver.find_element(By.CSS_SELECTOR, "h1").text == "Not Found")
-    
     def test_voting_multiple_questions_not_started(self):
         votingId = Voting.objects.get(name="test voting").pk
 
