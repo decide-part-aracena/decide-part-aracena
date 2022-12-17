@@ -727,7 +727,7 @@ class TestQuestionSelenium(StaticLiveServerTestCase):
         #     opt.save()
         
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
 
     def tearDown(self):
@@ -767,7 +767,7 @@ class TestAuthSelenium(StaticLiveServerTestCase):
         self.base.login()
 
         options = webdriver.ChromeOptions()
-        options.headless = False
+        options.headless = True
         self.driver = webdriver.Chrome(options=options)
 
     def tearDown(self):
