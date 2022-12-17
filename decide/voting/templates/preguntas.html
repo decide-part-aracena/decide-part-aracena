@@ -9,9 +9,9 @@
         </tr>
         {% for p in preguntas %}
         <tr>
-            <td><a>{{p.desc}}</a></td>
+            <td><a href="/question/questiondetails/{{ p.id }}">{{p.desc}}</a></td>
             <td><a class="fa fa-trash-o" href="{% url 'borrar_preguntas' p.id %}" 
-                onClick="return confirm('¿Quieres borrar la pregunta cuya Descripción es {{p.desc}}?');">
+                onClick="return confirm('Do you want to delete the question {{p.desc}}?');">
                     Delete
                 </a></td>
         </tr>
