@@ -19,9 +19,9 @@
           Order by:
           </a>
           <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-              <li><a class="dropdown-item" href="{% url 'sorted_by_name' %}">Title</a></li>
-              <li><a class="dropdown-item" href="{% url 'sorted_by_startDate' %}">Start date</a></li>
-              <li><a class="dropdown-item" href="{% url 'sorted_by_endDate' %}">End date</a></li>
+              <li><a class="dropdown-item" href="{% url 'name' %}">Title</a></li>
+              <li><a class="dropdown-item" href="{% url 'startDate' %}">Start date</a></li>
+              <li><a class="dropdown-item" href="{% url 'endDate' %}">End date</a></li>
           </ul>
       </li>
     </li>
@@ -50,7 +50,7 @@
         </tr>
       </thead>
       <tbody id="myTable">
-        {% for v in sorted_voting_name %}
+        {% for v in sorted_voting %}
           <tr>
             <td>
               <div class="d-flex align-items-center">

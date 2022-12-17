@@ -18,6 +18,41 @@
 <div class="alert alert-light" role="alert" style="width: 95.5%;display: grid;
   justify-content: right;margin-bottom: 1px;">
   <a class="btn btn-outline-dark" href="{% url 'crear_censo' %}">New Census</a>
+  <div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
+    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+      <li class="nav-item">
+      <li class="nav-item me-3 me-lg-0 dropdown">
+        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Export to:
+        </a>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+          <li>
+            <a class="dropdown-item" href="census_exported_csv">Export to CSV</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="census_exported_xls">Export to XLS</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="census_exported_yaml">Export to YAML</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="census_exported_json">Export to JSON</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="census_exported_html">Export to HTML</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="census_exported_ods">Export to ODS</a>
+          </li>
+          <li>
+            <a class="dropdown-item" href="census_exported_pdf">Export to PDF</a>
+          </li>
+        </ul>
+      </li>
+      </li>
+    </ul>
+  </div>
 </div>
 
 <div class="input-group container justify" style="width: 90%;margin-bottom: 9px;">
@@ -30,6 +65,7 @@
       </a>
       <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
         <li><a class="dropdown-item" href="{% url 'sorted_by_voting' %}">Voting</a></li>
+        <li><a class="dropdown-item" href="{% url 'sorted_by_voter' %}">Voter</a></li>
       </ul>
     </li>
     </li>

@@ -9,7 +9,7 @@
         </tr>
         {% for p in preguntas %}
         <tr>
-            <td><a href="{% url 'showUpdateQuestions' p.id %}">{{p.desc}}</a></td>
+            <td><a>{{p.desc}}</a></td>
             <td><a class="fa fa-trash-o" href="{% url 'borrar_preguntas' p.id %}" 
                 onClick="return confirm('¿Quieres borrar la pregunta cuya Descripción es {{p.desc}}?');">
                     Delete
@@ -18,7 +18,8 @@
         {% endfor %}
     </table>
     {% endif %}
-    <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_preguntas' %}">Create question</a></button>    
+    <button class="btn btn-secondary btn-lg"><a href="{% url 'crear_preguntas' %}">Create question</a></button>  
+    <button class="btn btn-secondary btn-lg"><a href="{% url 'create_questionYesNo' %}">Create question Yes/No</a></button>   
 </div>
 
 {% endblock %}

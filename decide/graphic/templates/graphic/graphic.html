@@ -1,5 +1,4 @@
 {% extends 'base_dashboard.html' %}
-
 {% load i18n static %}
 
 
@@ -21,27 +20,34 @@
 {% endblock %}
 
 {% block content %}
-
-    <div id="graphic-visualizer" class="graphic-container">
-        <div class="row">
-            <h1 class="title">
-                Graphs with voting results
-            </h1>
-        </div>
+    <div id="app-visualizer">        
         
-        <h1 class="title-graphic">Bar type</h1>
-        <canvas id="graphic"></canvas>
+        <div class="graphic-container graphic container">
+            
+            <div class="row">
+                <h1 class="title" id="info-title">
+                    Graphs with voting results
+                </h1>
+            </div>
 
-        <h1 class="title-graphic">Donut type</h1>
-        <canvas id="graphic2"></canvas>
-    </div>
+            <br>
+            <div class="row button-row">
+                <button id="return-button">
+                    <a :href="'/visualizer/' + voting.id">
+                        Voting results displayed in table
+                    </a>
+                </button>
+            </div>
 
-    <div class="row button-row">
-        <button id="return-button">
-            <a :href="'/visualizer/' + identificator">
-                Voting results displayed in table
-            </a>
-        </button>
+            <h2 v-if="!voting.postproc" id="advertisement">Count not complete, the graphics will be shown empty.</h2>
+
+            <h1 id="graphic-title-1" class="title-graphic">Bar type</h1>
+            <canvas id="graphic"></canvas>
+                
+            <h1 id="graphic-title-2" class="title-graphic">Donut type</h1>
+            <canvas id="graphic2"></canvas>        
+
+        </div>
     </div>
 
 {% endblock %}
@@ -63,17 +69,6 @@
                 voting: voting
             }
         })
-
-        var identificator = voting.id
-
-        var app2 = new Vue({
-            delimiters: ['[[', ']]'],
-            el: '#return-button',
-            data: {
-                identificator: identificator
-            }
-        })
-
 
         //                          //
         //Data extraction for charts//

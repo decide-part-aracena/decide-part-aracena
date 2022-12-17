@@ -2,6 +2,8 @@ from census.models import Census
 from voting.models import Voting
 from django.views.generic.base import TemplateView
 
+
+
 class mainView(TemplateView):
     template_name = 'base/index.html'
 
@@ -20,3 +22,5 @@ class mainView(TemplateView):
         context['finished_votings'] = finished_votings
         context['tally_votings'] = tally_votings
         return context
+
+
