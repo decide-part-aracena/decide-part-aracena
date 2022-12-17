@@ -1,0 +1,22 @@
+{% extends 'base_dashboard.html' %}
+{% block content %}
+
+<div id="app-booth">
+    <h1>Create Auth</h1>
+    {{error}}
+       
+    <form method="POST">
+   
+        {% csrf_token %}
+        {{form.as_p}} 
+        
+        <br />
+         <button class="btn btn-secondary btn-lg" type="submit"
+            onclick="return confirm('Are you sure you want to create a auth??');"><a>Create</a></button>
+    </form>
+</div>
+<br />
+<button class="btn btn-secondary btn-lg"><a href="{% url 'create_voting' %}">Back to create voting</a></button>
+<button class="btn btn-secondary btn-lg"><a href="{% url 'auth_list' %}">Back to auth list</a></button>
+
+{% endblock %}

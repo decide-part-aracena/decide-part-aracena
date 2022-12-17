@@ -13,3 +13,4 @@ pandas==1.5.1
 django-import-export
 selenium
 django-allauth
+WeasyPrint

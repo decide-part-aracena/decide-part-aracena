@@ -1,0 +1,33 @@
+name: VPS Deploy Develop
+on:
+  push:
+    branches: [ develop ]
+
+  workflow_dispatch:
+
+jobs:
+  Deployment:
+    name: Continuous Deployment VPS
+    runs-on: ubuntu-latest
+    steps:
+      - name: SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.VPS_SSH_HOST }}
+          username: ${{ secrets.VPS_SSH_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{secrets.VPS_SSH_PORT}}
+          script: |
+            rm -rf decide-part-aracena/
+            git clone https://github.com/decide-part-aracena/decide-part-aracena.git
+          
+            cd decide-part-aracena/
+            git switch develop
+
+            cp ../configuration/docker_settings.py docker/web/docker_settings.py
+            cp ../configuration/secrets_settings.py decide/secrets_settings.py
+            cp ../configuration/.env .env
+
+            docker compose down
+            docker compose up --detach --build
+            docker system prune -f

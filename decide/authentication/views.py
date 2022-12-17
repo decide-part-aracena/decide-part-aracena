@@ -23,6 +23,7 @@ from django.core.mail import send_mail
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.contrib.auth import login
+from django.contrib import messages
 import secrets
 
 URL_BASE = "/base/"
@@ -45,7 +46,7 @@ class LogoutView(APIView):
             pass
 
         return Response({})
-    
+
 
 class RegisterView(APIView):
     def post(self, request):
@@ -70,18 +71,23 @@ class RegisterView(APIView):
 
 
 def RegisterUserView(request):
-    if request.user.is_authenticated and not(request.user.is_staff):
+    if request.user.is_authenticated and not (request.user.is_staff):
         return redirect(URL_BASE)
 
     if request.method == "POST":
         form = NewUserForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save(commit=True)
-            user.save()
-            if request.user.is_staff:
-                return redirect("/users")
+            user = form.save(commit=False)
+            isRegisteredWithEmail = User.objects.filter(
+                email=user.email).exists()
+            if not isRegisteredWithEmail:
+                user.save()
+                if request.user.is_staff:
+                    return redirect("/users")
+                else:
+                    return redirect(URL_BASE)
             else:
-                return redirect(URL_BASE)
+                messages.error(request, 'This email is already being used')
         return render(request=request, template_name="authentication/register.html", context={"register_form": form})
     else:
         form = NewUserForm()
@@ -110,7 +116,7 @@ def LogoutUserView(request):
     return redirect(URL_BASE)
 
 
-@require_http_methods(["GET", "POST"])
+@ require_http_methods(["GET", "POST"])
 def magic_link_via_email(request: HttpRequest):
     '''
     Generate a 10 minutes magic link and send it via email to registered users
@@ -137,7 +143,7 @@ def magic_link_via_email(request: HttpRequest):
     return render(request, "authentication/magic_auth.html")
 
 
-@require_http_methods("GET")
+@ require_http_methods("GET")
 def authenticate_via_magic_link(request: HttpRequest, token: str):
     '''
     Use the magic link(token) to log in the user

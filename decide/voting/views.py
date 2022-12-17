@@ -1,31 +1,30 @@
 
+import json
+from django.http import Http404
 import django_filters.rest_framework
 import operator
 
 from django.conf import settings
 from django.utils import timezone
+from django.views.generic import TemplateView
 from rest_framework import generics, status
 from rest_framework.response import Response
 
-from base.serializers import KeySerializer
-
-from django.shortcuts import render, redirect, get_object_or_404
-from voting.forms import QuestionForm
-from .models import Voting
-from base.models import Key
-from .filters import StartedFilter
-from django.utils.crypto import get_random_string
 from base import mods
-from base.models import Auth, Key
-from voting.forms import QuestionForm, QuestionOptionsForm
+from voting.forms import QuestionForm
+from base.models import Auth
+from voting.forms import QuestionOptionsForm, QuestionYNForm
 from django.shortcuts import render, redirect, get_object_or_404
 
 from .models import Question, QuestionOption, Voting
 from .serializers import SimpleVotingSerializer, VotingSerializer
 from base.perms import UserIsStaff
 from base.models import Auth
-from .forms import VotingForm
+from .forms import VotingForm, AuthForm
+from django.contrib.auth.decorators import user_passes_test
 
+def staff_required(login_url):
+    return user_passes_test(lambda u: u.is_staff, login_url=login_url)
 
 class VotingView(generics.ListCreateAPIView):
     queryset = Voting.objects.all()
@@ -45,8 +44,8 @@ class VotingView(generics.ListCreateAPIView):
     def post(self, request, *args, **kwargs):
         self.permission_classes = (UserIsStaff,)
         self.check_permissions(request)
-        for data in ['name', 'desc', 'question', 'question_opt']:
-            if not data in request.data:
+        for data in ['name', 'desc', 'question', 'question_opt','typepostproc', 'seats']:
+            if data not in request.data:
                 return Response({}, status=status.HTTP_400_BAD_REQUEST)
 
         question = Question(desc=request.data.get('question'))
@@ -117,50 +116,86 @@ class VotingUpdate(generics.RetrieveUpdateDestroyAPIView):
             st = status.HTTP_400_BAD_REQUEST
         return Response(msg, status=st)
 
+class QuestionDetailsView(TemplateView):
+    template_name = 'questiondetails.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        qid = kwargs.get('question_id', 0)
+
+        try:
+            quest = Question.objects.get(id=qid)
+            
+            options = QuestionOption.objects.filter(question_id=qid)
+
+            context_options = "Options: "
+            context['question'] = quest.desc
+            for opt in options:
+                o = opt.option
+                n = opt.number
+                context_option = str(o)+"-"+str(n)
+                context_options += context_option+"\n"
+
+            context['options'] = context_options
+        
+
+        except:
+            raise Http404
+
+        return context
+
+
+@staff_required(login_url="/base")
 def listaPreguntas(request):
     preguntas = Question.objects.all()
     return render(request, 'preguntas.html', {'preguntas':preguntas})
 
-
+@staff_required(login_url="/base")
 def crearPreguntas(request):
     if request.method == 'GET':
         return render(request, 'crearPreguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm})
     else:
-        try: 
+        try:
+
             form = QuestionForm(request.POST)
-            nuevaPregunta = form.save(commit = False)
-            nuevaPregunta.save()
-            # form2 = QuestionOptionsForm(request.POST)
-            # nuevaPregunta2 = form2.save(commit = False)
-            # nuevaPregunta2.save()           
-            return redirect('preguntas')
+            q = form.save()
+
+            e = dict(request.POST)
+            numbers = e.pop('number')
+            options = e.pop('option')
+
+            for i  in range(len(numbers)):
+                form2 = QuestionOption(question=q, option=options[i], number=numbers[i])
+                form2.save()
+
+            return redirect('create_voting')
         except ValueError:
-            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
-        
+            return render(request, 'preguntas.html', {'form':QuestionForm, 'form2':QuestionOption,'error': form.errors})
+
+@staff_required(login_url="/base")
+def create_question_YesNo(request):
+    if request.method == 'GET':
+        return render(request, 'crearPreguntas.html', {'form':QuestionForm})
+    else:
+        try:
+            form = QuestionForm(request.POST)
+            q = form.save()
+            q.optionSiNo = True
+            q.save()
+
+            return redirect('preguntas')
+
+        except ValueError:
+            return render(request, 'preguntas.html', {'form':QuestionYNForm})
+
+
+@staff_required(login_url="/base")
 def borrarPreguntas(request, question_id):
     question = Question.objects.get(id = question_id)
     question.delete()
     return redirect('preguntas')
 
-def showUpdateQuestions(request, question_id):
-    if request.method == 'GET':
-        question = get_object_or_404(Question, pk=question_id)
-        form = QuestionForm(instance = question)
-        form2 = QuestionOptionsForm(instance=question)
-        return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':form, 'form2':QuestionOptionsForm})
-    else:
-        try:
-            question = get_object_or_404(Question, pk=question_id)
-            form = QuestionForm(request.POST, instance = question)
-            form.save()
-            form2 = QuestionOptionsForm(request.POST, instance = question)
-            form2.save()
-            return redirect('preguntas')
-        except ValueError:
-            return render(request, 'showUpdateQuestions.html', {'pregunta': question, 'form':QuestionForm, 'form2':QuestionOptionsForm,'error': form.errors})
-
-
-
+@staff_required(login_url="/base")
 def voting_details(request, voting_id):
     if request.method == 'GET':
         voting = get_object_or_404(Voting, pk=voting_id)
@@ -175,76 +210,115 @@ def voting_details(request, voting_id):
         except ValueError:
             return render(request, 'voting_details.html', {'voting': voting, 'form': VotingForm,
                                                           'error': form.errors})
-                                                  
 
 
+@staff_required(login_url="/base")
 def create_voting(request):
     if request.method == 'GET':
         return render(request, 'create_voting.html', {'form': VotingForm})
     else:
         try:
             form = VotingForm(request.POST)
-            nuevo_question = form.save(commit=False)
+            nuevo_question = form.save(commit=True)
             nuevo_question.save()
             return redirect('voting_list')
         except ValueError:
             return render(request, 'create_voting.html', {'form': VotingForm, 'error': form.errors})
 
-def sort_by_name(request):
+@staff_required(login_url="/base")
+def sort_by_param(request):
+    cadena = str(request)
+    spliter = cadena.split(sep = '/')
+    param = spliter[-2]
     voting = Voting.objects.all()
     dic = {}
-    for v in voting:
-        name = v.name
-        dic[v] = name
-    
-    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_name.html', {'sorted_voting_name':sorted_dic.keys})
 
-
-def sort_by_startDate(request):
-    voting = Voting.objects.all()
-    dic = {}
     for v in voting:
-        fecha = v.start_date
-        if fecha != None:      
-            dic[v] = fecha
+        if(param == 'name'):
+            name = v.name
+            dic[v] = name
+        elif(param == 'startDate'):
+            date = v.start_date
+            if date is not None:
+                dic[v] = date
+        else:
+            date = v.end_date
+            if date is not None:
+                dic[v] = date
 
     sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_startDate.html', {'sorted_voting_startDate':sorted_dic.keys})
-
-def sort_by_endDate(request):
-    voting = Voting.objects.all()
-    dic = {}
-    for v in voting:
-        fecha = v.end_date  
-        if fecha != None:      
-            dic[v] = fecha
-
-    sorted_dic = dict(sorted(dic.items(), key=operator.itemgetter(1)))
-    return render(request, 'sorted_by_endDate.html', {'sorted_voting_endDate':sorted_dic.keys})
+    return render(request, 'sorted_by_param.html', {'sorted_voting':sorted_dic.keys})
 
 
+@staff_required(login_url="/base")
 def list_voting(request):
     voting = Voting.objects.all()
     return render(request, 'voting_list.html',{
         'voting':voting
     })
-
+@staff_required(login_url="/base")
 def delete_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.delete()
     return redirect('voting_list')
-
+@staff_required(login_url="/base")
 def start_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
-    voting.create_pubkey()
+
+    Voting.create_pubkey(voting)
     voting.start_date = timezone.now()
     voting.save()
     return redirect('voting_list')
-
+@staff_required(login_url="/base")
 def stop_voting(request, voting_id):
     voting = Voting.objects.get(id = voting_id)
     voting.end_date = timezone.now()
     voting.save()
     return redirect('voting_list')
 
+@staff_required(login_url="/base")
+def tally_voting(request, voting_id):
+    voting = Voting.objects.get(id = voting_id)
+    token = request.session.get('auth-token', '')
+    voting.tally_votes(token)
+    return redirect('voting_list')
+
+@staff_required(login_url="/base")
+def create_auth(request):
+    if request.method == 'GET':
+        return render(request, 'create_auth.html', {'form': AuthForm})
+    else:
+        try:
+            form = AuthForm(request.POST)
+            new_auth = form.save(commit=True)
+            new_auth.save()
+            return redirect('create_voting')
+        except ValueError:
+            return render(request, 'create_auth.html', {'form':AuthForm, 'error':form.errors})
+
+@staff_required(login_url="/base")
+def list_auth(request):
+    auth = Auth.objects.all()
+    return render(request, 'auth_list.html',{'auth':auth})
+
+@staff_required(login_url="/base")
+def delete_auth(request, auth_id):
+    auth = Auth.objects.get(id = auth_id)
+    auth.delete()
+    return redirect('auth_list')
+
+@staff_required(login_url="/base")
+def auth_details(request, auth_id):
+    if request.method == 'GET':
+        auth = get_object_or_404(Auth, pk=auth_id)
+        form = AuthForm(instance=auth)
+        return render(request, 'auth_details.html', {'auth': auth, 'form':form})
+    else:
+        try:
+            auth = get_object_or_404(Auth, pk=auth_id)
+            form = AuthForm(request.POST, instance=auth)
+            form.save()
+            return redirect('auth_list')
+        except ValueError:
+            return render(request, 'auth_details.html', {'auth': auth, 'form': AuthForm,
+                                                          'error': form.errors})

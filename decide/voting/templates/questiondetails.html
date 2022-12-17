@@ -1,0 +1,44 @@
+{% extends 'base_dashboard.html' %}
+{% load i18n static %}
+
+{% block extrahead %}
+<STYLE>A {text-decoration: none;} </STYLE>
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+{% endblock extrahead %}
+
+{% block content %}
+    <div id="app-voting">
+        <div class="question container">
+            <h2>The question chosen is: {{question}}</h2>
+            
+            <h2>{{ question }}</h2>
+            <p>{{ options }}</p>
+
+    </div>    
+{% endblock %}
+
+{% block extrabody %}
+
+    <!-- Vuejs -->
+    <script src="https://unpkg.com/vue@2.7.10"></script>
+    <script src="https://unpkg.com/babel-polyfill@latest/dist/polyfill.min.js"></script>
+    <script src="https://unpkg.com/bootstrap-vue@latest/dist/bootstrap-vue.js"></script>
+
+    <script>
+
+        var question = {{question|safe}};
+        var options = {{options|safe}};
+        var app = new Vue({
+            delimiters: ['[[', ']]'],
+            el: '#app-voting',
+            data: {
+                question: question,
+                options: options,
+            }
+        })
+        
+    </script>
+
+{% endblock %}
