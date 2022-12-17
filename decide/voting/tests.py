@@ -1,5 +1,6 @@
 import random
 import itertools
+import time
 from django.utils import timezone
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -557,6 +558,9 @@ class TestVotingSelenium(StaticLiveServerTestCase):
         self.driver.get(f'{self.live_server_url}/voting/tally/voting/'+'id_voting'+'/')
 
       
+   
+
+
 
 class TestCrud(BaseTestCase):
 
@@ -702,3 +706,40 @@ class TestCrud(BaseTestCase):
         v.question.add(q)
         self.assertTrue(Voting.objects.count() != 0)
 
+# Test de frontend Auth 
+class TestAuthSelenium(StaticLiveServerTestCase):
+
+    def setUp(self):
+        self.base = BaseTestCase()
+        self.base.setUp()
+        
+
+        u = User(username='seleniumVoter')
+        u.set_password('123')
+        u.save()
+        self.base.login()
+
+        options = webdriver.ChromeOptions()
+        options.headless = True
+        self.driver = webdriver.Chrome(options=options)
+
+    def tearDown(self):
+        self.driver.quit()
+        self.base.tearDown()
+        self.vars = {}
+        self.client = None
+
+    def test_create_auth(self):
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/")
+        self.driver.set_window_size(1846, 1016)
+        self.driver.find_element(By.ID, "id_username").send_keys("admin")
+        self.driver.find_element(By.ID, "id_password").send_keys("qwerty")
+        self.driver.find_element(By.ID, "id_password").send_keys(Keys.ENTER)
+        self.driver.get(f'{self.live_server_url}/auth_list/')
+        self.driver.find_element(By.LINK_TEXT, "Create auth").click()
+        self.driver.find_element(By.ID, "id_name").send_keys("prueba1")
+        self.driver.find_element(By.ID, "id_url").send_keys('http://127.0.0.1:8000')  
+        time.sleep(5)
+        self.driver.find_element(By.CSS_SELECTOR, "form > .btn").click()
+        assert self.driver.switch_to.alert.text == "Are you sure you want to create a auth??"
+        self.driver.switch_to.alert.accept()
