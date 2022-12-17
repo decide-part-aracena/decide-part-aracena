@@ -21,8 +21,8 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.client = APIClient()
         self.base = BaseTestCase()  
         self.base.setUp()
-        #self.vars={}
-        #mods.mock_query(self.client)
+        self.vars={}
+        mods.mock_query(self.client)
         
         options = webdriver.ChromeOptions()
         options.headless = True
@@ -47,7 +47,6 @@ class BoothTestCase(StaticLiveServerTestCase):
         au.save()
         a, _ = Auth.objects.get_or_create(url=settings.BASEURL,
                                           defaults={'me': True, 'url':self.live_server_url, 'name': 'test auth'})
-        print(self.live_server_url)
         a.save()
         v.auths.add(au)
         v.question.add(q1)
@@ -143,8 +142,7 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.ID, "username").send_keys('incorrectVoter')
         self.driver.find_element(By.ID, "password").send_keys('incorrectPassword')
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-        time.sleep(2)
-        print(self.driver.find_element(By.CSS_SELECTOR, "div.alert.alert-dismissible.alert-danger").text)
+        time.sleep(1)
         self.assertTrue(
             self.driver.find_element(By.CSS_SELECTOR, "div.alert.alert-dismissible.alert-danger").text == "× Error: Bad Request")
     
