@@ -21,8 +21,8 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.client = APIClient()
         self.base = BaseTestCase()  
         self.base.setUp()
-        self.vars={}
-        mods.mock_query(self.client)
+        #self.vars={}
+        #mods.mock_query(self.client)
         
         options = webdriver.ChromeOptions()
         options.headless = True
@@ -56,6 +56,7 @@ class BoothTestCase(StaticLiveServerTestCase):
         #Create user
         u = User(username='voter1')
         u.set_password('complexpassword')
+        u.is_staff = True
         u.save()
 
     def tearDown(self):
@@ -71,6 +72,10 @@ class BoothTestCase(StaticLiveServerTestCase):
         census.save()
 
         #Start voting
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("voter1")
+        self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/voting/votingList/')
         self.driver.find_element(By.LINK_TEXT, "Start").click()
 
@@ -85,9 +90,14 @@ class BoothTestCase(StaticLiveServerTestCase):
         self.driver.find_element(By.CSS_SELECTOR, "#\\__BVID__19 .custom-control-label").click()
         self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
     
+    
     def selenium_test_vote_multiple_questions_not_started(self):
         votingId = Voting.objects.get(name="test voting").pk
         
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("voter1")
+        self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/voting/votingList/')
         self.driver.find_element(By.LINK_TEXT, "booth").click()
         self.assertTrue(
@@ -101,39 +111,29 @@ class BoothTestCase(StaticLiveServerTestCase):
         response = self.client.get('/booth/{}/'.format(votingId), format='json')
         self.assertEqual(response.status_code, 404)
     
-    def test_vote_multiple_questions_without_permission(self):
-        #Start the voting
-        votingId = Voting.objects.get(name="test voting").pk
-        response = self.client.get('/voting/start/voting/{}/'.format(votingId))
-        self.assertEqual(response.status_code, 302)
-
-        #Access the booth
-        response = self.client.get('/booth/{}/'.format(votingId), format='json')
-        self.assertEqual(response.status_code, 200)
-        
-        #Try to vote
-        response = self.client.get('/census/{}/?voter_id={}'.format(votingId,1), format='json')
-        self.assertEqual(response.status_code, 401)
-        response = self.client.post('/store/')
-        self.assertEqual(response.status_code, 401)
-        response = self.client.post('/gateway/store/')
-        self.assertEqual(response.status_code, 401)
-    
     ### SELENIUM TESTS 
     def selenium_test_vote_multiple_questions_not_started(self):
         votingId = Voting.objects.get(name="test voting").pk
         
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("voter1")
+        self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         self.driver.get(self.live_server_url+'/voting/votingList/')
         self.driver.find_element(By.LINK_TEXT, "booth").click()
         self.assertTrue(
             self.live_server_url+"/booth/{}/".format(votingId) == self.driver.current_url)
         self.assertTrue(
             self.driver.find_element(By.CSS_SELECTOR, "h1").text == "Not Found")
-
+    
     def selenium_test_vote_multiple_questions_incorrect_login(self):
         voting = Voting.objects.get(name="test voting")
         user = User.objects.get(username="voter1")
 
+        self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
+        self.driver.find_element(By.ID, "id_username").send_keys("voter1")
+        self.driver.find_element(By.ID, "id_password").send_keys("complexpassword")
+        self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
         #Start voting
         self.driver.get(self.live_server_url+'/voting/votingList/')
         self.driver.find_element(By.LINK_TEXT, "Start").click()
@@ -147,3 +147,4 @@ class BoothTestCase(StaticLiveServerTestCase):
         print(self.driver.find_element(By.CSS_SELECTOR, "div.alert.alert-dismissible.alert-danger").text)
         self.assertTrue(
             self.driver.find_element(By.CSS_SELECTOR, "div.alert.alert-dismissible.alert-danger").text == "× Error: Bad Request")
+    
