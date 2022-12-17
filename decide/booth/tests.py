@@ -10,9 +10,7 @@ from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from rest_framework.test import APIClient
 
 from selenium import webdriver
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
 import time
 
 class BoothTestCase(StaticLiveServerTestCase):
@@ -126,8 +124,6 @@ class BoothTestCase(StaticLiveServerTestCase):
             self.driver.find_element(By.CSS_SELECTOR, "h1").text == "Not Found")
     
     def selenium_test_vote_multiple_questions_incorrect_login(self):
-        voting = Voting.objects.get(name="test voting")
-        user = User.objects.get(username="voter1")
 
         self.driver.get(self.live_server_url+"/authentication/loginuser/?next=/base/")
         self.driver.find_element(By.ID, "id_username").send_keys("voter1")
