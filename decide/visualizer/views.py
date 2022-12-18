@@ -24,10 +24,9 @@ class VisualizerView(TemplateView):
             if r[0].get('start_date'):
                 num_census = Census.objects.filter(voting_id=vid).count()
                 num_votes = Vote.objects.filter(voting_id=vid).count()
-                num_questions = len(r[0].get('question'))
 
                 if num_census != 0:
-                    participation = (f'{((num_votes/num_questions)/num_census)*100}')+'%'
+                    participation = (f'{(num_votes/num_census)*100}')+'%'
                 
                 realtimedata = {'num_census':num_census, 'num_votes':num_votes, 'participation':participation}
                 context['realtimedata'] = realtimedata
